@@ -36,7 +36,7 @@ on_run(function()
     CLASS_NAME = className,
     CLASS_PATH = classPath,
     COPYRIGHT = os.date("%Y") .. [[ Jean "Pixfri" Letessier ]],
-    HEADER_GUARD = "PN_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
+    HEADER_GUARD = "FL_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
     PROJECT = project
   }
 
@@ -63,6 +63,8 @@ headerTemplate = [[
 
 #ifndef %HEADER_GUARD%
 #define %HEADER_GUARD%
+
+#include <FlashlightEngine/Types.hpp>
 
 namespace %PROJECT% {
     class %CLASS_NAME% {
