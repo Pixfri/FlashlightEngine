@@ -12,6 +12,8 @@ namespace FlashlightEngine {
 
         m_Window = std::make_shared<Window>(WindowProperties{ width, height, "Flashlight Engine" });
 
+        m_VulkanRenderContext = std::make_shared<Vk::RenderContext>(m_Window);
+
         m_Window->OnResize([](const UInt32 newWidth, const UInt32 newHeight) -> void {
             FlUnused(newWidth);
             FlUnused(newHeight);

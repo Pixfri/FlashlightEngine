@@ -11,7 +11,10 @@
 
 #include <FlashlightEngine/Core/Window.hpp>
 
+#include <FlashlightEngine/VulkanRHI/RenderContext.hpp>
+
 #include <memory>
+
 
 namespace FlashlightEngine {
     class Application {
@@ -29,6 +32,7 @@ namespace FlashlightEngine {
     
     private:
         std::shared_ptr<Window> m_Window;
+        std::shared_ptr<Vk::RenderContext> m_VulkanRenderContext;
     };
 }
 

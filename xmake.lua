@@ -7,6 +7,7 @@ set_project(ProjectName)
 add_rules("mode.debug", "mode.release")
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
+option("force_validation", {description = "Force Vulkan validation layers to be enabled.", default = false})
 
 add_includedirs("Include")
 
@@ -34,22 +35,27 @@ if is_plat("windows") then
   end
 end
 
+if has_config("force_validation") then
+  add_defines("FL_FORCE_VALIDATION_LAYERS")
+end
+
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
-add_requires("volk", "vulkan-memory-allocator", "glfw", "spdlog v1.9.0")
-add_requires("imgui", {configs = {glfw = true, vulkan = true}})
+add_requires("volk", "vulkan-memory-allocator", "glfw 3.4", "spdlog v1.9.0")
+add_requires("imgui", {configs = {vulkan = true, glfw = true}})
 add_requires("optick", {configs = {vulkan = true}})
 
 target(ProjectName)
   set_kind("binary")
 
-  
   add_files("Source/**.cpp")
 
   if is_plat("windows") then
     -- MSVC throws a bunch of warnings because of spdlog
     add_defines("_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING")
   end
+
+  add_defines("VK_NO_PROTOTYPES", "GLFW_INCLUDE_VULKAN")
   
   for _, ext in ipairs({".hpp", ".inl"}) do
     add_headerfiles("Include/**" .. ext)
