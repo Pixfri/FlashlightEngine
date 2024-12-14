@@ -13,19 +13,24 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 namespace FlashlightEngine {
     Window::Window(const WindowProperties& properties)
         : m_Data(properties.Width, properties.Height, properties.Title), m_HWnd(nullptr) {
-        WNDCLASSA windowClass{};
-        windowClass.lpszClassName = "FlashlightEngine";
+        WNDCLASSEX windowClass{};
+        windowClass.cbSize = sizeof(windowClass);
+        windowClass.style = CS_HREDRAW | CS_VREDRAW;
         windowClass.lpfnWndProc = WindowProc;
         windowClass.hInstance = GetModuleHandle(nullptr);
-        RegisterClassA(&windowClass);
+        windowClass.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+        windowClass.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+        windowClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
+        windowClass.lpszClassName = "FlashlightEngine";
+        RegisterClassEx(&windowClass);
 
         RECT windowRect = {0, 0, static_cast<LONG>(properties.Width), static_cast<LONG>(properties.Height)};
-        AdjustWindowRect(&windowRect, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU, FALSE);
+        AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
-        m_HWnd = CreateWindowA(
+        m_HWnd = CreateWindow(
             windowClass.lpszClassName,
             properties.Title.c_str(),
-            WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU,
+            WS_OVERLAPPEDWINDOW,
             CW_USEDEFAULT,
             CW_USEDEFAULT,
             windowRect.right,
@@ -37,8 +42,8 @@ namespace FlashlightEngine {
         );
 
         if (!m_HWnd) {
-            Log::Critical("Failed to create window!");
-            return;
+            Log::Critical("Failed to create window.");
+            throw std::runtime_error("Failed to create window.");
         }
 
         SetWindowLongPtr(m_HWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&m_Data));

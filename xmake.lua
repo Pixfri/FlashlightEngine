@@ -27,6 +27,7 @@ set_languages("cxx20")
 set_rundir("./bin/$(plat)_$(arch)_$(mode)")
 set_targetdir("./bin/$(plat)_$(arch)_$(mode)")
 set_allowedplats("windows", "mingw")
+set_warnings("allextra")
 
 if is_plat("windows") then
   if has_config("override_runtime") then
@@ -43,6 +44,11 @@ target(ProjectName)
   set_kind("binary")
   
   add_files("Source/**.cpp")
+
+  if is_plat("windows") then
+    -- MSVC throws a bunch of warnings because of spdlog
+    add_defines("_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING")
+  end
   
   for _, ext in ipairs({".hpp", ".inl"}) do
     add_headerfiles("Include/**" .. ext)

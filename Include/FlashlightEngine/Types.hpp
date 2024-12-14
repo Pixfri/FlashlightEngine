@@ -40,4 +40,6 @@ namespace FlashlightEngine {
     using Double = double;
 }
 
+#define FlUnused(x) (void)(x)
+
 #endif // FL_TYPES_HPP
