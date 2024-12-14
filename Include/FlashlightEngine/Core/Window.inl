@@ -5,8 +5,8 @@
 #pragma once
 
 namespace FlashlightEngine {
-    inline HWND Window::GetHandle() const {
-        return m_HWnd;
+    inline GLFWwindow* Window::GetHandle() const {
+        return m_Window;
     }
 
     inline UInt32 Window::GetWidth() const {
@@ -27,11 +27,11 @@ namespace FlashlightEngine {
     }
 
     inline bool Window::IsOpen() const {
-        return m_Data.IsOpen;
+        return !glfwWindowShouldClose(m_Window);
     }
 
-    inline void Window::Close() {
-        m_Data.IsOpen = false;
+    inline void Window::Close() const {
+        glfwSetWindowShouldClose(m_Window, true);
     }
 
     inline void Window::OnResize(const std::function<void(UInt32, UInt32)>& callback) {

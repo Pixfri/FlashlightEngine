@@ -26,7 +26,6 @@ set_exceptions("cxx")
 set_languages("cxx20")
 set_rundir("./bin/$(plat)_$(arch)_$(mode)")
 set_targetdir("./bin/$(plat)_$(arch)_$(mode)")
-set_allowedplats("windows", "mingw")
 set_warnings("allextra")
 
 if is_plat("windows") then
@@ -37,11 +36,13 @@ end
 
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
-add_requires("directxmath", "directx-headers", "spdlog v1.9.0")
-add_requires("imgui", {configs = {win32 = true, dx12 = true}})
+add_requires("volk", "vulkan-memory-allocator", "glfw", "spdlog v1.9.0")
+add_requires("imgui", {configs = {glfw = true, vulkan = true}})
+add_requires("optick", {configs = {vulkan = true}})
 
 target(ProjectName)
   set_kind("binary")
+
   
   add_files("Source/**.cpp")
 
@@ -54,11 +55,7 @@ target(ProjectName)
     add_headerfiles("Include/**" .. ext)
   end
 
-  if is_plat("windows", "mingw") then
-    add_syslinks("User32", "Kernel32", "d3d12")
-  end
-
-  add_packages("directxmath", "directx-headers", "spdlog", "imgui")
+  add_packages("volk", "vulkan-memory-allocator", "glfw", "spdlog", "imgui", "optick")
   
   add_rpathdirs("$ORIGIN")
 

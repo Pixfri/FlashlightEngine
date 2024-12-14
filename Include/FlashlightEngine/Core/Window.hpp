@@ -9,15 +9,7 @@
 
 #include <FlashlightEngine/Types.hpp>
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#include <Windows.h>
+#include <GLFW/glfw3.h>
 
 #include <functional>
 #include <string>
@@ -36,15 +28,15 @@ namespace FlashlightEngine {
         Window(const Window&) = delete;
         Window(Window&&) = delete;
 
-        [[nodiscard]] inline HWND GetHandle() const;
+        [[nodiscard]] inline GLFWwindow* GetHandle() const;
         [[nodiscard]] inline UInt32 GetWidth() const;
         [[nodiscard]] inline UInt32 GetHeight() const;
         inline void GetSize(UInt32& width, UInt32& height) const;
         [[nodiscard]] inline std::string GetTitle() const;
         [[nodiscard]] inline bool IsOpen() const;
 
-        void Update() const;
-        void Close();
+        void Update();
+        void Close() const;
         inline void OnResize(const std::function<void(UInt32, UInt32)>& callback);
 
         Window& operator=(const Window&) = delete;
@@ -55,12 +47,9 @@ namespace FlashlightEngine {
             UInt32 Width, Height;
             std::string Title;
             std::function<void(UInt32, UInt32)> OnResizeCallback;
-            bool IsOpen;
         } m_Data;
 
-        HWND m_HWnd;
-
-        static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+        GLFWwindow* m_Window;
     };
 }
 
