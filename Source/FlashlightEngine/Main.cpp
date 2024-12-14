@@ -3,16 +3,17 @@
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
 #include <FlashlightEngine/Core/Logger.hpp>
+#include <FlashlightEngine/Core/Window.hpp>
 
 int main() {
     FlashlightEngine::Logger::Init();
 
-    FlashlightEngine::Log::Trace("Hello Trace!");
-    FlashlightEngine::Log::Debug("Hello Debug!");
-    FlashlightEngine::Log::Info("Hello Info!");
-    FlashlightEngine::Log::Warn("Hello Warn!");
-    FlashlightEngine::Log::Error("Hello Error!");
-    FlashlightEngine::Log::Critical("Hello Critical!");
+    const FlashlightEngine::WindowProperties properties{800, 600, "Flashlight Engine"};
+    FlashlightEngine::Window window{properties};
+
+    while (window.IsOpen()) {
+        window.Update();
+    }
 
     return EXIT_SUCCESS;
 }

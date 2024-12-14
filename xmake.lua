@@ -37,11 +37,10 @@ end
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
 add_requires("directxmath", "directx-headers", "spdlog v1.9.0")
+add_requires("imgui", {configs = {win32 = true, dx12 = true}})
 
 target(ProjectName)
   set_kind("binary")
-
-  add_defines("UNICODE", "_UNICODE") -- Use the W (unicode) version of structs instead of the A (ASCII) version.
   
   add_files("Source/**.cpp")
   
@@ -53,7 +52,7 @@ target(ProjectName)
     add_syslinks("User32", "Kernel32", "d3d12")
   end
 
-  add_packages("directxmath", "directx-headers", "spdlog")
+  add_packages("directxmath", "directx-headers", "spdlog", "imgui")
   
   add_rpathdirs("$ORIGIN")
 
