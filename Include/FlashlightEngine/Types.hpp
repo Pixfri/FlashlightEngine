@@ -38,6 +38,8 @@ namespace FlashlightEngine {
 
     using Float = float;
     using Double = double;
+
+    using Flags = UInt32;
 }
 
 #define FlUnused(x) (void)(x)
