@@ -92,6 +92,8 @@ namespace FlashlightEngine::Vk {
 
         vkGetDeviceQueue(m_Device, indices.GraphicsFamily, 0, &m_GraphicsQueue);
         vkGetDeviceQueue(m_Device, indices.PresentFamily, 0, &m_PresentQueue);
+        vkGetDeviceQueue(m_Device, indices.TransferFamily, 0, &m_TransferQueue);
+        vkGetDeviceQueue(m_Device, indices.ComputeFamily, 0, &m_ComputeQueue);
     }
 
     bool Device::IsDeviceSuitable(VkPhysicalDevice device) const {
@@ -125,6 +127,16 @@ namespace FlashlightEngine::Vk {
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.GraphicsFamily = i;
                 indices.GraphicsFamilyFound = true;
+            }
+
+            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) {
+                indices.TransferFamily = i;
+                indices.TransferFamilyFound = true;
+            }
+
+            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                indices.ComputeFamily = i;
+                indices.ComputeFamilyFound = true;
             }
 
             VkBool32 presentSupport = false;

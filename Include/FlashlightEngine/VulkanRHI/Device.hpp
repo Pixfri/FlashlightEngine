@@ -25,11 +25,15 @@ namespace FlashlightEngine::Vk {
     struct QueueFamilyIndices {
         UInt32 GraphicsFamily{};
         UInt32 PresentFamily{};
+        UInt32 TransferFamily{};
+        UInt32 ComputeFamily{};
         bool GraphicsFamilyFound = false;
         bool PresentFamilyFound = false;
+        bool TransferFamilyFound = false;
+        bool ComputeFamilyFound = false;
 
         [[nodiscard]] bool IsComplete() const {
-            return GraphicsFamilyFound && PresentFamilyFound;
+            return GraphicsFamilyFound && PresentFamilyFound && TransferFamilyFound && ComputeFamilyFound;
         }
     };
 
@@ -45,6 +49,8 @@ namespace FlashlightEngine::Vk {
         [[nodiscard]] inline VkDevice GetDevice() const;
         [[nodiscard]] inline VkQueue GetGraphicsQueue() const;
         [[nodiscard]] inline VkQueue GetPresentQueue() const;
+        [[nodiscard]] inline VkQueue GetTransferQueue() const;
+        [[nodiscard]] inline VkQueue GetComputeQueue() const;
 
         [[nodiscard]] inline SwapchainSupportDetails GetSwapchainSupport() const;
         [[nodiscard]] inline QueueFamilyIndices GetQueueIndices() const;
@@ -74,6 +80,8 @@ namespace FlashlightEngine::Vk {
         VkDevice m_Device{VK_NULL_HANDLE};
         VkQueue m_GraphicsQueue{VK_NULL_HANDLE};
         VkQueue m_PresentQueue{VK_NULL_HANDLE};
+        VkQueue m_TransferQueue{VK_NULL_HANDLE};
+        VkQueue m_ComputeQueue{VK_NULL_HANDLE};
     };
 }
 

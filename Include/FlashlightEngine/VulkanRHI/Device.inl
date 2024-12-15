@@ -21,6 +21,14 @@ namespace FlashlightEngine::Vk {
         return m_PresentQueue;
     }
 
+    inline VkQueue Device::GetTransferQueue() const {
+        return m_TransferQueue;
+    }
+
+    inline VkQueue Device::GetComputeQueue() const {
+        return m_ComputeQueue;
+    }
+
     inline SwapchainSupportDetails Device::GetSwapchainSupport() const {
         return QuerySwapchainSupport(m_PhysicalDevice);
     }

@@ -1,6 +1,6 @@
 # Flashlight Engine
 
-Flashlight Engine is a graphics engine that runs on DirectX12.
+Flashlight Engine is a graphics engine that runs on Vulkan.
 
 ## Goal of the project
 
