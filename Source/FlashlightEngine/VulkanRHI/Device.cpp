@@ -15,10 +15,15 @@ namespace FlashlightEngine::Vk {
         : m_Instance(instance), m_Surface(surface) {
         PickPhysicalDevice();
         CreateDevice();
+        CreateAllocator();
     }
 
     Device::~Device() {
         WaitIdle();
+
+        if (m_Allocator != VK_NULL_HANDLE) {
+            vmaDestroyAllocator(m_Allocator);
+        }
 
         if (m_Device != VK_NULL_HANDLE) {
             vkDestroyDevice(m_Device, nullptr);
@@ -94,6 +99,19 @@ namespace FlashlightEngine::Vk {
         vkGetDeviceQueue(m_Device, indices.PresentFamily, 0, &m_PresentQueue);
         vkGetDeviceQueue(m_Device, indices.TransferFamily, 0, &m_TransferQueue);
         vkGetDeviceQueue(m_Device, indices.ComputeFamily, 0, &m_ComputeQueue);
+    }
+
+    void Device::CreateAllocator() {
+        VmaAllocatorCreateInfo allocatorInfo = {};
+        allocatorInfo.physicalDevice = m_PhysicalDevice;
+        allocatorInfo.device = m_Device;
+        allocatorInfo.instance = m_Instance->GetHandle();
+        allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_3;
+
+        if (vmaCreateAllocator(&allocatorInfo, &m_Allocator) != VK_SUCCESS) {
+            Log::Error("[Vulkan] Failed to create allocator!");
+            throw std::runtime_error("Failed to create allocator!");
+        }
     }
 
     bool Device::IsDeviceSuitable(VkPhysicalDevice device) const {

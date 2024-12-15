@@ -15,6 +15,8 @@
 #include <memory>
 #include <vector>
 
+#include <vk_mem_alloc.h>
+
 namespace FlashlightEngine::Vk {
     struct SwapchainSupportDetails {
         VkSurfaceCapabilitiesKHR capabilities{};
@@ -52,6 +54,8 @@ namespace FlashlightEngine::Vk {
         [[nodiscard]] inline VkQueue GetTransferQueue() const;
         [[nodiscard]] inline VkQueue GetComputeQueue() const;
 
+        [[nodiscard]] inline VmaAllocator GetAllocator() const;
+
         [[nodiscard]] inline SwapchainSupportDetails GetSwapchainSupport() const;
         [[nodiscard]] inline QueueFamilyIndices GetQueueIndices() const;
         [[nodiscard]] inline VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
@@ -67,6 +71,7 @@ namespace FlashlightEngine::Vk {
 
         void PickPhysicalDevice();
         void CreateDevice();
+        void CreateAllocator();
 
         bool IsDeviceSuitable(VkPhysicalDevice device) const;
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
@@ -82,6 +87,8 @@ namespace FlashlightEngine::Vk {
         VkQueue m_PresentQueue{VK_NULL_HANDLE};
         VkQueue m_TransferQueue{VK_NULL_HANDLE};
         VkQueue m_ComputeQueue{VK_NULL_HANDLE};
+
+        VmaAllocator m_Allocator{VK_NULL_HANDLE};
     };
 }
 
