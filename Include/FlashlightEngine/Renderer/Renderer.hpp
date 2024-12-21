@@ -25,6 +25,9 @@ namespace FlashlightEngine {
 
         void OnResize(UInt32 width, UInt32 height) const;
 
+        void BeginFrame() const;
+        void EndFrame() const;
+
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
     

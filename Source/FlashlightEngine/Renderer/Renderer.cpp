@@ -12,6 +12,33 @@ namespace FlashlightEngine {
     }
 
     void Renderer::OnResize(const UInt32 width, const UInt32 height) const {
+        m_Device->GetDeviceContext()->Flush();
+
         m_Swapchain->OnResize(width, height);
     }
+
+    void Renderer::BeginFrame() const {
+        const ComPtr<ID3D11DeviceContext> deviceContext = m_Device->GetDeviceContext();
+
+        D3D11_VIEWPORT viewport{};
+        viewport.TopLeftX = 0;
+        viewport.TopLeftY = 0;
+        viewport.Width = static_cast<Float32>(m_Window->GetWidth());
+        viewport.Height = static_cast<Float32>(m_Window->GetHeight());
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+
+        constexpr Float32 clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
+
+        deviceContext->ClearRenderTargetView(m_Swapchain->GetRTV().Get(), clearColor);
+        deviceContext->RSSetViewports(1, &viewport);
+        deviceContext->OMSetRenderTargets(1, m_Swapchain->GetRTV().GetAddressOf(), nullptr);
+    }
+
+    void Renderer::EndFrame() const {
+        if (const HRESULT hr = m_Swapchain->GetSwapchain()->Present(1, 0); FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to present swapchain. Error: {}", HResultToString(hr));
+        }
+    }
+
 }

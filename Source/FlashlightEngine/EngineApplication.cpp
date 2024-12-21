@@ -21,6 +21,9 @@ namespace FlashlightEngine {
     }
 
     void EngineApplication::OnRender() {
+        m_Renderer->BeginFrame();
+
+        m_Renderer->EndFrame();
     }
 
     void EngineApplication::OnKeyPressed(const KeyDownEvent& event) {
@@ -29,6 +32,8 @@ namespace FlashlightEngine {
             case Key::Escape:
                 Close();
                 break;
+            case Key::V:
+                GetWindow().SetVSync(!GetWindow().IsVSync());
             default:
                 break;
             }

@@ -31,7 +31,7 @@ namespace FlashlightEngine {
 
         Swapchain& operator=(const Swapchain&) = delete;
         Swapchain& operator=(Swapchain&& other) noexcept;
-    
+
     private:
         ComPtr<IDXGISwapChain1> m_Swapchain{nullptr};
         ComPtr<ID3D11RenderTargetView> m_RenderTargetView{nullptr};
