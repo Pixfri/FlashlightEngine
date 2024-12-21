@@ -45,34 +45,34 @@ add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "g
 
 add_requires("stb", "glfw 3.4", "spdlog")
 add_requires("imgui", {configs = {dx11 = true, glfw = true}})
-add_requires("directxshadercompiler", "directxmath")
+add_requires("directxmath")
 
 if has_config("profiler") then
     add_defines("FL_PROFILER_ENABLED")
   add_requires("tracy")
 end
 
+rule("cp-resources")
+  after_build(function(target)
+    os.cp("Resources", "./bin/$(plat)_$(arch)_$(mode)/")
+  end)
+
 target(ProjectName)
   set_kind("binary")
 
   add_files("Source/**.cpp")
-
-  if is_plat("windows") then
-    -- MSVC throws a bunch of warnings because of spdlog
-    add_defines("_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING")
-  end
 
   for _, ext in ipairs({".hpp", ".inl"}) do
     add_headerfiles("Include/**" .. ext)
   end
 
   add_packages("stb", "glfw", "spdlog", "imgui")
-  add_packages("directxshadercompiler", "directxmath")
+  add_packages("directxmath")
   if has_config("profiler") then
     add_packages("tracy")
   end
 
-  add_syslinks("d3d11", "user32", "kernel32", "dxgi", "dxguid", "WinMM")
+  add_syslinks("d3d11", "user32", "kernel32", "dxgi", "dxguid", "WinMM", "d3dcompiler")
 
   add_rpathdirs("$ORIGIN")
 

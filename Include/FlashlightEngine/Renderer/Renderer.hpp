@@ -13,6 +13,7 @@
 
 #include <FlashlightEngine/Renderer/Device.hpp>
 #include <FlashlightEngine/Renderer/Swapchain.hpp>
+#include <FlashlightEngine/Renderer/Shader.hpp>
 
 namespace FlashlightEngine {
     class Renderer {
@@ -29,10 +30,15 @@ namespace FlashlightEngine {
         void EndFrame() const;
 
         inline void SetClearColor(Float32 r, Float32 g, Float32 b, Float32 a);
+        void UseShaderCollection(const ShaderCollection& collection) const;
+
+        ShaderCollection     CreateShaderCollection(VertexType vertexType,
+                                                const std::filesystem::path& vertexShaderPath,
+                                                const std::filesystem::path& pixelShaderPath) const;
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
-    
+
     private:
         std::shared_ptr<Window> m_Window;
 

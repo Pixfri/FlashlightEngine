@@ -10,6 +10,9 @@
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
         : Application(width, height, "Flashlight Engine") {
+        m_MainShaderCollection = m_Renderer->CreateShaderCollection(VertexType::PositionColor,
+                                                                    "Resources/Shaders/Main.vs.hlsl",
+                                                                    "Resources/Shaders/Main.ps.hlsl");
     }
 
     void EngineApplication::OnEvent(Event& event) {
@@ -22,6 +25,8 @@ namespace FlashlightEngine {
 
     void EngineApplication::OnRender() {
         m_Renderer->BeginFrame();
+
+        m_Renderer->UseShaderCollection(m_MainShaderCollection);
 
         m_Renderer->EndFrame();
     }

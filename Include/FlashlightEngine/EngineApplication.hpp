@@ -9,7 +9,9 @@
 
 #include <FlashlightEngine/Types.hpp>
 
-#include <FlashlightEngine\Application.hpp>
+#include <FlashlightEngine/Application.hpp>
+
+#include <FlashlightEngine/Renderer/Shader.hpp>
 
 namespace FlashlightEngine {
     class EngineApplication final : public Application {
@@ -22,6 +24,8 @@ namespace FlashlightEngine {
         void OnRender() override;
 
     private:
+        ShaderCollection m_MainShaderCollection;
+
         void OnKeyPressed(const KeyDownEvent& event);
     };
 }

@@ -39,4 +39,20 @@ namespace FlashlightEngine {
         }
     }
 
+    void Renderer::UseShaderCollection(const ShaderCollection& collection) const {
+        collection.ApplyToContext(*m_Device);
+    }
+
+    ShaderCollection Renderer::CreateShaderCollection(const VertexType vertexType,
+                                                      const std::filesystem::path& vertexShaderPath,
+                                                      const std::filesystem::path& pixelShaderPath) const {
+        ShaderCollectionDescriptor desc{};
+        desc.VertexType = vertexType;
+        desc.VertexShaderPath = vertexShaderPath;
+        desc.PixelShaderPath = pixelShaderPath;
+
+        ShaderCollection collection = ShaderCollection::CreateShaderCollection(desc, *m_Device);
+
+        return collection;
+    }
 }
