@@ -14,6 +14,8 @@
 #include <FlashlightEngine/Renderer/Device.hpp>
 #include <FlashlightEngine/Renderer/Swapchain.hpp>
 #include <FlashlightEngine/Renderer/Shader.hpp>
+#include <FlashlightEngine/Renderer/Buffer.hpp>
+#include <FlashlightEngine/Renderer/Enums.hpp>
 
 namespace FlashlightEngine {
     class Renderer {
@@ -31,10 +33,19 @@ namespace FlashlightEngine {
 
         inline void SetClearColor(Float32 r, Float32 g, Float32 b, Float32 a);
         void UseShaderCollection(const ShaderCollection& collection) const;
+        void BindVertexBuffer(const Buffer& buffer, VertexType vertexType, UInt32 offset = 0) const;
+        void SetPrimitiveTopology(PrimitiveTopology topology) const;
+        void Draw(UInt32 vertexCount, UInt32 firstVertex = 0) const;
 
-        ShaderCollection     CreateShaderCollection(VertexType vertexType,
+        ShaderCollection CreateShaderCollection(VertexType vertexType,
                                                 const std::filesystem::path& vertexShaderPath,
                                                 const std::filesystem::path& pixelShaderPath) const;
+        std::unique_ptr<Buffer> CreateBuffer(const void* data,
+                                             UInt32 size,
+                                             D3D11_USAGE usage,
+                                             D3D11_BIND_FLAG bindFlag,
+                                             bool hasCpuAccess = false,
+                                             D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE) const;
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;

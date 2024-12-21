@@ -25,6 +25,7 @@ namespace FlashlightEngine {
 
     private:
         ShaderCollection m_MainShaderCollection;
+        std::unique_ptr<Buffer> m_TriangleVertexBuffer;
 
         void OnKeyPressed(const KeyDownEvent& event);
     };

@@ -59,6 +59,7 @@ rule("cp-resources")
 
 target(ProjectName)
   set_kind("binary")
+  add_rules("cp-resources")
 
   add_files("Source/**.cpp")
 
