@@ -9,15 +9,26 @@
 
 #include <FlashlightEngine/Types.hpp>
 
+#include <FlashlightEngine/Core/Events.hpp>
+
 #include <GLFW/glfw3.h>
 
-#include <functional>
+#include <filesystem>
 #include <string>
 
 namespace FlashlightEngine {
     struct WindowProperties {
         UInt32 Width, Height;
         std::string Title;
+        bool Fullscreen;
+        std::filesystem::path IconPath = "NoIcon";
+
+        explicit WindowProperties(const UInt32 width = 1920,
+                                         const UInt32 height = 1080,
+                                         std::string title = "IsometricGame",
+                                         const bool fullscreen = false)
+            : Width(width), Height(height), Title(std::move(title)), Fullscreen(fullscreen) {
+        }
     };
 
     class Window {
@@ -25,31 +36,41 @@ namespace FlashlightEngine {
         explicit Window(const WindowProperties& properties);
         ~Window();
 
-        Window(const Window&) = delete;
-        Window(Window&&) = delete;
-
-        [[nodiscard]] inline GLFWwindow* GetHandle() const;
+        void OnUpdate();
         [[nodiscard]] inline UInt32 GetWidth() const;
         [[nodiscard]] inline UInt32 GetHeight() const;
         inline void GetSize(UInt32& width, UInt32& height) const;
-        [[nodiscard]] inline std::string GetTitle() const;
-        [[nodiscard]] inline bool IsOpen() const;
 
-        void Update();
-        void Close() const;
-        inline void OnResize(const std::function<void(UInt32, UInt32)>& callback);
+        inline void SetEventCallback(const std::function<void(Event&)>& callback);
 
-        Window& operator=(const Window&) = delete;
-        Window& operator=(Window&&) = delete;
-    
+        void SetFullscreen(bool fullscreen);
+        void UpdateFullscreenMode();
+        [[nodiscard]] inline bool IsFullscreen() const;
+        [[nodiscard]] inline bool IsFocused() const;
+
+        void SetVSync(bool enabled);
+        [[nodiscard]] inline bool IsVSync() const;
+
+        [[nodiscard]] inline GLFWwindow* GetNativeWindow() const;
+
     private:
+        GLFWwindow* m_Window{nullptr};
+
+        static bool m_IsGlfwInit;
+
+        void Init(const WindowProperties& properties);
+        void Quit() const;
+
         struct WindowData {
             UInt32 Width, Height;
             std::string Title;
-            std::function<void(UInt32, UInt32)> OnResizeCallback;
-        } m_Data;
+            bool VSync = false;
+            bool ShouldUpdateFullscreenMode = false;
+            bool Fullscreen = false;
+            bool HasFocus = true;
 
-        GLFWwindow* m_Window;
+            std::function<void(Event&)> EventCallback;
+        } m_Data;
     };
 }
 

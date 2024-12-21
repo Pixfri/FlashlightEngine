@@ -36,10 +36,8 @@ namespace FlashlightEngine {
     using Int64 = int64_t;
     using UInt64 = uint64_t;
 
-    using Float = float;
-    using Double = double;
-
-    using Flags = UInt32;
+    using Float32 = float;
+    using Float64 = double;
 }
 
 #define FlUnused(x) (void)(x)

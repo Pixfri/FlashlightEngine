@@ -5,10 +5,6 @@
 #pragma once
 
 namespace FlashlightEngine {
-    inline GLFWwindow* Window::GetHandle() const {
-        return m_Window;
-    }
-
     inline UInt32 Window::GetWidth() const {
         return m_Data.Width;
     }
@@ -22,19 +18,23 @@ namespace FlashlightEngine {
         height = m_Data.Height;
     }
 
-    inline std::string Window::GetTitle() const {
-        return m_Data.Title;
+    inline void Window::SetEventCallback(const std::function<void(Event&)>& callback) {
+        m_Data.EventCallback = callback;
     }
 
-    inline bool Window::IsOpen() const {
-        return !glfwWindowShouldClose(m_Window);
+    inline bool Window::IsFullscreen() const {
+        return m_Data.Fullscreen;
     }
 
-    inline void Window::Close() const {
-        glfwSetWindowShouldClose(m_Window, true);
+    inline bool Window::IsFocused() const {
+        return m_Data.HasFocus;
     }
 
-    inline void Window::OnResize(const std::function<void(UInt32, UInt32)>& callback) {
-        m_Data.OnResizeCallback = callback;
+    inline bool Window::IsVSync() const {
+        return m_Data.VSync;
+    }
+
+    inline GLFWwindow* Window::GetNativeWindow() const {
+        return m_Window;
     }
 }
