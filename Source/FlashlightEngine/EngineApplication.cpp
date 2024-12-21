@@ -9,7 +9,7 @@
 
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
-        : Application(width, height, "Flashlight Engine") {
+        : Application(width, height, "Flashlight Engine <Direct3D 11>") {
         m_MainShaderCollection = m_Renderer->CreateShaderCollection(VertexType::PositionColor,
                                                                     "Resources/Shaders/Main.vs.hlsl",
                                                                     "Resources/Shaders/Main.ps.hlsl"

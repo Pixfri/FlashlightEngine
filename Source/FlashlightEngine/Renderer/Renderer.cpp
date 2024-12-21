@@ -37,7 +37,7 @@ namespace FlashlightEngine {
     }
 
     void Renderer::EndFrame() const {
-        if (const HRESULT hr = m_Swapchain->GetSwapchain()->Present(1, 0); FAILED(hr)) {
+        if (const HRESULT hr = m_Swapchain->GetSwapchain()->Present(m_Window->IsVSync() ? 1 : 0, 0); FAILED(hr)) {
             spdlog::error("[DirectX] Failed to present swapchain. Error: {}", HResultToString(hr));
             if (hr == DXGI_ERROR_DEVICE_REMOVED) {
                 spdlog::error("[DirectX] Device removed. Reason: {}",
