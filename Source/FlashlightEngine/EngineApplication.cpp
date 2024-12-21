@@ -24,9 +24,14 @@ namespace FlashlightEngine {
     }
 
     void EngineApplication::OnKeyPressed(const KeyDownEvent& event) {
-        if (const bool shiftPressed = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
-            shiftPressed && event.GetKeyCode() == Key::Escape) {
-            Close();
+        if (Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift)) {
+            switch (event.GetKeyCode()) {
+            case Key::Escape:
+                Close();
+                break;
+            default:
+                break;
+            }
         }
     }
 }

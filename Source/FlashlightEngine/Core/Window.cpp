@@ -167,44 +167,6 @@ namespace FlashlightEngine {
         glfwPollEvents();
     }
 
-    static void WinInitPos(GLFWwindow* win, Int32& x, Int32& y) {
-        glfwGetWindowPos(win, &x, &y);
-    }
-
-    void Window::UpdateFullscreenMode() {
-        if (m_Data.ShouldUpdateFullscreenMode) {
-            static Int32 xPos, yPos;
-            WinInitPos(m_Window, xPos, yPos);
-
-            static UInt32 width, height;
-            GetSize(width, height);
-
-            if (m_Data.Fullscreen) {
-                const auto monitor = glfwGetPrimaryMonitor();
-                const auto mode = glfwGetVideoMode(monitor);
-
-                static Int32 iWidth, iHeight;
-
-                // Store windows pos data to restore later
-                glfwGetWindowPos(m_Window, &xPos, &yPos);
-                glfwGetWindowSize(m_Window, &iWidth, &iHeight);
-
-                glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height,
-                                     IsVSync() ? mode->refreshRate : 0);
-            } else {
-                glfwSetWindowMonitor(m_Window, nullptr, xPos, yPos, static_cast<Int32>(width),
-                                     static_cast<Int32>(height), 0);
-            }
-
-            m_Data.ShouldUpdateFullscreenMode = false;
-        }
-    }
-
-    void Window::SetFullscreen(const bool fullscreen) {
-        m_Data.ShouldUpdateFullscreenMode = true;
-        m_Data.Fullscreen = fullscreen;
-    }
-
     void Window::SetVSync(const bool enabled) {
         glfwSwapInterval(enabled);
         m_Data.VSync = enabled;

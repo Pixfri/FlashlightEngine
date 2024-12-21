@@ -43,9 +43,6 @@ namespace FlashlightEngine {
 
         inline void SetEventCallback(const std::function<void(Event&)>& callback);
 
-        void SetFullscreen(bool fullscreen);
-        void UpdateFullscreenMode();
-        [[nodiscard]] inline bool IsFullscreen() const;
         [[nodiscard]] inline bool IsFocused() const;
 
         void SetVSync(bool enabled);
@@ -65,8 +62,6 @@ namespace FlashlightEngine {
             UInt32 Width, Height;
             std::string Title;
             bool VSync = false;
-            bool ShouldUpdateFullscreenMode = false;
-            bool Fullscreen = false;
             bool HasFocus = true;
 
             std::function<void(Event&)> EventCallback;

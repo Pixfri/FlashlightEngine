@@ -28,17 +28,17 @@ namespace FlashlightEngine {
         virtual void OnUpdate() = 0;
         virtual void OnRender() = 0;
         bool OnWindowClose(WindowCloseEvent& e);
+        bool OnWindowResize(const WindowResizeEvent& e) const;
 
         inline static Application& Get();
         [[nodiscard]] inline Window& GetWindow() const;
         inline void Close();
 
-
     private:
         std::shared_ptr<Window> m_Window;
 
     protected:
-        Renderer m_Renderer{m_Window};
+        std::shared_ptr<Renderer> m_Renderer;
 
     private:
         bool m_Running = false;

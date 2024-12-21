@@ -22,10 +22,6 @@ namespace FlashlightEngine {
         m_Data.EventCallback = callback;
     }
 
-    inline bool Window::IsFullscreen() const {
-        return m_Data.Fullscreen;
-    }
-
     inline bool Window::IsFocused() const {
         return m_Data.HasFocus;
     }

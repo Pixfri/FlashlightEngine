@@ -12,6 +12,7 @@
 #include <FlashlightEngine/Core/Window.hpp>
 
 #include <FlashlightEngine/Renderer/Device.hpp>
+#include <FlashlightEngine/Renderer/Swapchain.hpp>
 
 namespace FlashlightEngine {
     class Renderer {
@@ -20,15 +21,18 @@ namespace FlashlightEngine {
         ~Renderer() = default;
 
         Renderer(const Renderer&) = delete;
-        Renderer(Renderer&&) = delete;
+        Renderer(Renderer&&) noexcept = default;
+
+        void OnResize(UInt32 width, UInt32 height) const;
 
         Renderer& operator=(const Renderer&) = delete;
-        Renderer& operator=(Renderer&&) = delete;
+        Renderer& operator=(Renderer&&) noexcept = default;
     
     private:
         std::shared_ptr<Window> m_Window;
 
-        Device m_Device{};
+        std::shared_ptr<Device> m_Device;
+        std::shared_ptr<Swapchain> m_Swapchain;
     };
 }
 
