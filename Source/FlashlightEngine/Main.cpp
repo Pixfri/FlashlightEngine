@@ -2,12 +2,15 @@
 // This file is part of FlashlightEngine.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include <FlashlightEngine/Application.hpp>
+#include <FlashlightEngine/Types.hpp>
+
+#include <FlashlightEngine/EngineApplication.hpp>
 
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+
 
 int main(const int argc, char* argv[]) {
     try {
@@ -42,9 +45,10 @@ int main(const int argc, char* argv[]) {
             }
         }
 
-        const FlashlightEngine::Application app{width, height};
+        FlashlightEngine::EngineApplication app(width, height);
 
         app.Run();
+
     } catch (const std::invalid_argument& e) {
         std::cerr << "Invalid argument: " << e.what() << std::endl;
         return EXIT_FAILURE;

@@ -22,3 +22,6 @@
 /vsxmake2022/
 /.vs/
 /*/.vs/
+
+# NVidia NSight Graphics debugger
+/NSight/

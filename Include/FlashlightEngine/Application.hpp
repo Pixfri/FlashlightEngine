@@ -4,38 +4,48 @@
 
 #pragma once
 
-#ifndef FL_APPLICATION_HPP
-#define FL_APPLICATION_HPP
+#ifndef FL_CORE_APPLICATION_HPP
+#define FL_CORE_APPLICATION_HPP
 
 #include <FlashlightEngine/Types.hpp>
 
 #include <FlashlightEngine/Core/Window.hpp>
 
-#include <FlashlightEngine/VulkanRHI/RenderContext.hpp>
+#include <FlashlightEngine/Renderer/Renderer.hpp>
 
+#include <expected>
 #include <memory>
-
+#include <string>
 
 namespace FlashlightEngine {
     class Application {
     public:
-        Application(UInt32 width, UInt32 height);
-        ~Application() = default;
+        Application(UInt32 width, UInt32 height, const std::string& title);
+        virtual ~Application();
 
-        Application(const Application&) = delete;
-        Application(Application&&) = delete;
+        void Run();
+        virtual void OnEvent(Event& e) = 0;
+        virtual void OnUpdate() = 0;
+        virtual void OnRender() = 0;
+        bool OnWindowClose(WindowCloseEvent& e);
 
-        void Run() const;
+        inline static Application& Get();
+        [[nodiscard]] inline Window& GetWindow() const;
+        inline void Close();
 
-        Application& operator=(const Application&) = delete;
-        Application& operator=(Application&&) = delete;
-    
+
     private:
         std::shared_ptr<Window> m_Window;
-        std::shared_ptr<Vk::RenderContext> m_VulkanRenderContext;
+
+    protected:
+        Renderer m_Renderer{m_Window};
+
+    private:
+        bool m_Running = false;
+        static Application* m_Instance;
     };
 }
 
 #include <FlashlightEngine/Application.inl>
 
-#endif // FL_APPLICATION_HPP
+#endif // FL_CORE_APPLICATION_HPP
