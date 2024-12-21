@@ -154,9 +154,12 @@ namespace FlashlightEngine {
             WindowFocusEvent event(focused);
             data->EventCallback(event);
         });
+
+        spdlog::info("[GLFW] Window created with dimensions: {}x{}.", properties.Width, properties.Height);
     }
 
     void Window::Quit() const {
+        spdlog::info("[GLFW] Window destroyed.");
         glfwDestroyWindow(m_Window);
     }
 

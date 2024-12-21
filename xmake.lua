@@ -43,7 +43,7 @@ end
 
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
-add_requires("stb", "glfw 3.4", "spdlog v1.9.0")
+add_requires("stb", "glfw 3.4", "spdlog")
 add_requires("imgui", {configs = {dx11 = true, glfw = true}})
 add_requires("directxshadercompiler", "directxmath")
 
@@ -72,7 +72,7 @@ target(ProjectName)
     add_packages("tracy")
   end
 
-  add_syslinks("d3d11", "user32", "kernel32")
+  add_syslinks("d3d11", "user32", "kernel32", "dxgi", "dxguid", "WinMM")
 
   add_rpathdirs("$ORIGIN")
 

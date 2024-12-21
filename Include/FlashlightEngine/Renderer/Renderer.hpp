@@ -11,6 +11,8 @@
 
 #include <FlashlightEngine/Core/Window.hpp>
 
+#include <FlashlightEngine/Renderer/Device.hpp>
+
 namespace FlashlightEngine {
     class Renderer {
     public:
@@ -25,6 +27,8 @@ namespace FlashlightEngine {
     
     private:
         std::shared_ptr<Window> m_Window;
+
+        Device m_Device{};
     };
 }
 

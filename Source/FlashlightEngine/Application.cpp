@@ -27,6 +27,8 @@ namespace FlashlightEngine {
     }
 
     Application::~Application() {
+        m_Window.reset();
+        glfwTerminate();
     }
 
     void Application::Run() {

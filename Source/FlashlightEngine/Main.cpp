@@ -11,8 +11,9 @@
 #include <iostream>
 #include <stdexcept>
 
-
 int main(const int argc, char* argv[]) {
+    spdlog::set_pattern("[%H:%M:%S %z] [%^---%L---%$] [thread %t] %v");
+
     try {
         FlashlightEngine::UInt32 width = 1280;
         FlashlightEngine::UInt32 height = 720;
