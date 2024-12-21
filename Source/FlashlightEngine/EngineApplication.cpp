@@ -34,6 +34,7 @@ namespace FlashlightEngine {
                 break;
             case Key::V:
                 GetWindow().SetVSync(!GetWindow().IsVSync());
+                break;
             default:
                 break;
             }

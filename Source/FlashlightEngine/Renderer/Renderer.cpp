@@ -28,9 +28,7 @@ namespace FlashlightEngine {
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
 
-        constexpr Float32 clearColor[] = {0.1f, 0.1f, 0.1f, 1.0f};
-
-        deviceContext->ClearRenderTargetView(m_Swapchain->GetRTV().Get(), clearColor);
+        deviceContext->ClearRenderTargetView(m_Swapchain->GetRTV().Get(), m_ClearColor);
         deviceContext->RSSetViewports(1, &viewport);
         deviceContext->OMSetRenderTargets(1, m_Swapchain->GetRTV().GetAddressOf(), nullptr);
     }

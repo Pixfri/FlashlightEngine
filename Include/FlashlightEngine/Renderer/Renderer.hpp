@@ -28,6 +28,8 @@ namespace FlashlightEngine {
         void BeginFrame() const;
         void EndFrame() const;
 
+        inline void SetClearColor(Float32 r, Float32 g, Float32 b, Float32 a);
+
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
     
@@ -36,6 +38,8 @@ namespace FlashlightEngine {
 
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Swapchain> m_Swapchain;
+
+        Float32 m_ClearColor[4] = {0.1f, 0.1f, 0.1f, 0.1f};
     };
 }
 
