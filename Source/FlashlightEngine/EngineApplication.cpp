@@ -56,7 +56,11 @@ namespace FlashlightEngine {
 
         m_Renderer->BindVertexBuffer(*m_TriangleVertexBuffer, VertexType::PositionColorUv);
 
-        m_FrogTexture->UseTexture(0);
+        if (m_UseFrogTexture) {
+            m_FrogTexture->UseTexture(0);
+        } else {
+            m_FallbackTexture->UseTexture(0);
+        }
 
         m_Renderer->Draw(3);
 
@@ -68,6 +72,9 @@ namespace FlashlightEngine {
             switch (event.GetKeyCode()) {
             case Key::Escape:
                 Close();
+                break;
+            case Key::T:
+                m_UseFrogTexture = !m_UseFrogTexture;
                 break;
             default:
                 break;

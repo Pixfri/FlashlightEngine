@@ -31,6 +31,8 @@ namespace FlashlightEngine {
         std::unique_ptr<Texture> m_FrogTexture;
         std::unique_ptr<Texture> m_FallbackTexture;
 
+        bool m_UseFrogTexture = true;
+
         void OnKeyPressed(const KeyDownEvent& event);
     };
 }
