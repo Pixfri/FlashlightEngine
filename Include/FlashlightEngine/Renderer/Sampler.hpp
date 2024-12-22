@@ -30,6 +30,8 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline ComPtr<ID3D11SamplerState> GetSampler();
 
+        void UseSampler(UInt32 slot);
+
         Sampler& operator=(const Sampler&) = delete;
         Sampler& operator=(Sampler&& other) noexcept;
 

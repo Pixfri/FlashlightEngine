@@ -53,8 +53,7 @@ namespace FlashlightEngine {
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeV = D3D11_TEXTURE_ADDRESS_WRAP,
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP)
         const;
-        std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path,
-                                               const std::shared_ptr<Sampler>& sampler) const;
+        std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path) const;
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;

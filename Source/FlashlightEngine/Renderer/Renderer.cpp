@@ -96,8 +96,7 @@ namespace FlashlightEngine {
         return std::make_shared<Sampler>(m_Device, filter, addressModeU, addressModeV, addressModeW);
     }
 
-    std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path,
-                                                     const std::shared_ptr<Sampler>& sampler) const {
-        return std::make_unique<Texture>(path, m_Device, sampler);
+    std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path) const {
+        return std::make_unique<Texture>(path, m_Device);
     }
 }

@@ -11,9 +11,8 @@
 
 namespace FlashlightEngine {
     Texture::Texture(const std::filesystem::path& path,
-                     const std::shared_ptr<Device>& device,
-                     const std::shared_ptr<Sampler>& sampler)
-        : m_Device(device), m_Sampler(sampler) {
+                     const std::shared_ptr<Device>& device)
+        : m_Device(device) {
         if (path.extension().string() == ".dds") {
             CreateTextureViewFromDDS(path);
         } else {
@@ -30,14 +29,10 @@ namespace FlashlightEngine {
 
         m_Device = other.m_Device;
         other.m_Device = nullptr;
-
-        m_Sampler = other.m_Sampler;
-        other.m_Sampler = nullptr;
     }
 
     void Texture::UseTexture(const UInt32 slot) {
         m_Device->GetDeviceContext()->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
-        m_Device->GetDeviceContext()->PSSetSamplers(slot, 1, m_Sampler->GetSampler().GetAddressOf());
     }
 
     Texture& Texture::operator=(Texture&& other) noexcept {
@@ -45,9 +40,6 @@ namespace FlashlightEngine {
 
         m_Device = other.m_Device;
         other.m_Device = nullptr;
-
-        m_Sampler = other.m_Sampler;
-        other.m_Sampler = nullptr;
 
         return *this;
     }

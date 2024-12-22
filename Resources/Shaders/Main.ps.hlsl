@@ -5,12 +5,12 @@ struct VSOutput
     float2 Uv: TEXCOORD0;
 };
 
-sampler LinearSampler : register(s0);
+sampler Sampler : register(s0);
 
 Texture2D Texture : register(t0);
 
 float4 Main(VSOutput input): SV_Target
 {
-    float4 texel = Texture.Sample(LinearSampler, input.Uv);
+    float4 texel = Texture.Sample(Sampler, input.Uv);
     return float4(input.Color, 0.50f) * texel;
 }

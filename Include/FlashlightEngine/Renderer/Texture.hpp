@@ -19,8 +19,7 @@ namespace FlashlightEngine {
     class Texture {
     public:
         Texture(const std::filesystem::path& path,
-                const std::shared_ptr<Device>& device,
-                const std::shared_ptr<Sampler>& sampler);
+                const std::shared_ptr<Device>& device);
         ~Texture();
 
         Texture(const Texture&) = delete;
@@ -37,7 +36,6 @@ namespace FlashlightEngine {
         ComPtr<ID3D11ShaderResourceView> m_TextureSrv{nullptr};
 
         std::shared_ptr<Device> m_Device{nullptr};
-        std::shared_ptr<Sampler> m_Sampler{nullptr};
 
         void CreateTextureViewFromDDS(const std::filesystem::path& path);
         void CreateTextureView(const std::filesystem::path& path);

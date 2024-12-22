@@ -33,8 +33,10 @@ namespace FlashlightEngine {
 
         m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT);
 
-        m_FallbackTexture = m_Renderer->CreateTexture("Resources/Textures/Default.png", m_LinearSampler);
-        m_FrogTexture = m_Renderer->CreateTexture("Resources/Textures/T_Froge.dds", m_LinearSampler);
+        m_FallbackTexture = m_Renderer->CreateTexture("Resources/Textures/Default.png");
+        m_FrogTexture = m_Renderer->CreateTexture("Resources/Textures/T_Froge.dds");
+
+        m_Renderer->SetClearColor(0.0f, 0.2f, 0.4f, 1.0f);
     }
 
     EngineApplication::~EngineApplication() {
@@ -55,6 +57,8 @@ namespace FlashlightEngine {
         m_Renderer->UseShaderCollection(m_MainShaderCollection);
 
         m_Renderer->BindVertexBuffer(*m_TriangleVertexBuffer, VertexType::PositionColorUv);
+
+        m_LinearSampler->UseSampler(0);
 
         if (m_UseFrogTexture) {
             m_FrogTexture->UseTexture(0);
