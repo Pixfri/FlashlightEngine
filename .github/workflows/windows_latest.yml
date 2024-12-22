@@ -37,11 +37,9 @@ jobs:
         mkdir debug-artifact
         move bin/windows_x64_debug/FlashlightEngine.exe debug-artifact/
         move bin/windows_x64_debug/FlashlightEngine.pdb debug-artifact/
-        move Resources debug-artifact/
         
         mkdir release-artifact
         move bin/windows_x64_release/FlashlightEngine.exe release-artifact/
-        move Resources release-artifact/
 
     - uses: actions/upload-artifact@v4
       with:
