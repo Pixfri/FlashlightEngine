@@ -17,4 +17,7 @@
 
 #include <Windows.h>
 
+#undef CreateFile
+#undef CreateDirectory
+
 #endif // FL_LIBS_WINDOWS_HPP

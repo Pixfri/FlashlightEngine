@@ -37,7 +37,9 @@ namespace FlashlightEngine {
     }
 
     void Sampler::UseSampler(const UInt32 slot) {
-        m_Device->GetDeviceContext()->PSSetSamplers(slot, 1, m_Sampler.GetAddressOf());
+        if (m_Sampler != nullptr) {
+            m_Device->GetDeviceContext()->PSSetSamplers(slot, 1, m_Sampler.GetAddressOf());
+        }
     }
 
     Sampler& Sampler::operator=(Sampler&& other) noexcept {

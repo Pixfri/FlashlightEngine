@@ -4,7 +4,7 @@
 
 #include <FlashlightEngine/Renderer/Shader.hpp>
 
-#include <FlashlightEngine/Utils/FileUtils.hpp>
+#include <FlashlightEngine/Core/Filesystem.hpp>
 
 #include <d3dcompiler.h>
 
@@ -72,6 +72,11 @@ namespace FlashlightEngine {
 
     ShaderCollection ShaderCollection::CreateShaderCollection(const ShaderCollectionDescriptor& desc,
                                                               const Device& device) {
+        if (!Filesystem::Exists(desc.VertexShaderPath) || !Filesystem::Exists(desc.PixelShaderPath)) {
+            spdlog::error("[DirectX] Shader file does not exist.");
+            return {};
+        }
+
         ShaderCollection collection;
 
         ComPtr<ID3DBlob> vertexShaderBlob;
@@ -199,9 +204,11 @@ namespace FlashlightEngine {
     }
 
     void ShaderCollection::ApplyToContext(const Device& device) const {
-        device.GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
-        device.GetDeviceContext()->VSSetShader(m_VertexShader.Get(), nullptr, 0);
-        device.GetDeviceContext()->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+        if (m_InputLayout != nullptr && m_VertexShader != nullptr && m_PixelShader != nullptr) {
+            device.GetDeviceContext()->IASetInputLayout(m_InputLayout.Get());
+            device.GetDeviceContext()->VSSetShader(m_VertexShader.Get(), nullptr, 0);
+            device.GetDeviceContext()->PSSetShader(m_PixelShader.Get(), nullptr, 0);
+        }
     }
 
     void ShaderCollection::Destroy() {

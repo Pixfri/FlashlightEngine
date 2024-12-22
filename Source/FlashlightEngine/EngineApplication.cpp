@@ -6,13 +6,15 @@
 
 #include <FlashlightEngine/Core/Input.hpp>
 #include <FlashlightEngine/Core/KeyCodes.hpp>
+#include <FlashlightEngine/Core/Filesystem.hpp>
 
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
         : Application(width, height, "Flashlight Engine <Direct3D 11>") {
-        m_MainShaderCollection = m_Renderer->CreateShaderCollection(VertexType::PositionColorUv,
-                                                                    "Resources/Shaders/Main.vs.hlsl",
-                                                                    "Resources/Shaders/Main.ps.hlsl"
+        m_MainShaderCollection = m_Renderer->CreateShaderCollection(
+            VertexType::PositionColorUv,
+            Filesystem::GetShadersDirectory() / "Main.vs.hlsl",
+            Filesystem::GetShadersDirectory() / "Main.ps.hlsl"
         );
 
         constexpr VertexPositionColorUv vertices[] = {
@@ -33,8 +35,8 @@ namespace FlashlightEngine {
 
         m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT);
 
-        m_FallbackTexture = m_Renderer->CreateTexture("Resources/Textures/Default.png");
-        m_FrogTexture = m_Renderer->CreateTexture("Resources/Textures/T_Froge.dds");
+        m_FallbackTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "Default.png");
+        m_FrogTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "T_Froge.dds");
 
         m_Renderer->SetClearColor(0.0f, 0.2f, 0.4f, 1.0f);
     }
