@@ -67,11 +67,13 @@ namespace FlashlightEngine {
 
     ShaderCollection Renderer::CreateShaderCollection(const VertexType vertexType,
                                                       const std::filesystem::path& vertexShaderPath,
-                                                      const std::filesystem::path& pixelShaderPath) const {
+                                                      const std::filesystem::path& pixelShaderPath,
+                                                      const std::string_view name) const {
         ShaderCollectionDescriptor desc{};
         desc.VertexType = vertexType;
         desc.VertexShaderPath = vertexShaderPath;
         desc.PixelShaderPath = pixelShaderPath;
+        desc.Name = name;
 
         ShaderCollection collection = ShaderCollection::CreateShaderCollection(desc, *m_Device);
 
@@ -82,21 +84,25 @@ namespace FlashlightEngine {
                                                    const UInt32 size,
                                                    const D3D11_USAGE usage,
                                                    const D3D11_BIND_FLAG bindFlag,
+                                                   const std::string_view name,
                                                    const bool hasCpuAccess,
                                                    const D3D11_CPU_ACCESS_FLAG cpuAccess) const {
-        auto buffer = std::make_unique<Buffer>(m_Device, data, size, usage, bindFlag, hasCpuAccess, cpuAccess);
+        auto buffer = std::make_unique<Buffer>(m_Device, data, size, usage, bindFlag, name, hasCpuAccess, cpuAccess);
 
         return buffer;
     }
 
     std::shared_ptr<Sampler> Renderer::CreateSampler(const D3D11_FILTER filter,
+                                                     const std::string_view name,
                                                      const D3D11_TEXTURE_ADDRESS_MODE addressModeU,
                                                      const D3D11_TEXTURE_ADDRESS_MODE addressModeV,
-                                                     const D3D11_TEXTURE_ADDRESS_MODE addressModeW) const {
-        return std::make_shared<Sampler>(m_Device, filter, addressModeU, addressModeV, addressModeW);
+                                                     const D3D11_TEXTURE_ADDRESS_MODE addressModeW
+    ) const {
+        return std::make_shared<Sampler>(m_Device, filter, name, addressModeU, addressModeV, addressModeW);
     }
 
-    std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path) const {
-        return std::make_unique<Texture>(path, m_Device);
+    std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path,
+                                                     const std::string_view name) const {
+        return std::make_unique<Texture>(path, name, m_Device);
     }
 }

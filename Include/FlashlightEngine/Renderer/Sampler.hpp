@@ -13,12 +13,14 @@
 #include <FlashlightEngine/Renderer/Device.hpp>
 
 #include <memory>
+#include <string_view>
 
 namespace FlashlightEngine {
     class Sampler {
     public:
         Sampler(const std::shared_ptr<Device>& device,
                 D3D11_FILTER filter,
+                std::string_view name,
                 D3D11_TEXTURE_ADDRESS_MODE addressModeU = D3D11_TEXTURE_ADDRESS_WRAP,
                 D3D11_TEXTURE_ADDRESS_MODE addressModeV = D3D11_TEXTURE_ADDRESS_WRAP,
                 D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP

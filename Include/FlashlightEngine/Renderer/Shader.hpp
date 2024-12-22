@@ -22,6 +22,7 @@ namespace FlashlightEngine {
         std::filesystem::path VertexShaderPath;
         std::filesystem::path PixelShaderPath;
         VertexType VertexType;
+        std::string_view Name;
     };
 
     class ShaderCollection {

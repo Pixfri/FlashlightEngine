@@ -85,6 +85,14 @@ namespace FlashlightEngine {
             return false;
         }
 
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_Swapchain->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Swapchain"), "Swapchain");
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set swapchain name. Error: {}", HResultToString(hr));
+        }
+#endif
+
         spdlog::info("[DirectX] Swapchain created.");
 
         return true;
@@ -107,6 +115,20 @@ namespace FlashlightEngine {
             spdlog::error("[DirectX] Failed to create render target. Error: {}", HResultToString(hr));
             return false;
         }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = backBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Swapchain backbuffer"), "Swapchain backbuffer");
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set swapchain back buffer name. Error: {}", HResultToString(hr));
+        }
+
+        hr = m_RenderTargetView->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Swapchain RTV"), "Swapchain RTV");
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set RTV name. Error: {}", HResultToString(hr));
+        }
+#endif
 
         spdlog::info("[DirectX] Render target created.");
 

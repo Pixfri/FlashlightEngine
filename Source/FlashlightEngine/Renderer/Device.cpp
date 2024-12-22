@@ -92,6 +92,23 @@ namespace FlashlightEngine {
 #endif
 
         spdlog::info("[DirectX] Device created successfully.");
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_Device->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Device"), "Device");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set device name. Error: {}", HResultToString(hr));
+        }
+
+        hr = m_Context->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Context"), "Context");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set context name. Error: {}", HResultToString(hr));
+        }
+
+        hr = m_DxgiFactory->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("DXGI Factory"), "DXGI Factory");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set DXGI factory name. Error: {}", HResultToString(hr));
+        }
+#endif
     }
 
     Device::~Device() {

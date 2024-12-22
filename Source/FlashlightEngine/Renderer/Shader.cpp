@@ -87,6 +87,40 @@ namespace FlashlightEngine {
             return {};
         }
 
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        const std::string vertexShaderName = "VS_" + std::string(desc.Name);
+
+        HRESULT hr = collection.m_VertexShader->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                                               static_cast<UInt32>(vertexShaderName.size()),
+                                                               vertexShaderName.c_str());
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug object name for vertex shader. Error: {}",
+                          HResultToString(hr));
+        }
+
+        const std::string pixelShaderName = "PS_" + std::string(desc.Name);
+
+        hr = collection.m_PixelShader->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                                      static_cast<UInt32>(pixelShaderName.size()),
+                                                      pixelShaderName.c_str());
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug object name for pixel shader. Error: {}", HResultToString(hr));
+        }
+
+        const std::string inputLayoutName = "IL_" + std::string(desc.Name);
+
+        hr = collection.m_InputLayout->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                                      static_cast<UInt32>(inputLayoutName.size()),
+                                                      inputLayoutName.c_str());
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug object name for input layout. Error: {}", HResultToString(hr));
+        }
+#endif
+
         return collection;
     }
 

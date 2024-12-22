@@ -9,6 +9,7 @@
 namespace FlashlightEngine {
     Sampler::Sampler(const std::shared_ptr<Device>& device,
                      const D3D11_FILTER filter,
+                     const std::string_view name,
                      const D3D11_TEXTURE_ADDRESS_MODE addressModeU,
                      const D3D11_TEXTURE_ADDRESS_MODE addressModeV,
                      const D3D11_TEXTURE_ADDRESS_MODE addressModeW)
@@ -19,10 +20,17 @@ namespace FlashlightEngine {
         samplerDesc.AddressV = addressModeV;
         samplerDesc.AddressW = addressModeW;
 
-        const HRESULT hr = device->GetDevice()->CreateSamplerState(&samplerDesc, &m_Sampler);
+        HRESULT hr = device->GetDevice()->CreateSamplerState(&samplerDesc, &m_Sampler);
         if (FAILED(hr)) {
             spdlog::error("[DirectX] Failed to create sampler state. Error: {0}", HResultToString(hr));
         }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_Sampler->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set sampler name. Error: {0}", HResultToString(hr));
+        }
+#endif
     }
 
     Sampler::~Sampler() {

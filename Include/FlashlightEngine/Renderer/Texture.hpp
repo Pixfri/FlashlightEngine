@@ -19,6 +19,7 @@ namespace FlashlightEngine {
     class Texture {
     public:
         Texture(const std::filesystem::path& path,
+                std::string_view name,
                 const std::shared_ptr<Device>& device);
         ~Texture();
 
@@ -37,8 +38,8 @@ namespace FlashlightEngine {
 
         std::shared_ptr<Device> m_Device{nullptr};
 
-        void CreateTextureViewFromDDS(const std::filesystem::path& path);
-        void CreateTextureView(const std::filesystem::path& path);
+        void CreateTextureViewFromDDS(const std::filesystem::path& path, std::string_view name);
+        void CreateTextureView(const std::filesystem::path& path, std::string_view name);
     };
 }
 

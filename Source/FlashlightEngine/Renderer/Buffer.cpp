@@ -12,10 +12,18 @@ namespace FlashlightEngine {
                    const UInt32 size,
                    const D3D11_USAGE usage,
                    const D3D11_BIND_FLAG bindFlags,
+                   const std::string_view name,
                    const bool enableCpuAccess,
                    const D3D11_CPU_ACCESS_FLAG cpuAccess)
         : m_Device(device) {
         Allocate(data, size, usage, bindFlags, enableCpuAccess, cpuAccess);
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        if (const HRESULT hr = m_Buffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+            FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set buffer name. Error: {}", HResultToString(hr));
+        }
+#endif
     }
 
     Buffer::~Buffer() {
@@ -49,8 +57,8 @@ namespace FlashlightEngine {
         D3D11_SUBRESOURCE_DATA resourceData{};
         resourceData.pSysMem = data;
 
-        const HRESULT hr = m_Device->GetDevice()->CreateBuffer(&bufferInfo, &resourceData, &m_Buffer);
-        if (FAILED(hr)) {
+        if (const HRESULT hr = m_Device->GetDevice()->CreateBuffer(&bufferInfo, &resourceData, &m_Buffer);
+            FAILED(hr)) {
             spdlog::error("[DirectX] Failed to create buffer. Error: {}", HResultToString(hr));
         }
     }

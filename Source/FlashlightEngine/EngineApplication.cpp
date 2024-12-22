@@ -14,7 +14,8 @@ namespace FlashlightEngine {
         m_MainShaderCollection = m_Renderer->CreateShaderCollection(
             VertexType::PositionColorUv,
             Filesystem::GetShadersDirectory() / "Main.vs.hlsl",
-            Filesystem::GetShadersDirectory() / "Main.ps.hlsl"
+            Filesystem::GetShadersDirectory() / "Main.ps.hlsl",
+            "MainShaderCollection"
         );
 
         constexpr VertexPositionColorUv vertices[] = {
@@ -31,12 +32,12 @@ namespace FlashlightEngine {
         //};
 
         m_TriangleVertexBuffer = m_Renderer->CreateBuffer(vertices, sizeof(vertices), D3D11_USAGE_IMMUTABLE,
-                                                          D3D11_BIND_VERTEX_BUFFER);
+                                                          D3D11_BIND_VERTEX_BUFFER, "Triangle Verex Bufer");
 
-        m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT);
+        m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT, "Linear Sampler");
 
-        m_FallbackTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "Default.png");
-        m_FrogTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "T_Froge.dds");
+        m_FallbackTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "Default.png", "Fallback texture");
+        m_FrogTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "T_Froge.dds", "Frog texture");
 
         m_Renderer->SetClearColor(0.0f, 0.2f, 0.4f, 1.0f);
     }

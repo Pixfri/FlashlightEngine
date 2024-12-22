@@ -59,6 +59,7 @@ namespace FlashlightEngine {
                UInt32 size,
                D3D11_USAGE usage,
                D3D11_BIND_FLAG bindFlags,
+               std::string_view name,
                bool enableCpuAccess = false,
                D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE);
         ~Buffer();

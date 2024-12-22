@@ -13,13 +13,26 @@
 
 namespace FlashlightEngine {
     Texture::Texture(const std::filesystem::path& path,
+                     const std::string_view name,
                      const std::shared_ptr<Device>& device)
         : m_Device(device) {
         if (path.extension().string() == ".dds") {
-            CreateTextureViewFromDDS(path);
+            CreateTextureViewFromDDS(path, name);
         } else {
-            CreateTextureView(path);
+            CreateTextureView(path, name);
         }
+
+        if (m_TextureSrv == nullptr) {
+            spdlog::error("[DirectX] Failed to create texture from file: {}", path.string());
+        }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        const std::string srvName = std::string(name) + " SRV";
+        if (const HRESULT hr = m_TextureSrv->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(srvName.size()), srvName.data());
+            FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug name for texture: {}. Error: {}", name, HResultToString(hr));
+        }
+#endif
     }
 
     Texture::~Texture() {
@@ -48,7 +61,7 @@ namespace FlashlightEngine {
         return *this;
     }
 
-    void Texture::CreateTextureViewFromDDS(const std::filesystem::path& path) {
+    void Texture::CreateTextureViewFromDDS(const std::filesystem::path& path, std::string_view name) {
         DirectX::TexMetadata metadata{};
         DirectX::ScratchImage scratchImage;
 
@@ -89,7 +102,9 @@ namespace FlashlightEngine {
         m_TextureSrv = srv;
     }
 
-    void Texture::CreateTextureView(const std::filesystem::path& path) {
+    void Texture::CreateTextureView(const std::filesystem::path& path, std::string_view name) {
+        HRESULT hr = S_OK;
+
         FIBITMAP* image = nullptr;
         // Win32 methods for opening files is called "CreateFile" counterintuitively, we make sure to tell it to only read pre-existing files
 
@@ -162,7 +177,7 @@ namespace FlashlightEngine {
         initialData.pSysMem = FreeImage_GetBits(image);
         initialData.SysMemPitch = textureWidth * (textureBpp / 8);
 
-        HRESULT hr = m_Device->GetDevice()->CreateTexture2D(&textureDesc, &initialData, texture.GetAddressOf());
+        hr = m_Device->GetDevice()->CreateTexture2D(&textureDesc, &initialData, texture.GetAddressOf());
 
         if (FAILED(hr)) {
             spdlog::error("[DirectX] Failed to create texture from file: {}. Error: {}", path.string(),
@@ -170,6 +185,15 @@ namespace FlashlightEngine {
             FreeImage_Unload(image);
             return;
         }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = texture->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug name for texture: {}. Error: {}", name, HResultToString(hr));
+        }
+#endif
+
         FreeImage_Unload(image);
 
         ID3D11ShaderResourceView* srv = nullptr;
