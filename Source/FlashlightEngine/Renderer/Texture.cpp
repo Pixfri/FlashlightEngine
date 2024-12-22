@@ -4,6 +4,8 @@
 
 #include <FlashlightEngine/Renderer/Texture.hpp>
 
+#include <FlashlightEngine/Core/Filesystem.hpp>
+
 #include <FreeImage.h>
 #include <DirectXTex.h>
 
@@ -32,7 +34,9 @@ namespace FlashlightEngine {
     }
 
     void Texture::UseTexture(const UInt32 slot) {
-        m_Device->GetDeviceContext()->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
+        if (m_TextureSrv != nullptr) {
+            m_Device->GetDeviceContext()->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
+        }
     }
 
     Texture& Texture::operator=(Texture&& other) noexcept {
@@ -48,11 +52,17 @@ namespace FlashlightEngine {
         DirectX::TexMetadata metadata{};
         DirectX::ScratchImage scratchImage;
 
+        if (!Filesystem::Exists(path)) {
+            spdlog::error("[DirectXTex] Texture file does not exist: {}", path.string());
+            return;
+        }
+
         HRESULT hr = DirectX::LoadFromDDSFile(path.c_str(), DirectX::DDS_FLAGS_NONE, &metadata, scratchImage);
 
         if (FAILED(hr)) {
             spdlog::error("[DirectXTex] Failed to load texture from DDS file: {}. Error: {}", path.string(),
                           HResultToString(hr));
+            return;
         }
 
         ComPtr<ID3D11Resource> texture = nullptr;
@@ -62,6 +72,7 @@ namespace FlashlightEngine {
             spdlog::error("[DirectXTex] Failed to create texture from DDS file: {}. Error: {}", path.string(),
                           HResultToString(hr));
             scratchImage.Release();
+            return;
         }
 
         ID3D11ShaderResourceView* srv = nullptr;
@@ -72,6 +83,7 @@ namespace FlashlightEngine {
             spdlog::error("[DirectXTex] Failed to create shader resource view from DDS file: {}. Error: {}",
                           path.string(), HResultToString(hr));
             scratchImage.Release();
+            return;
         }
 
         m_TextureSrv = srv;
@@ -83,22 +95,15 @@ namespace FlashlightEngine {
 
         //We open a new local scope here so we don't keep the vector in memory for the entire function call, we can get rid of the memory it holds earlier this way
         {
-            HANDLE file = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
-            UInt64 fileSize = GetFileSize(file, nullptr);
+            std::vector<char> fileDataRaw = Filesystem::ReadBytes(path);
 
-            std::vector<BYTE> fileDataRaw(fileSize);
-            if (!ReadFile(file, fileDataRaw.data(), static_cast<DWORD>(fileDataRaw.size()), nullptr, nullptr)) {
-                CloseHandle(file);
-                spdlog::error("Failed to read file: {}", path.string());
-            }
-
-            CloseHandle(file);
-
-            FIMEMORY* memHandle = FreeImage_OpenMemory(fileDataRaw.data(), static_cast<DWORD>(fileDataRaw.size()));
+            FIMEMORY* memHandle = FreeImage_OpenMemory(reinterpret_cast<BYTE*>(fileDataRaw.data()),
+                                                       static_cast<DWORD>(fileDataRaw.size()));
             FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileTypeFromMemory(memHandle);
             if (imageFormat == FIF_UNKNOWN) {
                 FreeImage_CloseMemory(memHandle);
                 spdlog::error("Failed to determine image format: {}", path.string());
+                return;
             }
             image = FreeImage_LoadFromMemory(imageFormat, memHandle);
 
