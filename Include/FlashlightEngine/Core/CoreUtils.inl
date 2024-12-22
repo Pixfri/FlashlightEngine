@@ -23,7 +23,7 @@ namespace FlashlightEngine {
 #else
 
     template <typename T>
-    constexpr void FlAssert(T expr, const std::string& msg, const std::source_location& location) {}
+    constexpr void FlAssert([[maybe_unused]] T expr, [[maybe_unused]] const std::string& msg, [[maybe_unused]] const std::source_location& location) {}
 #endif
 
     template <typename T>
