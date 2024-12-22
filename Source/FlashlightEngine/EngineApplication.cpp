@@ -51,9 +51,6 @@ namespace FlashlightEngine {
             case Key::Escape:
                 Close();
                 break;
-            case Key::V:
-                GetWindow().SetVSync(!GetWindow().IsVSync());
-                break;
             default:
                 break;
             }

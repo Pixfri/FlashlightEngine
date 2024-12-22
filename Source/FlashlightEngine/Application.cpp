@@ -4,6 +4,8 @@
 
 #include <FlashlightEngine/Application.hpp>
 
+#include <FlashlightEngine/Core/Time.hpp>
+
 namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
@@ -36,6 +38,9 @@ namespace FlashlightEngine {
 
     void Application::Run() {
         while (m_Running) {
+            Time::m_DeltaTime = glfwGetTime() - Time::m_LastFrameTime;
+            Time::m_LastFrameTime += Time::m_DeltaTime.AsSeconds();
+
             m_Window->OnUpdate();
 
             OnUpdate();
@@ -53,5 +58,4 @@ namespace FlashlightEngine {
         m_Renderer->OnResize(e.GetWidth(), e.GetHeight());
         return true;
     }
-
 }
