@@ -40,14 +40,16 @@ namespace FlashlightEngine {
         FlAssert(m_Window, "[GLFW] Failed to create GLFW window.");
 
 #ifndef __unix__
-        Int32 texWidth{}, texHeight{}, texChannels{};
-        stbi_uc* pixels = stbi_load(properties.IconPath.string().c_str(), &texWidth, &texHeight, &texChannels,
-                                    STBI_rgb_alpha);
+        if (!properties.IconPath.empty()) {
+            Int32 texWidth{}, texHeight{}, texChannels{};
+            stbi_uc* pixels = stbi_load(properties.IconPath.string().c_str(), &texWidth, &texHeight, &texChannels,
+                                        STBI_rgb_alpha);
 
-        const GLFWimage icon = {texWidth, texHeight, pixels};
-        glfwSetWindowIcon(m_Window, 1, &icon);
+            const GLFWimage icon = {texWidth, texHeight, pixels};
+            glfwSetWindowIcon(m_Window, 1, &icon);
 
-        stbi_image_free(pixels);
+            stbi_image_free(pixels);
+        }
 #endif
 
         glfwSetWindowUserPointer(m_Window, &m_Data);

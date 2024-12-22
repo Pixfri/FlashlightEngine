@@ -19,7 +19,7 @@ namespace FlashlightEngine {
                     "POSITION",
                     0, DXGI_FORMAT_R32G32B32_FLOAT,
                     0,
-                    offsetof(VertexPositionColor, Pos),
+                    offsetof(VertexPositionColor, Position),
                     D3D11_INPUT_PER_VERTEX_DATA,
                     0
                 },
@@ -28,9 +28,43 @@ namespace FlashlightEngine {
                     0,
                     DXGI_FORMAT_R32G32B32_FLOAT,
                     0,
-                    offsetof(VertexPositionColor, Col),
+                    offsetof(VertexPositionColor, Color),
                     D3D11_INPUT_PER_VERTEX_DATA,
                     0
+                }
+            }
+        },
+        {
+            VertexType::PositionColorUv,
+            {
+                {
+                    {
+                        "POSITION",
+                        0,
+                        DXGI_FORMAT_R32G32B32_FLOAT,
+                        0,
+                        offsetof(VertexPositionColorUv, Position),
+                        D3D11_INPUT_PER_VERTEX_DATA,
+                        0
+                    },
+                    {
+                        "COLOR",
+                        0,
+                        DXGI_FORMAT_R32G32B32_FLOAT,
+                        0,
+                        offsetof(VertexPositionColorUv, Color),
+                        D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
+                        0
+                    },
+                    {
+                        "TEXCOORD",
+                        0,
+                        DXGI_FORMAT_R32G32_FLOAT,
+                        0,
+                        offsetof(VertexPositionColorUv, Uv),
+                        D3D11_INPUT_PER_VERTEX_DATA,
+                        0
+                    }
                 }
             }
         }
@@ -55,6 +89,8 @@ namespace FlashlightEngine {
         switch (type) {
         case VertexType::PositionColor:
             return sizeof(VertexPositionColor);
+        case VertexType::PositionColorUv:
+            return sizeof(VertexPositionColorUv);
         default:
             return 0;
         }
@@ -146,7 +182,8 @@ namespace FlashlightEngine {
                                               &tempShaderBlob,
                                               &errorBlob);
         if (FAILED(hr)) {
-            spdlog::error("[DirectX] Failed to compile shader: {}. Error: {}", filePath.string(), HResultToString(hr));
+            spdlog::error("[DirectX] Failed to compile shader: {}. Error: {}", filePath.string(),
+                          HResultToString(hr));
 
             if (errorBlob) {
                 spdlog::error("[DirectX] Shader compilation error: {}",

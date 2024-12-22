@@ -43,9 +43,9 @@ end
 
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
-add_requires("stb", "glfw 3.4", "spdlog")
+add_requires("freeimage", "stb", "glfw 3.4", "spdlog")
 add_requires("imgui", {configs = {dx11 = true, glfw = true}})
-add_requires("directxmath")
+add_requires("directxmath", "directxtex")
 
 if has_config("profiler") then
     add_defines("FL_PROFILER_ENABLED")
@@ -67,8 +67,8 @@ target(ProjectName)
     add_headerfiles("Include/**" .. ext)
   end
 
-  add_packages("stb", "glfw", "spdlog", "imgui")
-  add_packages("directxmath")
+  add_packages("freeimage", "stb", "glfw", "spdlog", "imgui")
+  add_packages("directxmath", "directxtex")
   if has_config("profiler") then
     add_packages("tracy")
   end

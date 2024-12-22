@@ -6,12 +6,17 @@
 
 #include <FlashlightEngine/Core/Time.hpp>
 
+#include <FreeImage.h>
+
 namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
     Application::Application(const UInt32 width, const UInt32 height, const std::string& title) {
         FlAssert(!m_Instance, "Application already exists!");
         m_Instance = this;
+
+        FreeImage_Initialise();
+
         WindowProperties properties{};
         properties.Width = width;
         properties.Height = height;

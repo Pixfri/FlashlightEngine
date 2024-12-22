@@ -16,6 +16,8 @@
 #include <FlashlightEngine/Renderer/Shader.hpp>
 #include <FlashlightEngine/Renderer/Buffer.hpp>
 #include <FlashlightEngine/Renderer/Enums.hpp>
+#include <FlashlightEngine/Renderer/Texture.hpp>
+#include <FlashlightEngine/Renderer/Sampler.hpp>
 
 namespace FlashlightEngine {
     class Renderer {
@@ -46,6 +48,13 @@ namespace FlashlightEngine {
                                              D3D11_BIND_FLAG bindFlag,
                                              bool hasCpuAccess = false,
                                              D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE) const;
+        std::shared_ptr<Sampler> CreateSampler(D3D11_FILTER filter,
+                                               D3D11_TEXTURE_ADDRESS_MODE addressModeU = D3D11_TEXTURE_ADDRESS_WRAP,
+                                               D3D11_TEXTURE_ADDRESS_MODE addressModeV = D3D11_TEXTURE_ADDRESS_WRAP,
+                                               D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP)
+        const;
+        std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path,
+                                               const std::shared_ptr<Sampler>& sampler) const;
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;

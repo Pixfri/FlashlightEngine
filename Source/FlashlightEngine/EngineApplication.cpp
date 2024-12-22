@@ -10,19 +10,35 @@
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
         : Application(width, height, "Flashlight Engine <Direct3D 11>") {
-        m_MainShaderCollection = m_Renderer->CreateShaderCollection(VertexType::PositionColor,
+        m_MainShaderCollection = m_Renderer->CreateShaderCollection(VertexType::PositionColorUv,
                                                                     "Resources/Shaders/Main.vs.hlsl",
                                                                     "Resources/Shaders/Main.ps.hlsl"
         );
 
-        constexpr VertexPositionColor vertices[] = {
-            {Position{0.0f, 0.5f, 0.0f}, Color{0.25f, 0.39f, 0.19f}},
-            {Position{0.5f, -0.5f, 0.0f}, Color{0.44f, 0.75f, 0.35f}},
-            {Position{-0.5f, -0.5f, 0.0f}, Color{0.38f, 0.55f, 0.20f}},
+        constexpr VertexPositionColorUv vertices[] = {
+            {Position{0.0f, 0.5f, 0.0f}, Color{0.25f, 0.39f, 0.19f}, Uv{0.5f, 0.0f}},
+            {Position{0.5f, -0.5f, 0.0f}, Color{0.44f, 0.75f, 0.35f}, Uv{1.0f, 1.0f}},
+            {Position{-0.5f, -0.5f, 0.0f}, Color{0.38f, 0.55f, 0.20f}, Uv{0.0f, 1.0f}},
         };
+
+        // RGB triangle
+        //constexpr VertexPositionColorUv vertices[] = {
+        //    {Position{0.0f, 0.5f, 0.0f}, Color{1.0f, 0.0f, 0.0f}, Uv{0.5f, 0.0f}},
+        //    {Position{0.5f, -0.5f, 0.0f}, Color{0.0f, 1.0f, 0.0f}, Uv{1.0f, 1.0f}},
+        //    {Position{-0.5f, -0.5f, 0.0f}, Color{0.0f, 0.0f, 1.0f}, Uv{0.0f, 1.0f}},
+        //};
 
         m_TriangleVertexBuffer = m_Renderer->CreateBuffer(vertices, sizeof(vertices), D3D11_USAGE_IMMUTABLE,
                                                           D3D11_BIND_VERTEX_BUFFER);
+
+        m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT);
+
+        m_FallbackTexture = m_Renderer->CreateTexture("Resources/Textures/Default.png", m_LinearSampler);
+        m_FrogTexture = m_Renderer->CreateTexture("Resources/Textures/T_Froge.dds", m_LinearSampler);
+    }
+
+    EngineApplication::~EngineApplication() {
+        m_MainShaderCollection.Destroy();
     }
 
     void EngineApplication::OnEvent(Event& event) {
@@ -38,7 +54,9 @@ namespace FlashlightEngine {
 
         m_Renderer->UseShaderCollection(m_MainShaderCollection);
 
-        m_Renderer->BindVertexBuffer(*m_TriangleVertexBuffer, VertexType::PositionColor);
+        m_Renderer->BindVertexBuffer(*m_TriangleVertexBuffer, VertexType::PositionColorUv);
+
+        m_FrogTexture->UseTexture(0);
 
         m_Renderer->Draw(3);
 

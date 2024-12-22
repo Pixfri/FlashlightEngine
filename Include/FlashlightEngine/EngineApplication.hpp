@@ -17,7 +17,7 @@ namespace FlashlightEngine {
     class EngineApplication final : public Application {
     public:
         EngineApplication(UInt32 width, UInt32 height);
-        ~EngineApplication() override = default;
+        ~EngineApplication() override;
 
         void OnEvent(Event& event) override;
         void OnUpdate() override;
@@ -26,6 +26,10 @@ namespace FlashlightEngine {
     private:
         ShaderCollection m_MainShaderCollection;
         std::unique_ptr<Buffer> m_TriangleVertexBuffer;
+
+        std::shared_ptr<Sampler> m_LinearSampler;
+        std::unique_ptr<Texture> m_FrogTexture;
+        std::unique_ptr<Texture> m_FallbackTexture;
 
         void OnKeyPressed(const KeyDownEvent& event);
     };

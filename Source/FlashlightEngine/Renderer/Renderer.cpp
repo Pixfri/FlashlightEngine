@@ -88,4 +88,16 @@ namespace FlashlightEngine {
 
         return buffer;
     }
+
+    std::shared_ptr<Sampler> Renderer::CreateSampler(const D3D11_FILTER filter,
+                                                     const D3D11_TEXTURE_ADDRESS_MODE addressModeU,
+                                                     const D3D11_TEXTURE_ADDRESS_MODE addressModeV,
+                                                     const D3D11_TEXTURE_ADDRESS_MODE addressModeW) const {
+        return std::make_shared<Sampler>(m_Device, filter, addressModeU, addressModeV, addressModeW);
+    }
+
+    std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path,
+                                                     const std::shared_ptr<Sampler>& sampler) const {
+        return std::make_unique<Texture>(path, m_Device, sampler);
+    }
 }

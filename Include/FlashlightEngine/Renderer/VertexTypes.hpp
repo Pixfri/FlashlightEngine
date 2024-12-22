@@ -13,15 +13,23 @@
 
 namespace FlashlightEngine {
     enum class VertexType {
-        PositionColor
+        PositionColor,
+        PositionColorUv,
     };
 
     using Position = DirectX::XMFLOAT3;
     using Color = DirectX::XMFLOAT3;
+    using Uv = DirectX::XMFLOAT2;
 
     struct VertexPositionColor {
-        Position Pos;
-        Color Col;
+        Position Position;
+        Color Color;
+    };
+
+    struct VertexPositionColorUv {
+        Position Position;
+        Color Color;
+        Uv Uv;
     };
 }
 

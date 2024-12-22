@@ -10,11 +10,14 @@
 #include <FlashlightEngine/Types.hpp>
 
 #include <expected>
+#include <filesystem>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace FlashlightEngine {
-    std::expected<std::string, std::string> ReadFile(std::string_view path);
+    std::expected<std::string, std::string> ReadTextFile(std::string_view path);
+    std::expected<std::vector<char>, std::string> ReadBinaryFile(const std::filesystem::path& path);
 }
 
 #include <FlashlightEngine/Utils/FileUtils.inl>
