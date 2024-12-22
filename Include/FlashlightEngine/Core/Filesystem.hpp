@@ -22,6 +22,7 @@ namespace FlashlightEngine {
         Filesystem(const Filesystem&) = delete;
         Filesystem(Filesystem&&) = delete;
 
+        // File operations
         static bool Exists(const std::filesystem::path& path);
         static bool IsDirectory(const std::filesystem::path& path);
 
@@ -37,6 +38,16 @@ namespace FlashlightEngine {
         static UInt64 GetFileSize(const std::filesystem::path& path);
         static std::string ReadFile(const std::filesystem::path& path);
         static std::vector<char> ReadBytes(const std::filesystem::path& path);
+
+        // Directories
+        static inline std::filesystem::path GetApplicationDirectory();
+        static inline std::filesystem::path GetTempDirectory();
+        static inline std::filesystem::path GetResourcesDirectory();
+        static inline std::filesystem::path GetShadersDirectory();
+        static inline std::filesystem::path GetTexturesDirectory();
+        static inline std::filesystem::path GetModelsDirectory();
+        static inline std::filesystem::path GetConfigDirectory();
+        static inline std::filesystem::path GetLogsDirectory();
 
         Filesystem& operator=(const Filesystem&) = delete;
         Filesystem& operator=(Filesystem&&) = delete;
