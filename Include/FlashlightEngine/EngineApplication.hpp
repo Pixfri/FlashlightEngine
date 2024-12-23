@@ -35,7 +35,8 @@ namespace FlashlightEngine {
 
     private:
         ShaderCollection m_MainShaderCollection;
-        std::unique_ptr<Buffer> m_TriangleVertexBuffer;
+        std::unique_ptr<Buffer> m_CubeVertexBuffer;
+        std::unique_ptr<Buffer> m_CubeIndexBuffer;
 
         std::shared_ptr<Sampler> m_LinearSampler;
         std::unique_ptr<Texture> m_FrogTexture;

@@ -12,4 +12,8 @@ namespace FlashlightEngine {
     inline ComPtr<ID3D11RenderTargetView> Swapchain::GetRTV() const {
         return m_RenderTargetView;
     }
+
+    inline ComPtr<ID3D11DepthStencilView> Swapchain::GetDSV() const {
+        return m_DepthStencilView;
+    }
 }

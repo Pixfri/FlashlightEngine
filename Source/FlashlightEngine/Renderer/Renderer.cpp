@@ -14,6 +14,26 @@ namespace FlashlightEngine {
 
         // Set the default primitive topology to be a triangle list.
         SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+
+        D3D11_RASTERIZER_DESC rasterizerDesc{};
+        rasterizerDesc.CullMode = D3D11_CULL_NONE;
+        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+
+        HRESULT hr = m_Device->GetDevice()->CreateRasterizerState(&rasterizerDesc, m_RasterizerState.GetAddressOf());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create rasterizer state. Error: {}", HResultToString(hr));
+        }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_RasterizerState->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Rasterizer State") - 1,
+                                               "Rasterizer State");
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set name for rasterizer state. Error: {}", HResultToString(hr));
+        }
+#endif
+
+        CreateDepthStencilState();
     }
 
     void Renderer::OnResize(const UInt32 width, const UInt32 height) const {
@@ -34,8 +54,12 @@ namespace FlashlightEngine {
         viewport.MaxDepth = 1.0f;
 
         deviceContext->ClearRenderTargetView(m_Swapchain->GetRTV().Get(), m_ClearColor);
+        deviceContext->ClearDepthStencilView(m_Swapchain->GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+
         deviceContext->RSSetViewports(1, &viewport);
-        deviceContext->OMSetRenderTargets(1, m_Swapchain->GetRTV().GetAddressOf(), nullptr);
+        deviceContext->OMSetRenderTargets(1, m_Swapchain->GetRTV().GetAddressOf(), m_Swapchain->GetDSV().Get());
+        deviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 0);
+        deviceContext->RSSetState(m_RasterizerState.Get());
     }
 
     void Renderer::EndFrame() const {
@@ -60,6 +84,21 @@ namespace FlashlightEngine {
         m_Device->GetDeviceContext()->IASetVertexBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data(),
                                                          &stride, offsets.data());
     }
+
+    void Renderer::BindIndexBuffer(ID3D11Buffer* buffer, const IndexType indexType) const {
+        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
+        switch (indexType) {
+        case IndexType::UInt16:
+            format = DXGI_FORMAT_R16_UINT;
+            break;
+        case IndexType::UInt32:
+            format = DXGI_FORMAT_R32_UINT;
+            break;
+        }
+
+        m_Device->GetDeviceContext()->IASetIndexBuffer(buffer, format, 0);
+    }
+
 
     void Renderer::BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
                                        const PipelineBindPoint bindPoint,
@@ -91,6 +130,10 @@ namespace FlashlightEngine {
 
     void Renderer::Draw(const UInt32 vertexCount, const UInt32 firstVertex) const {
         m_Device->GetDeviceContext()->Draw(vertexCount, firstVertex);
+    }
+
+    void Renderer::DrawIndexed(const UInt32 indexCount, const UInt32 firstIndex, const UInt32 baseVertex) const {
+        m_Device->GetDeviceContext()->DrawIndexed(indexCount, firstIndex, baseVertex);
     }
 
     ShaderCollection Renderer::CreateShaderCollection(const VertexType vertexType,
@@ -140,5 +183,25 @@ namespace FlashlightEngine {
     std::unique_ptr<Texture> Renderer::CreateTexture(const std::filesystem::path& path,
                                                      const std::string_view name) const {
         return std::make_unique<Texture>(path, name, m_Device);
+    }
+
+    void Renderer::CreateDepthStencilState() {
+
+        D3D11_DEPTH_STENCIL_DESC depthStencilDesc{};
+        depthStencilDesc.DepthEnable = true;
+        depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+        depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+        HRESULT hr = m_Device->GetDevice()->CreateDepthStencilState(&depthStencilDesc, m_DepthStencilState.GetAddressOf());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create depth stencil state. Error: {}", HResultToString(hr));
+        }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_DepthStencilState->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Depth Stencil State") - 1,
+                                                 "Depth Stencil State");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set name for depth stencil state. Error: {}", HResultToString(hr));
+        }
+#endif
     }
 }

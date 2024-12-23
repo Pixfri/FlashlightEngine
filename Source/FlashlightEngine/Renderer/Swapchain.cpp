@@ -116,6 +116,30 @@ namespace FlashlightEngine {
             return false;
         }
 
+        D3D11_TEXTURE2D_DESC texDesc{};
+        texDesc.Width = m_Window->GetWidth();
+        texDesc.Height = m_Window->GetHeight();
+        texDesc.MipLevels = 1;
+        texDesc.ArraySize = 1;
+        texDesc.SampleDesc.Count = 1;
+        texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+        texDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+
+        ID3D11Texture2D* depthTexture = nullptr;
+        hr = m_Device->GetDevice()->CreateTexture2D(&texDesc, nullptr, &depthTexture);
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create depth buffer texture. Error: {}", HResultToString(hr));
+        }
+
+        D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
+        dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+        dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+        hr = m_Device->GetDevice()->CreateDepthStencilView(depthTexture, &dsvDesc, m_DepthStencilView.GetAddressOf());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create depth stencil view. Error: {}", HResultToString(hr));
+        }
+
 #if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
         hr = backBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Swapchain backbuffer"), "Swapchain backbuffer");
 
@@ -128,6 +152,18 @@ namespace FlashlightEngine {
         if (FAILED(hr)) {
             spdlog::error("[DirectX] Failed to set RTV name. Error: {}", HResultToString(hr));
         }
+
+        hr = depthTexture->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Depth Buffer Texture") - 1,
+                                     "Depth Buffer Texture");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set name for depth buffer texture. Error: {}", HResultToString(hr));
+        }
+
+        hr = m_DepthStencilView->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Depth Stencil View") - 1,
+                                                "Depth Stencil View");
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set name for depth stencil view. Error: {}", HResultToString(hr));
+        }
 #endif
 
         spdlog::info("[DirectX] Render target created.");
@@ -137,5 +173,6 @@ namespace FlashlightEngine {
 
     void Swapchain::DestroySwapchainResources() {
         m_RenderTargetView.Reset();
+        m_DepthStencilView.Reset();
     }
 }

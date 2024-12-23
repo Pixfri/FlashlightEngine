@@ -20,20 +20,52 @@ namespace FlashlightEngine {
         );
 
         constexpr VertexPositionColorUv vertices[] = {
-            {Position{0.0f, 0.5f, 0.0f}, Color{0.25f, 0.39f, 0.19f}, Uv{0.5f, 0.0f}},
-            {Position{0.5f, -0.5f, 0.0f}, Color{0.44f, 0.75f, 0.35f}, Uv{1.0f, 1.0f}},
-            {Position{-0.5f, -0.5f, 0.0f}, Color{0.38f, 0.55f, 0.20f}, Uv{0.0f, 1.0f}},
+            //Front
+            {Position{-0.5f, -0.5f, 0.5f}, Color{1.0f, 0.0f, 0.0f}, Uv{0.0f, 1.0f}},
+            {Position{0.5f, -0.5f, 0.5f}, Color{0.0f, 1.0f, 0.0f}, Uv{1.0f, 1.0f}},
+            {Position{-0.5f, 0.5f, 0.5f}, Color{0.0f, 0.0f, 1.0f}, Uv{0.0f, 0.0f}},
+            {Position{0.5f, 0.5f, 0.5f}, Color{1.0f, 1.0f, 0.0f}, Uv{1.0f, 0.0f}},
+
+            //Back
+            {Position{-0.5f, -0.5f, -0.5f}, Color{0.0f, 1.0f, 1.0f}, Uv{0.0f, 1.0f}},
+            {Position{0.5f, -0.5f, -0.5f}, Color{1.0f, 0.0f, 1.0f}, Uv{1.0f, 1.0f}},
+            {Position{-0.5f, 0.5f, -0.5f}, Color{0.0f, 0.0f, 0.0f}, Uv{0.0f, 0.0f}},
+            {Position{0.5f, 0.5f, -0.5f}, Color{1.0f, 1.0f, 1.0f}, Uv{1.0f, 0.0f}},
         };
 
-        // RGB triangle
-        //constexpr VertexPositionColorUv vertices[] = {
-        //    {Position{0.0f, 0.5f, 0.0f}, Color{1.0f, 0.0f, 0.0f}, Uv{0.5f, 0.0f}},
-        //    {Position{0.5f, -0.5f, 0.0f}, Color{0.0f, 1.0f, 0.0f}, Uv{1.0f, 1.0f}},
-        //    {Position{-0.5f, -0.5f, 0.0f}, Color{0.0f, 0.0f, 1.0f}, Uv{0.0f, 1.0f}},
-        //};
+        constexpr uint32_t indices[] =
+        {
+            //Top
+            7, 6, 2,
+            2, 3, 7,
 
-        m_TriangleVertexBuffer = m_Renderer->CreateBuffer(vertices, sizeof(vertices), D3D11_USAGE_IMMUTABLE,
-                                                          D3D11_BIND_VERTEX_BUFFER, "Triangle Vertex Buffer");
+            //Bottom
+            0, 4, 5,
+            5, 1, 0,
+
+            //Left
+            0, 2, 6,
+            6, 4, 0,
+
+            //Right
+            7, 3, 1,
+            1, 5, 7,
+
+            //Front
+            3, 2, 0,
+            0, 1, 3,
+
+            //Back
+            4, 6, 7,
+            7, 5, 4
+        };
+
+        m_CubeVertexBuffer = m_Renderer->CreateBuffer(vertices, sizeof(vertices), D3D11_USAGE_IMMUTABLE,
+                                                      D3D11_BIND_VERTEX_BUFFER, "Cube Vertex Buffer");
+
+        m_CubeIndexBuffer = m_Renderer->CreateBuffer(indices, sizeof(indices), D3D11_USAGE_IMMUTABLE,
+                                                     D3D11_BIND_INDEX_BUFFER, "Cube Index Buffer");
+
 
         m_PerFrameConstantBuffer = m_Renderer->CreateEmptyBuffer(sizeof(PerFrameConstantBuffer),
                                                                  D3D11_USAGE_DYNAMIC,
@@ -111,7 +143,8 @@ namespace FlashlightEngine {
 
         m_Renderer->UseShaderCollection(m_MainShaderCollection);
 
-        m_Renderer->BindVertexBuffers({m_TriangleVertexBuffer->GetBuffer().Get()}, VertexType::PositionColorUv, {0});
+        m_Renderer->BindVertexBuffers({m_CubeVertexBuffer->GetBuffer().Get()}, VertexType::PositionColorUv, {0});
+        m_Renderer->BindIndexBuffer(m_CubeIndexBuffer->GetBuffer().Get(), IndexType::UInt32);
         m_Renderer->BindConstantBuffers({
                                             m_PerFrameConstantBuffer->GetBuffer().Get(),
                                             m_PerObjectConstantBuffer->GetBuffer().Get()
@@ -126,7 +159,7 @@ namespace FlashlightEngine {
             m_FallbackTexture->UseTexture(0, PipelineBindPoint::PixelShader);
         }
 
-        m_Renderer->Draw(3);
+        m_Renderer->DrawIndexed(36);
 
         m_Renderer->EndFrame();
     }

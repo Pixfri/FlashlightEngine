@@ -39,11 +39,13 @@ namespace FlashlightEngine {
                                VertexType vertexType,
                                const std::vector<UInt32>& offsets,
                                UInt32 startSlot = 0) const;
+        void BindIndexBuffer(ID3D11Buffer* buffer, IndexType indexType) const;
         void BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
                                  PipelineBindPoint bindPoint,
                                  UInt32 startSlot = 0) const;
         void SetPrimitiveTopology(PrimitiveTopology topology) const;
         void Draw(UInt32 vertexCount, UInt32 firstVertex = 0) const;
+        void DrawIndexed(UInt32 indexCount, UInt32 firstIndex = 0, UInt32 baseVertex = 0) const;
 
         [[nodiscard]] ShaderCollection CreateShaderCollection(VertexType vertexType,
                                                               const std::filesystem::path& vertexShaderPath,
@@ -82,7 +84,12 @@ namespace FlashlightEngine {
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Swapchain> m_Swapchain;
 
+        ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
+        ComPtr<ID3D11RasterizerState> m_RasterizerState;
+
         Float32 m_ClearColor[4] = {0.1f, 0.1f, 0.1f, 0.1f};
+
+        void CreateDepthStencilState();
     };
 }
 

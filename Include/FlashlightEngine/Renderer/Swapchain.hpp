@@ -26,6 +26,7 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline ComPtr<IDXGISwapChain1> GetSwapchain() const;
         [[nodiscard]] inline ComPtr<ID3D11RenderTargetView> GetRTV() const;
+        [[nodiscard]] inline ComPtr<ID3D11DepthStencilView> GetDSV() const;
 
         void OnResize(UInt32 width, UInt32 height);
 
@@ -35,6 +36,7 @@ namespace FlashlightEngine {
     private:
         ComPtr<IDXGISwapChain1> m_Swapchain{nullptr};
         ComPtr<ID3D11RenderTargetView> m_RenderTargetView{nullptr};
+        ComPtr<ID3D11DepthStencilView> m_DepthStencilView{nullptr};
 
         std::shared_ptr<Window> m_Window{nullptr};
         std::shared_ptr<Device> m_Device{nullptr};

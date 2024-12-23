@@ -33,6 +33,11 @@ namespace FlashlightEngine {
         HullShader,
         DomainShader
     };
+
+    enum class IndexType {
+        UInt16,
+        UInt32
+    };
 }
 
 #endif // FL_RENDERER_ENUMS_HPP

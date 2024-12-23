@@ -7,7 +7,7 @@ set_project(ProjectName)
 add_rules("mode.debug", "mode.release")
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
-option("force_validation", {description = "Force Vulkan validation layers to be enabled.", default = false})
+option("force_validation", {description = "Force DirectX debug interface to be enabled.", default = false})
 option("profiler", {description = "Enable the Tracy profiler.", default = false})
 
 add_includedirs("Include")
