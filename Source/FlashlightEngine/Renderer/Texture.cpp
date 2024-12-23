@@ -17,9 +17,9 @@ namespace FlashlightEngine {
                      const std::shared_ptr<Device>& device)
         : m_Device(device) {
         if (path.extension().string() == ".dds") {
-            CreateTextureViewFromDDS(path, name);
+            CreateTextureViewFromDDS(Filesystem::GetTexturesDirectory() / path, name);
         } else {
-            CreateTextureView(path, name);
+            CreateTextureView(Filesystem::GetTexturesDirectory() / path, name);
         }
 
         if (m_TextureSrv == nullptr) {

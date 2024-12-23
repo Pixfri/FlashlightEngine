@@ -13,8 +13,8 @@ namespace FlashlightEngine {
         : Application(width, height, "Flashlight Engine <Direct3D 11>") {
         m_MainShaderCollection = m_Renderer->CreateShaderCollection(
             VertexType::PositionColorUv,
-            Filesystem::GetShadersDirectory() / "Main.vs.hlsl",
-            Filesystem::GetShadersDirectory() / "Main.ps.hlsl",
+            "Main.vs.hlsl",
+            "Main.ps.hlsl",
             "MainShaderCollection"
         );
 
@@ -32,12 +32,12 @@ namespace FlashlightEngine {
         //};
 
         m_TriangleVertexBuffer = m_Renderer->CreateBuffer(vertices, sizeof(vertices), D3D11_USAGE_IMMUTABLE,
-                                                          D3D11_BIND_VERTEX_BUFFER, "Triangle Verex Bufer");
+                                                          D3D11_BIND_VERTEX_BUFFER, "Triangle Vertex Buffer");
 
         m_LinearSampler = m_Renderer->CreateSampler(D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT, "Linear Sampler");
 
-        m_FallbackTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "Default.png", "Fallback texture");
-        m_FrogTexture = m_Renderer->CreateTexture(Filesystem::GetTexturesDirectory() / "T_Froge.dds", "Frog texture");
+        m_FallbackTexture = m_Renderer->CreateTexture("Default.png", "Fallback texture");
+        m_FrogTexture = m_Renderer->CreateTexture("T_Froge.dds", "Frog texture");
 
         m_Renderer->SetClearColor(0.0f, 0.2f, 0.4f, 1.0f);
     }

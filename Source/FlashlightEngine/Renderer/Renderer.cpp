@@ -4,6 +4,8 @@
 
 #include <FlashlightEngine/Renderer/Renderer.hpp>
 
+#include <FlashlightEngine/Core/Filesystem.hpp>
+
 namespace FlashlightEngine {
     Renderer::Renderer(const std::shared_ptr<Window>& window)
         : m_Window(window) {
@@ -71,8 +73,8 @@ namespace FlashlightEngine {
                                                       const std::string_view name) const {
         ShaderCollectionDescriptor desc{};
         desc.VertexType = vertexType;
-        desc.VertexShaderPath = vertexShaderPath;
-        desc.PixelShaderPath = pixelShaderPath;
+        desc.VertexShaderPath = Filesystem::GetShadersDirectory() / vertexShaderPath;
+        desc.PixelShaderPath = Filesystem::GetShadersDirectory() / pixelShaderPath;
         desc.Name = name;
 
         ShaderCollection collection = ShaderCollection::CreateShaderCollection(desc, *m_Device);
