@@ -47,27 +47,6 @@ namespace FlashlightEngine {
         other.m_Device = nullptr;
     }
 
-    void Texture::UseTexture(const UInt32 slot, const PipelineBindPoint bindPoint) {
-        if (m_TextureSrv != nullptr) {
-            const auto deviceContext = m_Device->GetDeviceContext();
-
-            switch (bindPoint) {
-            case PipelineBindPoint::VertexShader:
-                deviceContext->VSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
-                break;
-            case PipelineBindPoint::PixelShader:
-                deviceContext->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
-                break;
-            case PipelineBindPoint::ComputeShader:
-            case PipelineBindPoint::DomainShader:
-            case PipelineBindPoint::GeometryShader:
-            case PipelineBindPoint::HullShader:
-                spdlog::warn("[DirectX] Unsupported shader stage for texture binding.");
-                break;
-            }
-        }
-    }
-
     Texture& Texture::operator=(Texture&& other) noexcept {
         m_TextureSrv.Swap(other.m_TextureSrv);
 
@@ -182,7 +161,7 @@ namespace FlashlightEngine {
         default:
             {
                 //we could try to handle some weird bit count, but these will probably be HDR or some antique format, just exit instead.
-                spdlog::warn("Texture {} has nontrivial bits per pixel ({}).", path.string(), textureBpp);
+                spdlog::warn("[DirectX] Texture {} has nontrivial bits per pixel ({}).", path.string(), textureBpp);
             }
             break;
         }

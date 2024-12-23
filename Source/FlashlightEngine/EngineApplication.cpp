@@ -12,12 +12,17 @@
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
         : Application(width, height, "Flashlight Engine <Direct3D 11>") {
-        m_MainShaderCollection = m_Renderer->CreateShaderCollection(
-            VertexType::PositionColorUv,
-            "Main.vs.hlsl",
-            "Main.ps.hlsl",
-            "MainShaderCollection"
-        );
+        m_PipelineBuilder = m_Renderer->CreatePipelineBuilder();
+
+        PipelineDescriptor mainPipelineDescriptor{};
+        mainPipelineDescriptor.PipelineName = "MainPipeline";
+        mainPipelineDescriptor.VertexType = VertexType::PositionColorUv;
+        mainPipelineDescriptor.VertexShaderPath = "Main.vs.hlsl";
+        mainPipelineDescriptor.PixelShaderPath = "Main.ps.hlsl";
+
+        if (!m_PipelineBuilder->CreatePipeline(mainPipelineDescriptor, m_MainPipeline)) {
+            spdlog::error("[Engine] Failed to create main pipeline.");
+        }
 
         constexpr VertexPositionColorUv vertices[] = {
             //Front
@@ -87,9 +92,7 @@ namespace FlashlightEngine {
         m_Renderer->SetClearColor(0.0f, 0.2f, 0.4f, 1.0f);
     }
 
-    EngineApplication::~EngineApplication() {
-        m_MainShaderCollection.Destroy();
-    }
+    EngineApplication::~EngineApplication() = default;
 
     void EngineApplication::OnEvent(Event& event) {
         EventDispatcher dispatcher(event);
@@ -101,7 +104,7 @@ namespace FlashlightEngine {
         static Float32 scale = 1.0f;
         static DirectX::XMFLOAT3 cameraPosition = {0.0f, 0.0f, -1.0f};
 
-        yRotation += Time::GetDeltaTime();
+        yRotation += static_cast<Float32>(Time::GetDeltaTime());
 
         // Camera
         const DirectX::XMVECTOR camPos = DirectX::XMLoadFloat3(&cameraPosition);
@@ -141,25 +144,26 @@ namespace FlashlightEngine {
     void EngineApplication::OnRender() {
         m_Renderer->BeginFrame();
 
-        m_Renderer->UseShaderCollection(m_MainShaderCollection);
-
-        m_Renderer->BindVertexBuffers({m_CubeVertexBuffer->GetBuffer().Get()}, VertexType::PositionColorUv, {0});
-        m_Renderer->BindIndexBuffer(m_CubeIndexBuffer->GetBuffer().Get(), IndexType::UInt32);
-        m_Renderer->BindConstantBuffers({
-                                            m_PerFrameConstantBuffer->GetBuffer().Get(),
-                                            m_PerObjectConstantBuffer->GetBuffer().Get()
-                                        },
-                                        PipelineBindPoint::VertexShader);
-
-        m_LinearSampler->UseSampler(0, PipelineBindPoint::PixelShader);
+        m_MainPipeline->SetViewport(0, 0,
+                                    static_cast<Float32>(GetWindow().GetWidth()),
+                                    static_cast<Float32>(GetWindow().GetHeight()));
+        m_MainPipeline->BindSampler(0, *m_LinearSampler, PipelineBindPoint::PixelShader);
 
         if (m_UseFrogTexture) {
-            m_FrogTexture->UseTexture(0, PipelineBindPoint::PixelShader);
+            m_MainPipeline->BindTexture(0, *m_FrogTexture, PipelineBindPoint::PixelShader);
         } else {
-            m_FallbackTexture->UseTexture(0, PipelineBindPoint::PixelShader);
+            m_MainPipeline->BindTexture(0, *m_FallbackTexture, PipelineBindPoint::PixelShader);
         }
 
-        m_Renderer->DrawIndexed(36);
+        m_MainPipeline->BindConstantBuffer(0, *m_PerFrameConstantBuffer, PipelineBindPoint::VertexShader);
+        m_MainPipeline->BindConstantBuffer(1, *m_PerObjectConstantBuffer, PipelineBindPoint::VertexShader);
+
+        m_Renderer->SetPipeline(m_MainPipeline.get());
+
+        m_Renderer->SetVertexBuffer(*m_CubeVertexBuffer);
+        m_Renderer->SetIndexBuffer(*m_CubeIndexBuffer);
+
+        m_Renderer->DrawIndexed();
 
         m_Renderer->EndFrame();
     }

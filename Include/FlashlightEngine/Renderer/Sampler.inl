@@ -5,7 +5,7 @@
 #pragma once
 
 namespace FlashlightEngine {
-    inline ComPtr<ID3D11SamplerState> Sampler::GetSampler() {
+    inline ComPtr<ID3D11SamplerState> Sampler::GetSampler() const {
         return m_Sampler;
     }
 }

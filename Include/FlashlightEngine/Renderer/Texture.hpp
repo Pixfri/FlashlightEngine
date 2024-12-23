@@ -30,8 +30,6 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline ComPtr<ID3D11ShaderResourceView> GetTextureSRV() const;
 
-        void UseTexture(UInt32 slot, PipelineBindPoint bindPoint);
-
         Texture& operator=(const Texture&) = delete;
         Texture& operator=(Texture&& other) noexcept;
 

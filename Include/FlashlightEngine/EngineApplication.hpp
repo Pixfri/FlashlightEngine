@@ -11,7 +11,7 @@
 
 #include <FlashlightEngine/Application.hpp>
 
-#include <FlashlightEngine/Renderer/Shader.hpp>
+#include <FlashlightEngine/Renderer/Pipeline.hpp>
 
 #include <DirectXMath.h>
 
@@ -34,7 +34,9 @@ namespace FlashlightEngine {
         void OnRender() override;
 
     private:
-        ShaderCollection m_MainShaderCollection;
+        std::unique_ptr<PipelineBuilder> m_PipelineBuilder;
+        std::unique_ptr<Pipeline> m_MainPipeline;
+
         std::unique_ptr<Buffer> m_CubeVertexBuffer;
         std::unique_ptr<Buffer> m_CubeIndexBuffer;
 

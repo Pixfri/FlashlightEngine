@@ -9,17 +9,19 @@
 
 #include <FlashlightEngine/Types.hpp>
 
+#include <FlashlightEngine/Renderer/Buffer.hpp>
+#include <FlashlightEngine/Renderer/Device.hpp>
+#include <FlashlightEngine/Renderer/ResourceDescriptor.hpp>
+#include <FlashlightEngine/Renderer/Sampler.hpp>
+#include <FlashlightEngine/Renderer/Swapchain.hpp>
+#include <FlashlightEngine/Renderer/Texture.hpp>
+
 #include <FlashlightEngine/Core/Window.hpp>
 
-#include <FlashlightEngine/Renderer/Device.hpp>
-#include <FlashlightEngine/Renderer/Swapchain.hpp>
-#include <FlashlightEngine/Renderer/Shader.hpp>
-#include <FlashlightEngine/Renderer/Buffer.hpp>
-#include <FlashlightEngine/Renderer/Enums.hpp>
-#include <FlashlightEngine/Renderer/Texture.hpp>
-#include <FlashlightEngine/Renderer/Sampler.hpp>
-
 namespace FlashlightEngine {
+    class Pipeline;
+    class PipelineBuilder;
+
     class Renderer {
     public:
         explicit Renderer(const std::shared_ptr<Window>& window);
@@ -34,23 +36,16 @@ namespace FlashlightEngine {
         void EndFrame() const;
 
         inline void SetClearColor(Float32 r, Float32 g, Float32 b, Float32 a);
-        void UseShaderCollection(const ShaderCollection& collection) const;
-        void BindVertexBuffers(const std::vector<ID3D11Buffer*>& buffers,
-                               VertexType vertexType,
-                               const std::vector<UInt32>& offsets,
-                               UInt32 startSlot = 0) const;
-        void BindIndexBuffer(ID3D11Buffer* buffer, IndexType indexType) const;
-        void BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
-                                 PipelineBindPoint bindPoint,
-                                 UInt32 startSlot = 0) const;
         void SetPrimitiveTopology(PrimitiveTopology topology) const;
-        void Draw(UInt32 vertexCount, UInt32 firstVertex = 0) const;
-        void DrawIndexed(UInt32 indexCount, UInt32 firstIndex = 0, UInt32 baseVertex = 0) const;
 
-        [[nodiscard]] ShaderCollection CreateShaderCollection(VertexType vertexType,
-                                                              const std::filesystem::path& vertexShaderPath,
-                                                              const std::filesystem::path& pixelShaderPath,
-                                                              std::string_view name) const;
+        void SetPipeline(const Pipeline* pipeline);
+        void SetVertexBuffer(const Buffer& buffer, UInt32 vertexOffset = 0);
+        void SetIndexBuffer(const Buffer& buffer, UInt32 indexOffset = 0, IndexType indexType = IndexType::UInt32);
+        void UpdateSubresource(const Buffer& buffer, const void* data) const;
+
+        void Draw() const;
+        void DrawIndexed() const;
+
         std::unique_ptr<Buffer> CreateBuffer(const void* data,
                                              UInt32 size,
                                              D3D11_USAGE usage,
@@ -69,11 +64,13 @@ namespace FlashlightEngine {
                                                std::string_view name = "Sampler",
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeU = D3D11_TEXTURE_ADDRESS_WRAP,
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeV = D3D11_TEXTURE_ADDRESS_WRAP,
-                                               D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP)
-        const;
+                                               D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP) const;
+
         [[nodiscard]]
         std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path,
                                                std::string_view name = "Texture") const;
+
+        std::unique_ptr<PipelineBuilder> CreatePipelineBuilder() const;
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
@@ -87,9 +84,18 @@ namespace FlashlightEngine {
         ComPtr<ID3D11DepthStencilState> m_DepthStencilState;
         ComPtr<ID3D11RasterizerState> m_RasterizerState;
 
+        const Pipeline* m_ActivePipeline{nullptr};
+        UInt32 m_DrawVertices{0};
+        UInt32 m_DrawIndices{0};
+
         Float32 m_ClearColor[4] = {0.1f, 0.1f, 0.1f, 0.1f};
 
         void CreateDepthStencilState();
+        void CreateRasterizerState();
+
+        void BindSamplerToPipeline(PipelineBindPoint bindPoint, UInt32 slotIndex, ID3D11SamplerState** sampler) const;
+        void BindTextureToPipeline(PipelineBindPoint bindPoint, UInt32 slotIndex, ID3D11ShaderResourceView** texture) const;
+        void BindConstantBufferToPipeline(PipelineBindPoint bindPoint, UInt32 slotIndex, ID3D11Buffer** buffer) const;
     };
 }
 

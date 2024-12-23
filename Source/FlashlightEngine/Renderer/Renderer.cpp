@@ -4,7 +4,10 @@
 
 #include <FlashlightEngine/Renderer/Renderer.hpp>
 
+#include <FlashlightEngine/Renderer/Pipeline.hpp>
+
 #include <FlashlightEngine/Core/Filesystem.hpp>
+
 
 namespace FlashlightEngine {
     Renderer::Renderer(const std::shared_ptr<Window>& window)
@@ -15,25 +18,8 @@ namespace FlashlightEngine {
         // Set the default primitive topology to be a triangle list.
         SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
-        D3D11_RASTERIZER_DESC rasterizerDesc{};
-        rasterizerDesc.CullMode = D3D11_CULL_NONE;
-        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-
-        HRESULT hr = m_Device->GetDevice()->CreateRasterizerState(&rasterizerDesc, m_RasterizerState.GetAddressOf());
-        if (FAILED(hr)) {
-            spdlog::error("[DirectX] Failed to create rasterizer state. Error: {}", HResultToString(hr));
-        }
-
-#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
-        hr = m_RasterizerState->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Rasterizer State") - 1,
-                                               "Rasterizer State");
-
-        if (FAILED(hr)) {
-            spdlog::error("[DirectX] Failed to set name for rasterizer state. Error: {}", HResultToString(hr));
-        }
-#endif
-
         CreateDepthStencilState();
+        CreateRasterizerState();
     }
 
     void Renderer::OnResize(const UInt32 width, const UInt32 height) const {
@@ -45,18 +31,9 @@ namespace FlashlightEngine {
     void Renderer::BeginFrame() const {
         const ComPtr<ID3D11DeviceContext> deviceContext = m_Device->GetDeviceContext();
 
-        D3D11_VIEWPORT viewport{};
-        viewport.TopLeftX = 0;
-        viewport.TopLeftY = 0;
-        viewport.Width = static_cast<Float32>(m_Window->GetWidth());
-        viewport.Height = static_cast<Float32>(m_Window->GetHeight());
-        viewport.MinDepth = 0.0f;
-        viewport.MaxDepth = 1.0f;
-
         deviceContext->ClearRenderTargetView(m_Swapchain->GetRTV().Get(), m_ClearColor);
         deviceContext->ClearDepthStencilView(m_Swapchain->GetDSV().Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-        deviceContext->RSSetViewports(1, &viewport);
         deviceContext->OMSetRenderTargets(1, m_Swapchain->GetRTV().GetAddressOf(), m_Swapchain->GetDSV().Get());
         deviceContext->OMSetDepthStencilState(m_DepthStencilState.Get(), 0);
         deviceContext->RSSetState(m_RasterizerState.Get());
@@ -72,83 +49,100 @@ namespace FlashlightEngine {
         }
     }
 
-    void Renderer::UseShaderCollection(const ShaderCollection& collection) const {
-        collection.ApplyToContext(*m_Device);
-    }
-
-    void Renderer::BindVertexBuffers(const std::vector<ID3D11Buffer*>& buffers,
-                                     const VertexType vertexType,
-                                     const std::vector<UInt32>& offsets,
-                                     const UInt32 startSlot) const {
-        const UInt32 stride = ShaderCollection::GetLayoutByteSize(vertexType);
-        m_Device->GetDeviceContext()->IASetVertexBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data(),
-                                                         &stride, offsets.data());
-    }
-
-    void Renderer::BindIndexBuffer(ID3D11Buffer* buffer, const IndexType indexType) const {
-        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
-        switch (indexType) {
-        case IndexType::UInt16:
-            format = DXGI_FORMAT_R16_UINT;
-            break;
-        case IndexType::UInt32:
-            format = DXGI_FORMAT_R32_UINT;
-            break;
-        }
-
-        m_Device->GetDeviceContext()->IASetIndexBuffer(buffer, format, 0);
-    }
-
-
-    void Renderer::BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
-                                       const PipelineBindPoint bindPoint,
-                                       const UInt32 startSlot) const {
-        const auto deviceContext = m_Device->GetDeviceContext();
-
-        switch (bindPoint) {
-        case PipelineBindPoint::VertexShader:
-            deviceContext->VSSetConstantBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data());
-            break;
-        case PipelineBindPoint::PixelShader:
-            deviceContext->PSSetConstantBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data());
-            break;
-        case PipelineBindPoint::GeometryShader:
-        case PipelineBindPoint::HullShader:
-        case PipelineBindPoint::DomainShader:
-        case PipelineBindPoint::ComputeShader:
-            spdlog::warn("[DirectX] Binding constant buffers to unsupported shader stage.");
-            break;
-        }
-    }
-
-
     void Renderer::SetPrimitiveTopology(const PrimitiveTopology topology) const {
         m_Device->GetDeviceContext()->IASetPrimitiveTopology(
             static_cast<D3D11_PRIMITIVE_TOPOLOGY>(EnumAsInteger(topology))
         );
     }
 
-    void Renderer::Draw(const UInt32 vertexCount, const UInt32 firstVertex) const {
-        m_Device->GetDeviceContext()->Draw(vertexCount, firstVertex);
+    void Renderer::SetPipeline(const Pipeline* pipeline) {
+        m_ActivePipeline = pipeline;
+        m_Device->GetDeviceContext()->IASetInputLayout(pipeline->m_InputLayout.Get());
+        m_Device->GetDeviceContext()->IASetPrimitiveTopology(pipeline->m_Topology);
+        m_Device->GetDeviceContext()->VSSetShader(pipeline->m_VertexShader.Get(), nullptr, 0);
+        m_Device->GetDeviceContext()->PSSetShader(pipeline->m_PixelShader.Get(), nullptr, 0);
+
+        const auto deviceContext = m_Device->GetDeviceContext();
+
+        for (auto [descriptor, resource] : pipeline->m_Resources) {
+            switch (descriptor.Type) {
+            case ResourceType::Sampler:
+                BindSamplerToPipeline(descriptor.Stage, descriptor.SlotIndex,
+                                      reinterpret_cast<ID3D11SamplerState**>(&resource));
+                break;
+            case ResourceType::Texture:
+                BindTextureToPipeline(descriptor.Stage, descriptor.SlotIndex,
+                                      reinterpret_cast<ID3D11ShaderResourceView**>(&resource));
+                break;
+            case ResourceType::Buffer:
+                BindConstantBufferToPipeline(descriptor.Stage, descriptor.SlotIndex,
+                                             reinterpret_cast<ID3D11Buffer**>(&resource));
+                break;
+            }
+        }
+
+        m_Device->GetDeviceContext()->RSSetViewports(1, &pipeline->m_Viewport);
     }
 
-    void Renderer::DrawIndexed(const UInt32 indexCount, const UInt32 firstIndex, const UInt32 baseVertex) const {
-        m_Device->GetDeviceContext()->DrawIndexed(indexCount, firstIndex, baseVertex);
+    void Renderer::SetVertexBuffer(const Buffer& buffer, const UInt32 vertexOffset) {
+        if (!m_ActivePipeline) {
+            spdlog::warn("[DirectX] Trying to set vertex buffer with no pipeline bound.");
+            return;
+        }
+
+        D3D11_BUFFER_DESC desc{};
+        buffer.GetBuffer()->GetDesc(&desc);
+
+        if (!(desc.BindFlags & D3D11_BIND_VERTEX_BUFFER)) {
+            spdlog::warn("[DirectX] Trying to bind a vertex buffer that is not marked as such.");
+            return;
+        }
+
+        m_Device->GetDeviceContext()->IASetVertexBuffers(
+            0,
+            1,
+            buffer.GetBuffer().GetAddressOf(),
+            &m_ActivePipeline->m_VertexSize,
+            &vertexOffset
+        );
+
+        m_DrawVertices = desc.ByteWidth / m_ActivePipeline->m_VertexSize;
     }
 
-    ShaderCollection Renderer::CreateShaderCollection(const VertexType vertexType,
-                                                      const std::filesystem::path& vertexShaderPath,
-                                                      const std::filesystem::path& pixelShaderPath,
-                                                      const std::string_view name) const {
-        ShaderCollectionDescriptor desc{};
-        desc.VertexType = vertexType;
-        desc.VertexShaderPath = Filesystem::GetShadersDirectory() / vertexShaderPath;
-        desc.PixelShaderPath = Filesystem::GetShadersDirectory() / pixelShaderPath;
-        desc.Name = name;
+    void Renderer::SetIndexBuffer(const Buffer& buffer, const UInt32 indexOffset, const IndexType indexType) {
+        D3D11_BUFFER_DESC desc{};
+        buffer.GetBuffer()->GetDesc(&desc);
 
-        ShaderCollection collection = ShaderCollection::CreateShaderCollection(desc, *m_Device);
+        if (!(desc.BindFlags & D3D11_BIND_INDEX_BUFFER)) {
+            spdlog::warn("[DirectX] Trying to bind an index buffer that is not marked as such.");
+            return;
+        }
 
-        return collection;
+        m_Device->GetDeviceContext()->IASetIndexBuffer(
+            buffer.GetBuffer().Get(),
+            indexType == IndexType::UInt32 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT,
+            indexOffset);
+
+        const UInt64 indexSize = indexType == IndexType::UInt32 ? sizeof(UInt32) : sizeof(UInt16);
+        m_DrawIndices = desc.ByteWidth / indexSize;
+    }
+
+    void Renderer::UpdateSubresource(const Buffer& buffer, const void* data) const {
+        m_Device->GetDeviceContext()->UpdateSubresource(
+            buffer.GetBuffer().Get(),
+            0,
+            nullptr,
+            data,
+            0,
+            0);
+    }
+
+    void Renderer::Draw() const {
+        m_Device->GetDeviceContext()->Draw(m_DrawVertices, 0);
+    }
+
+    void Renderer::DrawIndexed() const {
+        m_Device->GetDeviceContext()->DrawIndexed(m_DrawIndices, 0, 0);
     }
 
     std::unique_ptr<Buffer> Renderer::CreateBuffer(const void* data,
@@ -185,13 +179,17 @@ namespace FlashlightEngine {
         return std::make_unique<Texture>(path, name, m_Device);
     }
 
-    void Renderer::CreateDepthStencilState() {
+    std::unique_ptr<PipelineBuilder> Renderer::CreatePipelineBuilder() const {
+        return std::make_unique<PipelineBuilder>(m_Device);
+    }
 
+    void Renderer::CreateDepthStencilState() {
         D3D11_DEPTH_STENCIL_DESC depthStencilDesc{};
         depthStencilDesc.DepthEnable = true;
         depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
         depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-        HRESULT hr = m_Device->GetDevice()->CreateDepthStencilState(&depthStencilDesc, m_DepthStencilState.GetAddressOf());
+        HRESULT hr = m_Device->GetDevice()->CreateDepthStencilState(&depthStencilDesc,
+                                                                    m_DepthStencilState.GetAddressOf());
         if (FAILED(hr)) {
             spdlog::error("[DirectX] Failed to create depth stencil state. Error: {}", HResultToString(hr));
         }
@@ -203,5 +201,85 @@ namespace FlashlightEngine {
             spdlog::error("[DirectX] Failed to set name for depth stencil state. Error: {}", HResultToString(hr));
         }
 #endif
+    }
+
+    void Renderer::CreateRasterizerState() {
+        D3D11_RASTERIZER_DESC rasterizerDesc{};
+        rasterizerDesc.CullMode = D3D11_CULL_NONE;
+        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+
+        HRESULT hr = m_Device->GetDevice()->CreateRasterizerState(&rasterizerDesc, m_RasterizerState.GetAddressOf());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create rasterizer state. Error: {}", HResultToString(hr));
+        }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_RasterizerState->SetPrivateData(WKPDID_D3DDebugObjectName, sizeof("Rasterizer State") - 1,
+                                               "Rasterizer State");
+
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set name for rasterizer state. Error: {}", HResultToString(hr));
+        }
+#endif
+    }
+
+    void Renderer::BindSamplerToPipeline(const PipelineBindPoint bindPoint, const UInt32 slotIndex,
+                                         ID3D11SamplerState** sampler) const {
+        const auto deviceContext = m_Device->GetDeviceContext();
+
+        switch (bindPoint) {
+        case PipelineBindPoint::VertexShader:
+            deviceContext->VSSetSamplers(slotIndex, 1, sampler);
+            break;
+        case PipelineBindPoint::PixelShader:
+            deviceContext->PSSetSamplers(slotIndex, 1, sampler);
+            break;
+        case PipelineBindPoint::ComputeShader:
+        case PipelineBindPoint::DomainShader:
+        case PipelineBindPoint::HullShader:
+        case PipelineBindPoint::GeometryShader:
+            spdlog::warn("[DirectX] Unsupported shader stage when binding sampler.");
+            break;
+        }
+    }
+
+    void Renderer::BindTextureToPipeline(const PipelineBindPoint bindPoint, const UInt32 slotIndex,
+                                         ID3D11ShaderResourceView** texture) const {
+        const auto deviceContext = m_Device->GetDeviceContext();
+
+        switch (bindPoint) {
+        case PipelineBindPoint::VertexShader:
+            deviceContext->VSSetShaderResources(slotIndex, 1, texture);
+            break;
+        case PipelineBindPoint::PixelShader:
+            deviceContext->PSSetShaderResources(slotIndex, 1, texture);
+            break;
+        case PipelineBindPoint::ComputeShader:
+        case PipelineBindPoint::DomainShader:
+        case PipelineBindPoint::HullShader:
+        case PipelineBindPoint::GeometryShader:
+            spdlog::warn("[DirectX] Unsupported shader stage when binding texture.");
+            break;
+        }
+    }
+
+    void Renderer::BindConstantBufferToPipeline(const PipelineBindPoint bindPoint, const UInt32 slotIndex,
+                                                ID3D11Buffer** buffer) const {
+        const auto deviceContext = m_Device->GetDeviceContext();
+
+        switch (bindPoint) {
+        case PipelineBindPoint::VertexShader:
+            deviceContext->VSSetConstantBuffers(slotIndex, 1, buffer);
+            break;
+        case PipelineBindPoint::PixelShader:
+            deviceContext->PSSetConstantBuffers(slotIndex, 1, buffer);
+            break;
+        case PipelineBindPoint::ComputeShader:
+        case PipelineBindPoint::DomainShader:
+        case PipelineBindPoint::HullShader:
+        case PipelineBindPoint::GeometryShader:
+            spdlog::warn("[DirectX] Unsupported shader stage when binding constant buffer.");
+            break;
+        }
     }
 }
