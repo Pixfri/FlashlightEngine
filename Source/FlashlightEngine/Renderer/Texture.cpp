@@ -28,7 +28,8 @@ namespace FlashlightEngine {
 
 #if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
         const std::string srvName = std::string(name) + " SRV";
-        if (const HRESULT hr = m_TextureSrv->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(srvName.size()), srvName.data());
+        if (const HRESULT hr = m_TextureSrv->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                                            static_cast<UInt32>(srvName.size()), srvName.data());
             FAILED(hr)) {
             spdlog::error("[DirectX] Failed to set debug name for texture: {}. Error: {}", name, HResultToString(hr));
         }
@@ -46,9 +47,24 @@ namespace FlashlightEngine {
         other.m_Device = nullptr;
     }
 
-    void Texture::UseTexture(const UInt32 slot) {
+    void Texture::UseTexture(const UInt32 slot, const PipelineBindPoint bindPoint) {
         if (m_TextureSrv != nullptr) {
-            m_Device->GetDeviceContext()->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
+            const auto deviceContext = m_Device->GetDeviceContext();
+
+            switch (bindPoint) {
+            case PipelineBindPoint::VertexShader:
+                deviceContext->VSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
+                break;
+            case PipelineBindPoint::PixelShader:
+                deviceContext->PSSetShaderResources(slot, 1, m_TextureSrv.GetAddressOf());
+                break;
+            case PipelineBindPoint::ComputeShader:
+            case PipelineBindPoint::DomainShader:
+            case PipelineBindPoint::GeometryShader:
+            case PipelineBindPoint::HullShader:
+                spdlog::warn("[DirectX] Unsupported shader stage for texture binding.");
+                break;
+            }
         }
     }
 
@@ -87,6 +103,13 @@ namespace FlashlightEngine {
             scratchImage.Release();
             return;
         }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = texture->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set debug name for texture: {}. Error: {}", name, HResultToString(hr));
+        }
+#endif
 
         ID3D11ShaderResourceView* srv = nullptr;
 

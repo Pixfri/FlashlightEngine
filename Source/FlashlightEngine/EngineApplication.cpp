@@ -61,12 +61,12 @@ namespace FlashlightEngine {
 
         m_Renderer->BindVertexBuffer(*m_TriangleVertexBuffer, VertexType::PositionColorUv);
 
-        m_LinearSampler->UseSampler(0);
+        m_LinearSampler->UseSampler(0, PipelineBindPoint::PixelShader);
 
         if (m_UseFrogTexture) {
-            m_FrogTexture->UseTexture(0);
+            m_FrogTexture->UseTexture(0, PipelineBindPoint::PixelShader);
         } else {
-            m_FallbackTexture->UseTexture(0);
+            m_FallbackTexture->UseTexture(0, PipelineBindPoint::PixelShader);
         }
 
         m_Renderer->Draw(3);

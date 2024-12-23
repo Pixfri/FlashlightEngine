@@ -22,6 +22,17 @@ namespace FlashlightEngine {
         TriangleListAdj = 12,
         TriangleStripAdj = 13
     };
+
+    enum class PipelineBindPoint {
+        VertexShader,
+        PixelShader,
+
+        // Unsupported for now
+        ComputeShader,
+        GeometryShader,
+        HullShader,
+        DomainShader
+    };
 }
 
 #endif // FL_RENDERER_ENUMS_HPP

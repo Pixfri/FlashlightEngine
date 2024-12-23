@@ -11,9 +11,11 @@
 
 #include <FlashlightEngine/Renderer/Device.hpp>
 #include <FlashlightEngine/Renderer/Sampler.hpp>
+#include <FlashlightEngine/Renderer/Enums.hpp>
 
 #include <filesystem>
 #include <memory>
+
 
 namespace FlashlightEngine {
     class Texture {
@@ -28,7 +30,7 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline ComPtr<ID3D11ShaderResourceView> GetTextureSRV() const;
 
-        void UseTexture(UInt32 slot);
+        void UseTexture(UInt32 slot, PipelineBindPoint bindPoint);
 
         Texture& operator=(const Texture&) = delete;
         Texture& operator=(Texture&& other) noexcept;

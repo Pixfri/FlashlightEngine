@@ -44,9 +44,24 @@ namespace FlashlightEngine {
         other.m_Device = nullptr;
     }
 
-    void Sampler::UseSampler(const UInt32 slot) {
+    void Sampler::UseSampler(const UInt32 slot, const PipelineBindPoint bindPoint) {
         if (m_Sampler != nullptr) {
-            m_Device->GetDeviceContext()->PSSetSamplers(slot, 1, m_Sampler.GetAddressOf());
+            const auto deviceContext = m_Device->GetDeviceContext();
+
+            switch (bindPoint) {
+            case PipelineBindPoint::VertexShader:
+                deviceContext->VSSetSamplers(slot, 1, m_Sampler.GetAddressOf());
+                break;
+            case PipelineBindPoint::PixelShader:
+                deviceContext->PSSetSamplers(slot, 1, m_Sampler.GetAddressOf());
+                break;
+            case PipelineBindPoint::ComputeShader:
+            case PipelineBindPoint::DomainShader:
+            case PipelineBindPoint::GeometryShader:
+            case PipelineBindPoint::HullShader:
+                spdlog::warn("[DirectX] Unsupported shader stage for sampler binding.");
+                break;
+            }
         }
     }
 

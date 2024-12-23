@@ -11,6 +11,7 @@
 
 #include <FlashlightEngine/Renderer/DxUtils.hpp>
 #include <FlashlightEngine/Renderer/Device.hpp>
+#include <FlashlightEngine/Renderer/Enums.hpp>
 
 #include <memory>
 #include <string_view>
@@ -32,7 +33,7 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline ComPtr<ID3D11SamplerState> GetSampler();
 
-        void UseSampler(UInt32 slot);
+        void UseSampler(UInt32 slot, PipelineBindPoint bindPoint);
 
         Sampler& operator=(const Sampler&) = delete;
         Sampler& operator=(Sampler&& other) noexcept;
