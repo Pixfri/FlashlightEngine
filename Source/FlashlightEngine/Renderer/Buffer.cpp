@@ -15,18 +15,49 @@ namespace FlashlightEngine {
                    const std::string_view name,
                    const bool enableCpuAccess,
                    const D3D11_CPU_ACCESS_FLAG cpuAccess)
-        : m_Device(device) {
+        : m_Device(device), m_HasCPUAccess(enableCpuAccess) {
         Allocate(data, size, usage, bindFlags, enableCpuAccess, cpuAccess);
 
 #if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
-        if (const HRESULT hr = m_Buffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+        if (const HRESULT hr = m_Buffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()),
+                                                        name.data());
             FAILED(hr)) {
             spdlog::error("[DirectX] Failed to set buffer name. Error: {}", HResultToString(hr));
         }
 #endif
     }
 
-    Buffer::~Buffer() {
+    Buffer::Buffer(const std::shared_ptr<Device>& device,
+                   const UInt32 size,
+                   const D3D11_USAGE usage,
+                   const D3D11_BIND_FLAG bindFlags,
+                   const std::string_view name,
+                   const bool enableCpuAccess,
+                   const D3D11_CPU_ACCESS_FLAG cpuAccess)
+        : m_Device(device), m_HasCPUAccess(enableCpuAccess) {
+        D3D11_BUFFER_DESC bufferInfo{};
+        bufferInfo.ByteWidth = size;
+        bufferInfo.Usage = usage;
+        bufferInfo.BindFlags = bindFlags;
+        bufferInfo.CPUAccessFlags = enableCpuAccess ? cpuAccess : 0;
+
+        HRESULT hr = S_OK;
+        hr = m_Device->GetDevice()->CreateBuffer(&bufferInfo, nullptr, &m_Buffer);
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to create buffer. Error: {}", HResultToString(hr));
+        }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_DX_DEBUG_INTERFACE)
+        hr = m_Buffer->SetPrivateData(WKPDID_D3DDebugObjectName, static_cast<UInt32>(name.size()), name.data());
+        if (FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to set buffer name. Error: {}", HResultToString(hr));
+        }
+#endif
+    }
+
+    Buffer
+
+    ::~Buffer() {
         Free();
     }
 
@@ -67,4 +98,34 @@ namespace FlashlightEngine {
     void Buffer::Free() {
         m_Buffer.Reset();
     }
+
+    void Buffer::Map(D3D11_MAPPED_SUBRESOURCE* mappedResource, const D3D11_MAP mapType, const UInt32 mapFlags) {
+        if (!m_HasCPUAccess) {
+            spdlog::warn("[DirectX] Trying to map buffer without CPU access, aborting.");
+            return;
+        }
+
+        if (const HRESULT hr = m_Device->GetDeviceContext()->Map(m_Buffer.Get(), 0, mapType, mapFlags, mappedResource);
+            FAILED(hr)) {
+            spdlog::error("[DirectX] Failed to map buffer. Error: {}", HResultToString(hr));
+            return;
+        }
+
+        m_Mapped = true;
+    }
+
+    void Buffer::Unmap() const {
+        if (!m_HasCPUAccess) {
+            spdlog::warn("[DirectX] Trying to unmap buffer without CPU access, aborting.");
+            return;
+        }
+
+        if (!m_Mapped) {
+            spdlog::warn("[DirectX] Trying to unmap buffer that is not mapped, aborting.");
+            return;
+        }
+
+        m_Device->GetDeviceContext()->Unmap(m_Buffer.Get(), 0);
+    }
+
 }

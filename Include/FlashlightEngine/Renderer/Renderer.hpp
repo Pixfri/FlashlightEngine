@@ -35,7 +35,13 @@ namespace FlashlightEngine {
 
         inline void SetClearColor(Float32 r, Float32 g, Float32 b, Float32 a);
         void UseShaderCollection(const ShaderCollection& collection) const;
-        void BindVertexBuffer(const Buffer& buffer, VertexType vertexType, UInt32 offset = 0) const;
+        void BindVertexBuffers(const std::vector<ID3D11Buffer*>& buffers,
+                               VertexType vertexType,
+                               const std::vector<UInt32>& offsets,
+                               UInt32 startSlot = 0) const;
+        void BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
+                                 PipelineBindPoint bindPoint,
+                                 UInt32 startSlot = 0) const;
         void SetPrimitiveTopology(PrimitiveTopology topology) const;
         void Draw(UInt32 vertexCount, UInt32 firstVertex = 0) const;
 
@@ -50,12 +56,19 @@ namespace FlashlightEngine {
                                              std::string_view name = "Buffer",
                                              bool hasCpuAccess = false,
                                              D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE) const;
+        std::unique_ptr<Buffer> CreateEmptyBuffer(UInt32 size,
+                                                  D3D11_USAGE usage,
+                                                  D3D11_BIND_FLAG bindFlag,
+                                                  std::string_view name = "Buffer",
+                                                  bool hasCpuAccess = false,
+                                                  D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE) const;
         [[nodiscard]]
         std::shared_ptr<Sampler> CreateSampler(D3D11_FILTER filter,
                                                std::string_view name = "Sampler",
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeU = D3D11_TEXTURE_ADDRESS_WRAP,
                                                D3D11_TEXTURE_ADDRESS_MODE addressModeV = D3D11_TEXTURE_ADDRESS_WRAP,
-                                               D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP) const;
+                                               D3D11_TEXTURE_ADDRESS_MODE addressModeW = D3D11_TEXTURE_ADDRESS_WRAP)
+        const;
         [[nodiscard]]
         std::unique_ptr<Texture> CreateTexture(const std::filesystem::path& path,
                                                std::string_view name = "Texture") const;

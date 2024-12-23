@@ -52,10 +52,36 @@ namespace FlashlightEngine {
         collection.ApplyToContext(*m_Device);
     }
 
-    void Renderer::BindVertexBuffer(const Buffer& buffer, const VertexType vertexType, const UInt32 offset) const {
+    void Renderer::BindVertexBuffers(const std::vector<ID3D11Buffer*>& buffers,
+                                     const VertexType vertexType,
+                                     const std::vector<UInt32>& offsets,
+                                     const UInt32 startSlot) const {
         const UInt32 stride = ShaderCollection::GetLayoutByteSize(vertexType);
-        m_Device->GetDeviceContext()->IASetVertexBuffers(0, 1, buffer.GetBuffer().GetAddressOf(), &stride, &offset);
+        m_Device->GetDeviceContext()->IASetVertexBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data(),
+                                                         &stride, offsets.data());
     }
+
+    void Renderer::BindConstantBuffers(const std::vector<ID3D11Buffer*>& buffers,
+                                       const PipelineBindPoint bindPoint,
+                                       const UInt32 startSlot) const {
+        const auto deviceContext = m_Device->GetDeviceContext();
+
+        switch (bindPoint) {
+        case PipelineBindPoint::VertexShader:
+            deviceContext->VSSetConstantBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data());
+            break;
+        case PipelineBindPoint::PixelShader:
+            deviceContext->PSSetConstantBuffers(startSlot, static_cast<UInt32>(buffers.size()), buffers.data());
+            break;
+        case PipelineBindPoint::GeometryShader:
+        case PipelineBindPoint::HullShader:
+        case PipelineBindPoint::DomainShader:
+        case PipelineBindPoint::ComputeShader:
+            spdlog::warn("[DirectX] Binding constant buffers to unsupported shader stage.");
+            break;
+        }
+    }
+
 
     void Renderer::SetPrimitiveTopology(const PrimitiveTopology topology) const {
         m_Device->GetDeviceContext()->IASetPrimitiveTopology(
@@ -89,10 +115,18 @@ namespace FlashlightEngine {
                                                    const std::string_view name,
                                                    const bool hasCpuAccess,
                                                    const D3D11_CPU_ACCESS_FLAG cpuAccess) const {
-        auto buffer = std::make_unique<Buffer>(m_Device, data, size, usage, bindFlag, name, hasCpuAccess, cpuAccess);
-
-        return buffer;
+        return std::make_unique<Buffer>(m_Device, data, size, usage, bindFlag, name, hasCpuAccess, cpuAccess);
     }
+
+    std::unique_ptr<Buffer> Renderer::CreateEmptyBuffer(const UInt32 size,
+                                                        const D3D11_USAGE usage,
+                                                        const D3D11_BIND_FLAG bindFlag,
+                                                        const std::string_view name,
+                                                        const bool hasCpuAccess,
+                                                        const D3D11_CPU_ACCESS_FLAG cpuAccess) const {
+        return std::make_unique<Buffer>(m_Device, size, usage, bindFlag, name, hasCpuAccess, cpuAccess);
+    }
+
 
     std::shared_ptr<Sampler> Renderer::CreateSampler(const D3D11_FILTER filter,
                                                      const std::string_view name,

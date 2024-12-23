@@ -62,6 +62,13 @@ namespace FlashlightEngine {
                std::string_view name,
                bool enableCpuAccess = false,
                D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE);
+        Buffer(const std::shared_ptr<Device>& device,
+               UInt32 size,
+               D3D11_USAGE usage,
+               D3D11_BIND_FLAG bindFlags,
+               std::string_view name,
+               bool enableCpuAccess = false,
+               D3D11_CPU_ACCESS_FLAG cpuAccess = D3D11_CPU_ACCESS_WRITE);
         ~Buffer();
 
         Buffer(const Buffer&) = delete;
@@ -77,6 +84,9 @@ namespace FlashlightEngine {
                       D3D11_CPU_ACCESS_FLAG cpuAccess);
         void Free();
 
+        void Map(D3D11_MAPPED_SUBRESOURCE* mappedResource, D3D11_MAP mapType, UInt32 mapFlags = 0);
+        void Unmap() const;
+
         Buffer& operator=(const Buffer&) = delete;
         Buffer& operator=(Buffer&& other) noexcept;
 
@@ -84,6 +94,9 @@ namespace FlashlightEngine {
         ComPtr<ID3D11Buffer> m_Buffer{nullptr};
 
         std::shared_ptr<Device> m_Device{nullptr};
+
+        bool m_HasCPUAccess{false};
+        bool m_Mapped{false};
     };
 }
 

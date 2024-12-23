@@ -13,6 +13,16 @@
 
 #include <FlashlightEngine/Renderer/Shader.hpp>
 
+#include <DirectXMath.h>
+
+struct PerFrameConstantBuffer {
+    DirectX::XMFLOAT4X4 ViewProjectionMatrix;
+};
+
+struct PerObjectConstantBuffer {
+    DirectX::XMFLOAT4X4 ModelMatrix;
+};
+
 namespace FlashlightEngine {
     class EngineApplication final : public Application {
     public:
@@ -30,6 +40,12 @@ namespace FlashlightEngine {
         std::shared_ptr<Sampler> m_LinearSampler;
         std::unique_ptr<Texture> m_FrogTexture;
         std::unique_ptr<Texture> m_FallbackTexture;
+
+        std::unique_ptr<Buffer> m_PerFrameConstantBuffer = nullptr;
+        std::unique_ptr<Buffer> m_PerObjectConstantBuffer = nullptr;
+
+        PerFrameConstantBuffer m_PerFrameConstantBufferData{};
+        PerObjectConstantBuffer m_PerObjectConstantBufferData{};
 
         bool m_UseFrogTexture = true;
 
