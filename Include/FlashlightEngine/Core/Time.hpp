@@ -22,7 +22,7 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline Float64 AsMilliseconds() const;
 
-        explicit operator double() const;
+        operator double() const;
 
         DeltaTime& operator=(const DeltaTime&) = default;
         DeltaTime& operator=(DeltaTime&&) = default;
