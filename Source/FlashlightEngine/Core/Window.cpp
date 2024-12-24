@@ -57,6 +57,13 @@ namespace FlashlightEngine {
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
 
+        // Put the window in the center of the screen.
+        const auto monitor = glfwGetPrimaryMonitor();
+        const auto videoMode = glfwGetVideoMode(monitor);
+        const Int32 windowLeft = videoMode->width / 2 - properties.Width / 2;
+        const Int32 windowTop = videoMode->height / 2 - properties.Height / 2;
+        glfwSetWindowPos(m_Window, windowLeft, windowTop);
+
         // --------------------------------------------- Glfw callbacks ---------------------------------------------
 
         glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
