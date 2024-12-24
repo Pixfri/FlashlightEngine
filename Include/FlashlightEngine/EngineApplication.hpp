@@ -11,8 +11,6 @@
 
 #include <FlashlightEngine/Application.hpp>
 
-#include <FlashlightEngine/Renderer/Shader.hpp>
-
 namespace FlashlightEngine {
     class EngineApplication final : public Application {
     public:
@@ -24,15 +22,6 @@ namespace FlashlightEngine {
         void OnRender() override;
 
     private:
-        ShaderCollection m_MainShaderCollection;
-        std::unique_ptr<Buffer> m_TriangleVertexBuffer;
-
-        std::shared_ptr<Sampler> m_LinearSampler;
-        std::unique_ptr<Texture> m_FrogTexture;
-        std::unique_ptr<Texture> m_FallbackTexture;
-
-        bool m_UseFrogTexture = true;
-
         void OnKeyPressed(const KeyDownEvent& event);
     };
 }

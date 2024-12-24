@@ -27,11 +27,8 @@ namespace FlashlightEngine {
         m_Window->SetEventCallback([this](Event& e) {
             EventDispatcher dispatcher(e);
             dispatcher.Dispatch<WindowCloseEvent>(FL_BIND_EVENT(Application::OnWindowClose));
-            dispatcher.Dispatch<WindowResizeEvent>(FL_BIND_EVENT(Application::OnWindowResize));
             OnEvent(e);
         });
-
-        m_Renderer = std::make_shared<Renderer>(m_Window);
 
         m_Running = true;
     }
@@ -56,11 +53,6 @@ namespace FlashlightEngine {
 
     bool Application::OnWindowClose([[maybe_unused]] WindowCloseEvent& e) {
         m_Running = false;
-        return true;
-    }
-
-    bool Application::OnWindowResize(const WindowResizeEvent& e) const {
-        m_Renderer->OnResize(e.GetWidth(), e.GetHeight());
         return true;
     }
 }

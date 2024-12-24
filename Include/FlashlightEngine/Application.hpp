@@ -11,8 +11,6 @@
 
 #include <FlashlightEngine/Core/Window.hpp>
 
-#include <FlashlightEngine/Renderer/Renderer.hpp>
-
 #include <expected>
 #include <memory>
 #include <string>
@@ -28,7 +26,6 @@ namespace FlashlightEngine {
         virtual void OnUpdate() = 0;
         virtual void OnRender() = 0;
         bool OnWindowClose(WindowCloseEvent& e);
-        bool OnWindowResize(const WindowResizeEvent& e) const;
 
         inline static Application& Get();
         [[nodiscard]] inline Window& GetWindow() const;
@@ -38,8 +35,6 @@ namespace FlashlightEngine {
         std::shared_ptr<Window> m_Window;
 
     protected:
-        std::shared_ptr<Renderer> m_Renderer;
-
     private:
         bool m_Running = false;
         static Application* m_Instance;
