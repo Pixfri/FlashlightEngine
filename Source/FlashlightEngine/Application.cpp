@@ -11,7 +11,7 @@
 namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
-    Application::Application(const UInt32 width, const UInt32 height, const std::string& title) {
+    Application::Application(const UInt32 width, const UInt32 height, const std::string& title, const bool useWarpAdapter) {
         FlAssert(!m_Instance, "Application already exists!");
         m_Instance = this;
 
@@ -29,6 +29,8 @@ namespace FlashlightEngine {
             dispatcher.Dispatch<WindowCloseEvent>(FL_BIND_EVENT(Application::OnWindowClose));
             OnEvent(e);
         });
+
+        m_Renderer = std::make_unique<Renderer>(m_Window, useWarpAdapter);
 
         m_Running = true;
     }

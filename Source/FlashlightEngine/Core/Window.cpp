@@ -12,6 +12,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include <DirectXMath.h>
+
 namespace FlashlightEngine {
     bool Window::m_IsGlfwInit = false;
 
@@ -67,6 +69,7 @@ namespace FlashlightEngine {
             const auto data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
             data->Width = static_cast<UInt32>(width);
             data->Height = static_cast<UInt32>(height);
+            data->ShouldInvalidateSwapchain = true;
 
             WindowResizeEvent event(width, height);
             data->EventCallback(event);
@@ -172,5 +175,41 @@ namespace FlashlightEngine {
     void Window::SetVSync(const bool enabled) {
         glfwSwapInterval(enabled);
         m_Data.VSync = enabled;
+        m_Data.ShouldInvalidateSwapchain = true;
+    }
+
+    void Window::SetFullscreen(const bool state) {
+        m_Data.ShouldUpdateFullscreenMode = true;
+        m_Data.Fullscreen = state;
+    }
+
+    static VideoMode WinInitPos(GLFWwindow* win) {
+        Int32 x, y;
+        glfwGetWindowPos(win, &x, &y);
+        return {x, y};
+    }
+
+    void Window::UpdateFullscreenMode() {
+        if (m_Data.ShouldUpdateFullscreenMode) {
+            static auto winPos = WinInitPos(m_Window);
+            static auto winSize = GetVideoMode();
+
+            if (m_Data.Fullscreen) {
+                const auto monitor = glfwGetPrimaryMonitor();
+                const auto mode = glfwGetVideoMode(monitor);
+
+                // Store windows pos data to restore later
+                glfwGetWindowPos(m_Window, &winPos.X, &winPos.Y);
+                glfwGetWindowSize(m_Window, &winSize.W, &winSize.H);
+
+                glfwSetWindowMonitor(m_Window, monitor, 0, 0, mode->width, mode->height,
+                                     IsVSync() ? mode->refreshRate : 0);
+            } else {
+                glfwSetWindowMonitor(m_Window, nullptr, winPos.X, winPos.Y, winSize.W, winSize.H, 0);
+            }
+
+            m_Data.ShouldInvalidateSwapchain = true;
+            m_Data.ShouldUpdateFullscreenMode = false;
+        }
     }
 }

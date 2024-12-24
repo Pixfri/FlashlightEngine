@@ -15,10 +15,12 @@
 #include <memory>
 #include <string>
 
+#include <FlashlightEngine/Renderer/Renderer.hpp>
+
 namespace FlashlightEngine {
     class Application {
     public:
-        Application(UInt32 width, UInt32 height, const std::string& title);
+        Application(UInt32 width, UInt32 height, const std::string& title, bool useWarpAdapter);
         virtual ~Application();
 
         void Run();
@@ -35,6 +37,7 @@ namespace FlashlightEngine {
         std::shared_ptr<Window> m_Window;
 
     protected:
+        std::unique_ptr<Renderer> m_Renderer;
     private:
         bool m_Running = false;
         static Application* m_Instance;

@@ -35,13 +35,12 @@ set_allowedplats("windows", "mingw")
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
 add_requires(
-  "freeimage", 
-  "stb", 
-  "glfw", 
-  "spdlog", 
-  "directxmath", 
-  "directx-headers", 
-  "directxshadercompiler"
+  "freeimage",
+  "stb",
+  "glfw",
+  "spdlog",
+  "directxmath",
+  "directx-headers"
 )
 
 if is_plat("windows") then
@@ -79,6 +78,8 @@ rule("cp-d3d12")
     if is_mode("debug") or has_config("force_d3d12_debug") then
       os.cp("Deps/PIX/bin/WinPixEventRuntime.dll", "./bin/$(plat)_$(arch)_$(mode)/")
     end
+
+    os.cp("Deps/D3DCompiler/d3dcompiler_47.dll", "./bin/$(plat)_$(arch)_$(mode)/")
   end)
 
 target(ProjectName)
@@ -95,13 +96,12 @@ target(ProjectName)
   end
 
   add_packages(
-    "freeimage", 
-    "stb", 
-    "glfw", 
-    "spdlog", 
-    "directxmath", 
-    "directx-headers", 
-    "directxshadercompiler"
+    "freeimage",
+    "stb",
+    "glfw",
+    "spdlog",
+    "directxmath",
+    "directx-headers"
   )
 
   if has_config("profiler") then
@@ -114,7 +114,8 @@ target(ProjectName)
     "kernel32",
     "dxgi", 
     "dxguid", 
-    "WinMM"
+    "WinMM",
+    "d3dcompiler"
   )
 
   if is_mode("debug") or has_config("force_d3d12_debug") then

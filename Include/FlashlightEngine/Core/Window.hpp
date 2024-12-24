@@ -31,6 +31,16 @@ namespace FlashlightEngine {
         }
     };
 
+    struct VideoMode {
+        union {
+            Int32 X, W;
+        };
+
+        union {
+            Int32 Y, H;
+        };
+    };
+
     class Window {
     public:
         explicit Window(const WindowProperties& properties);
@@ -40,6 +50,7 @@ namespace FlashlightEngine {
         [[nodiscard]] inline UInt32 GetWidth() const;
         [[nodiscard]] inline UInt32 GetHeight() const;
         inline void GetSize(UInt32& width, UInt32& height) const;
+        inline VideoMode GetVideoMode() const;
 
         inline void SetEventCallback(const std::function<void(Event&)>& callback);
 
@@ -47,6 +58,13 @@ namespace FlashlightEngine {
 
         void SetVSync(bool enabled);
         [[nodiscard]] inline bool IsVSync() const;
+
+        inline void SwapchainInvalidated();
+        [[nodiscard]] inline bool ShouldInvalidateSwapchain() const;
+
+        void SetFullscreen(bool state);
+        void UpdateFullscreenMode();
+        [[nodiscard]] inline bool IsFullscreen() const;
 
         [[nodiscard]] inline GLFWwindow* GetNativeWindow() const;
 
@@ -63,6 +81,9 @@ namespace FlashlightEngine {
             std::string Title;
             bool VSync = false;
             bool HasFocus = true;
+            bool Fullscreen = false;
+            bool ShouldInvalidateSwapchain = false;
+            bool ShouldUpdateFullscreenMode = false;
 
             std::function<void(Event&)> EventCallback;
         } m_Data;

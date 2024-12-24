@@ -4,12 +4,18 @@
 
 #pragma once
 
+#include <FlashlightEngine/Core/CoreUtils.hpp>
+
 #include <comdef.h>
 
 namespace FlashlightEngine {
-    inline const char* HResultToString(const HRESULT hr) {
+    inline std::string HResultToString(const HRESULT hr) {
         const _com_error error(hr);
 
-        return error.ErrorMessage();
+        return {error.ErrorMessage()};
+    }
+
+    inline void ThrowIfFailed(const HRESULT hr) {
+        FlAssert(SUCCEEDED(hr), "[DirectX] Call failed. Detail: " + HResultToString(hr));
     }
 }

@@ -18,6 +18,10 @@ namespace FlashlightEngine {
         height = m_Data.Height;
     }
 
+    inline VideoMode Window::GetVideoMode() const {
+        return {static_cast<Int32>(m_Data.Width), static_cast<Int32>(m_Data.Height)};
+    }
+
     inline void Window::SetEventCallback(const std::function<void(Event&)>& callback) {
         m_Data.EventCallback = callback;
     }
@@ -28,6 +32,18 @@ namespace FlashlightEngine {
 
     inline bool Window::IsVSync() const {
         return m_Data.VSync;
+    }
+
+    inline void Window::SwapchainInvalidated() {
+        m_Data.ShouldInvalidateSwapchain = false;
+    }
+
+    inline bool Window::ShouldInvalidateSwapchain() const {
+        return m_Data.ShouldInvalidateSwapchain;
+    }
+
+    inline bool Window::IsFullscreen() const {
+        return m_Data.Fullscreen;
     }
 
     inline GLFWwindow* Window::GetNativeWindow() const {

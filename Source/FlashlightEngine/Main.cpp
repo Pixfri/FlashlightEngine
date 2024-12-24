@@ -18,6 +18,7 @@
 
 FlashlightEngine::UInt32 g_Width = 1280;
 FlashlightEngine::UInt32 g_Height = 720;
+auto g_UseWarpAdapter = false;
 
 void SetupLogger();
 void ParseArguments(int argc, char* argv[]);
@@ -27,7 +28,7 @@ int main(const int argc, char* argv[]) {
         SetupLogger();
         ParseArguments(argc, argv);
 
-        FlashlightEngine::EngineApplication app(g_Width, g_Height);
+        FlashlightEngine::EngineApplication app(g_Width, g_Height, g_UseWarpAdapter);
 
         app.Run();
     } catch (const std::invalid_argument& e) {
@@ -62,7 +63,7 @@ void ParseArguments(const int argc, char* argv[]) {
     // If argc (argument count) is one, it means the program was run without arguments
     // (argv[0] = the name of the program, hence argc = 1 when there are no arguments).
     if (argc > 1) {
-        for (FlashlightEngine::Int32 i = 1; i < argc - 1; i++) {
+        for (FlashlightEngine::Int32 i = 1; i < argc; i++) {
             if (std::strcmp(argv[i], "--width") == 0 || std::strcmp(argv[i], "-w") == 0) {
                 char* end;
                 const long value = std::strtol(argv[i + 1], &end, 10);
@@ -83,6 +84,10 @@ void ParseArguments(const int argc, char* argv[]) {
                 }
 
                 g_Height = static_cast<FlashlightEngine::UInt32>(value);
+            }
+
+            if (std::strcmp(argv[i], "--warp") == 0 || std::strcmp(argv[i], "-warp") == 0) {
+                g_UseWarpAdapter = true;
             }
         }
     }
