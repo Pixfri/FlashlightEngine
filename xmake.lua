@@ -8,6 +8,7 @@ add_rules("mode.debug", "mode.release")
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
 option("force_d3d12_debug", {description = "Force D3D12 debug utilities to be enabled.", default = false})
+option("use_preview_d3d12_sdk", {description = "Use the preview D3D12 SDK.", default = false})
 option("profiler", {description = "Enable the Tracy profiler.", default = false})
 
 add_includedirs("Include")
@@ -53,6 +54,10 @@ if has_config("force_d3d12_debug") then
   add_defines("FL_FORCE_D3D12_DEBUG")
 end
 
+if has_config("use_preview_d3d12_sdk") then
+  add_defines("FL_USE_PREVIEW_D3D12_SDK")
+end
+
 if has_config("profiler") then
     add_defines("FL_PROFILER_ENABLED")
   add_requires("tracy")
@@ -65,7 +70,12 @@ rule("cp-resources")
 
 rule("cp-d3d12")
   after_build(function(target) 
-    os.cp("Deps/D3D12", "./bin/$(plat)_$(arch)_$(mode)/")
+    if (has_config("use_preview_d3d12_sdk")) then
+      os.cp("Deps/D3D12-Preview", "./bin/$(plat)_$(arch)_$(mode)/")
+    else
+      os.cp("Deps/D3D12", "./bin/$(plat)_$(arch)_$(mode)/")
+    end
+
     if is_mode("debug") or has_config("force_d3d12_debug") then
       os.cp("Deps/PIX/bin/WinPixEventRuntime.dll", "./bin/$(plat)_$(arch)_$(mode)/")
     end
