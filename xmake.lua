@@ -40,7 +40,11 @@ add_requires(
   "glfw",
   "spdlog",
   "directxmath",
-  "directx-headers"
+  "directx-headers",
+  "directxtk12",
+  "directxshadercompiler",
+  "directxtex",
+  "d3d12-memory-allocator"
 )
 
 if is_plat("windows") then
@@ -78,8 +82,6 @@ rule("cp-d3d12")
     if is_mode("debug") or has_config("force_d3d12_debug") then
       os.cp("Deps/PIX/bin/WinPixEventRuntime.dll", "./bin/$(plat)_$(arch)_$(mode)/")
     end
-
-    os.cp("Deps/D3DCompiler/d3dcompiler_47.dll", "./bin/$(plat)_$(arch)_$(mode)/")
   end)
 
 target(ProjectName)
@@ -101,7 +103,11 @@ target(ProjectName)
     "glfw",
     "spdlog",
     "directxmath",
-    "directx-headers"
+    "directx-headers",
+    "directxtk12",
+    "directxshadercompiler",
+    "directxtex",
+    "d3d12-memory-allocator"
   )
 
   if has_config("profiler") then
@@ -114,8 +120,7 @@ target(ProjectName)
     "kernel32",
     "dxgi", 
     "dxguid", 
-    "WinMM",
-    "d3dcompiler"
+    "WinMM"
   )
 
   if is_mode("debug") or has_config("force_d3d12_debug") then

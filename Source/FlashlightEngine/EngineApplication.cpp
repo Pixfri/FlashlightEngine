@@ -10,7 +10,9 @@
 
 namespace FlashlightEngine {
     EngineApplication::EngineApplication(const UInt32 width, const UInt32 height, const bool useWarpAdapter)
-        : Application(width, height, "Flashlight Engine <Direct3D 12>", useWarpAdapter) {
+        : Application(width, height,
+                      useWarpAdapter ? "Flashlight Engine <Direct3D 12> with WARP" : "Flashlight Engine <Direct3D 12>",
+                      useWarpAdapter) {
     }
 
     EngineApplication::~EngineApplication() = default;
