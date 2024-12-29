@@ -6,16 +6,12 @@
 
 #include <FlashlightEngine/Core/Time.hpp>
 
-#include <FreeImage.h>
-
 namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
-    Application::Application(const UInt32 width, const UInt32 height, const std::string& title, const bool useWarpAdapter) {
+    Application::Application(const UInt32 width, const UInt32 height, const std::string& title) {
         FlAssert(!m_Instance, "Application already exists!");
         m_Instance = this;
-
-        FreeImage_Initialise();
 
         WindowProperties properties{};
         properties.Width = width;
@@ -30,7 +26,7 @@ namespace FlashlightEngine {
             OnEvent(e);
         });
 
-        m_Renderer = std::make_unique<Renderer>(m_Window, useWarpAdapter);
+        m_Renderer = std::make_unique<Renderer>(m_Window);
 
         m_Running = true;
     }

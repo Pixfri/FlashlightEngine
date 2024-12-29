@@ -14,7 +14,7 @@
 namespace FlashlightEngine {
     class EngineApplication final : public Application {
     public:
-        EngineApplication(UInt32 width, UInt32 height, bool useWarpAdapter);
+        EngineApplication(UInt32 width, UInt32 height);
         ~EngineApplication() override;
 
         void OnEvent(Event& event) override;

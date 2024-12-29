@@ -8,6 +8,7 @@
 #include <FlashlightEngine/Core/Filesystem.hpp>
 
 #include <spdlog/spdlog.h>
+#include <spdlog/cfg/argv.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -18,17 +19,16 @@
 
 FlashlightEngine::UInt32 g_Width = 1280;
 FlashlightEngine::UInt32 g_Height = 720;
-auto g_UseWarpAdapter = false;
 
-void SetupLogger();
+void SetupLogger(int argc, char* argv[]);
 void ParseArguments(int argc, char* argv[]);
 
 int main(const int argc, char* argv[]) {
     try {
-        SetupLogger();
+        SetupLogger(argc, argv);
         ParseArguments(argc, argv);
 
-        FlashlightEngine::EngineApplication app(g_Width, g_Height, g_UseWarpAdapter);
+        FlashlightEngine::EngineApplication app(g_Width, g_Height);
 
         app.Run();
     } catch (const std::invalid_argument& e) {
@@ -45,7 +45,7 @@ int main(const int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
-void SetupLogger() {
+void SetupLogger(const int argc, char* argv[]) {
     const auto logFile = FlashlightEngine::Filesystem::GetLogsDirectory() / "FlashlightEngine.log";
 
     std::vector<spdlog::sink_ptr> sinks;
@@ -57,6 +57,8 @@ void SetupLogger() {
     spdlog::set_default_logger(logger);
 
     spdlog::set_pattern("[%H:%M:%S %z] [%^---%L---%$] [thread %t] %v");
+
+    spdlog::cfg::load_argv_levels(argc, argv);
 }
 
 void ParseArguments(const int argc, char* argv[]) {
@@ -84,10 +86,6 @@ void ParseArguments(const int argc, char* argv[]) {
                 }
 
                 g_Height = static_cast<FlashlightEngine::UInt32>(value);
-            }
-
-            if (std::strcmp(argv[i], "--warp") == 0 || std::strcmp(argv[i], "-warp") == 0) {
-                g_UseWarpAdapter = true;
             }
         }
     }

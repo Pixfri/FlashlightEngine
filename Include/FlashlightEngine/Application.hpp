@@ -20,7 +20,7 @@
 namespace FlashlightEngine {
     class Application {
     public:
-        Application(UInt32 width, UInt32 height, const std::string& title, bool useWarpAdapter);
+        Application(UInt32 width, UInt32 height, const std::string& title);
         virtual ~Application();
 
         void Run();
