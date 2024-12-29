@@ -5,6 +5,7 @@
 #include <FlashlightEngine/Types.hpp>
 
 #include <FlashlightEngine/EngineApplication.hpp>
+#include <FlashlightEngine/Core/CommandLineParser.hpp>
 #include <FlashlightEngine/Core/Filesystem.hpp>
 
 #include <spdlog/spdlog.h>
@@ -13,16 +14,14 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <stdexcept>
 
 FlashlightEngine::UInt32 g_Width = 1280;
 FlashlightEngine::UInt32 g_Height = 720;
 
-// TODO: Make configurable through command line options.
 #if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
-auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Errors;
+auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Warnings;
 #else
 auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::None;
 #endif
@@ -73,33 +72,42 @@ void SetupLogger(const int argc, char* argv[]) {
 }
 
 void ParseArguments(const int argc, char* argv[]) {
-    // If argc (argument count) is one, it means the program was run without arguments
-    // (argv[0] = the name of the program, hence argc = 1 when there are no arguments).
-    if (argc > 1) {
-        for (FlashlightEngine::Int32 i = 1; i < argc; i++) {
-            if (std::strcmp(argv[i], "--width") == 0 || std::strcmp(argv[i], "-w") == 0) {
-                char* end;
-                const long value = std::strtol(argv[i + 1], &end, 10);
+    const FlashlightEngine::CommandLineParser cmdLineParser(argc, argv);
+    if (cmdLineParser.CmdOptionExists("--width")) {
+        if (const std::string width = cmdLineParser.GetCmdOption("--width");
+            width.empty()) {
+            spdlog::warn("No width value provided after --width. Keeping the default value of {} instead.",
+                         g_Width);
+        } else {
+            g_Width = static_cast<FlashlightEngine::UInt32>(std::stoi(width));
+        }
+    }
 
-                if (*end != '\0' || value <= 0) {
-                    spdlog::error("Invalid width value provided after --width. Keeping the default value of {} instead.", g_Width);
-                    return;
-                }
+    if (cmdLineParser.CmdOptionExists("--height")) {
+        if (const std::string height = cmdLineParser.GetCmdOption("--height");
+            height.empty()) {
+            spdlog::warn("No height value provided after --height. Keeping the default value of {} instead.",
+                         g_Height);
+        } else {
+            g_Height = static_cast<FlashlightEngine::UInt32>(std::stoi(height));
+        }
+    }
 
-                g_Width = static_cast<FlashlightEngine::UInt32>(value);
-            }
-
-            if (std::strcmp(argv[i], "--height") == 0 || std::strcmp(argv[i], "-h") == 0) {
-                char* end;
-                const long value = std::strtol(argv[i + 1], &end, 10);
-
-                if (*end != '\0' || value <= 0) {
-                    spdlog::error("Invalid height value provided after --height. Keeping the default value of {} instead.", g_Height);
-                    return;
-                }
-
-                g_Height = static_cast<FlashlightEngine::UInt32>(value);
-            }
+    if (cmdLineParser.CmdOptionExists("--vvl_level")) {
+        if (const std::string level = cmdLineParser.GetCmdOption("--vvl_level");
+            level.empty()) {
+            spdlog::warn("No validation level provided after --vvl_level. Using the default level.");
+        } else {
+            if (level == "verbose")
+                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Verbose;
+            else if (level == "infos")
+                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Infos;
+            else if (level == "warnings")
+                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Warnings;
+            else if (level == "errors")
+                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Errors;
+            else
+                spdlog::warn("Invalid level provided after --vvl_level. Using the default value.");
         }
     }
 }
