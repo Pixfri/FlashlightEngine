@@ -9,8 +9,9 @@
 #include <FlashlightEngine/Core/Filesystem.hpp>
 
 namespace FlashlightEngine {
-    EngineApplication::EngineApplication(const UInt32 width, const UInt32 height)
-        : Application(width, height, "Flashlight Engine <Vulkan>") {
+    EngineApplication::EngineApplication(const UInt32 width, const UInt32 height,
+                                         const RendererValidationLevel validationLevel)
+        : Application(width, height, "Flashlight Engine <Vulkan>", validationLevel) {
     }
 
     EngineApplication::~EngineApplication() = default;

@@ -55,6 +55,10 @@ if has_config("force_vk_debug") then
   add_defines("FL_FORCE_VULKAN_DEBUG")
 end
 
+if is_mode("debug") or has_config("force_vk_debug") then
+  add_requires("debugbreak")
+end
+
 rule("cp-resources")
   after_build(function(target)
     os.cp("Resources", "./bin/$(plat)_$(arch)_$(mode)/")
@@ -80,6 +84,10 @@ target(ProjectName)
 
   if has_config("profiler") then
     add_packages("tracy")
+  end
+
+  if is_mode("debug") or has_config("force_vk_debug") then
+    add_packages("debugbreak")
   end
 
   add_defines("VK_NO_PROTOTYPES", "GLFW_INCLUDE_VULKAN")

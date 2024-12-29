@@ -20,6 +20,13 @@
 FlashlightEngine::UInt32 g_Width = 1280;
 FlashlightEngine::UInt32 g_Height = 720;
 
+// TODO: Make configurable through command line options.
+#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
+auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Errors;
+#else
+auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::None;
+#endif
+
 void SetupLogger(int argc, char* argv[]);
 void ParseArguments(int argc, char* argv[]);
 
@@ -28,7 +35,7 @@ int main(const int argc, char* argv[]) {
         SetupLogger(argc, argv);
         ParseArguments(argc, argv);
 
-        FlashlightEngine::EngineApplication app(g_Width, g_Height);
+        FlashlightEngine::EngineApplication app(g_Width, g_Height, g_ValidationLevel);
 
         app.Run();
     } catch (const std::runtime_error& e) {

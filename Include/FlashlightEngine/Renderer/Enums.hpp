@@ -9,16 +9,17 @@
 
 #include <FlashlightEngine/Types.hpp>
 
+#include <FlashlightEngine/Core/CoreUtils.hpp>
+
 namespace FlashlightEngine {
     enum class RendererValidationLevel {
         None = 0,
 
-        Verbose,
-        Info,
-        Warning,
-        Error
+        Errors = 1,
+        Warnings = 2,
+        Infos = 3,
+        Verbose = 4
     };
-
 }
 
 #endif // FL_RENDERER_ENUMS_HPP

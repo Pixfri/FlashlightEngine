@@ -17,7 +17,7 @@
 namespace FlashlightEngine {
     class Renderer {
     public:
-        Renderer(const std::shared_ptr<Window>& window);
+        Renderer(const std::shared_ptr<Window>& window, RendererValidationLevel validationLevel);
         ~Renderer();
 
         Renderer(const Renderer&) = delete;

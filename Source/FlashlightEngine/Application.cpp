@@ -9,7 +9,8 @@
 namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
-    Application::Application(const UInt32 width, const UInt32 height, const std::string& title) {
+    Application::Application(const UInt32 width, const UInt32 height, const std::string& title,
+                             const RendererValidationLevel validationLevel) {
         FlAssert(!m_Instance, "Application already exists!");
         m_Instance = this;
 
@@ -26,7 +27,7 @@ namespace FlashlightEngine {
             OnEvent(e);
         });
 
-        m_Renderer = std::make_unique<Renderer>(m_Window);
+        m_Renderer = std::make_unique<Renderer>(m_Window, validationLevel);
 
         m_Running = true;
     }
