@@ -8,6 +8,7 @@ add_rules("mode.debug", "mode.release")
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
 option("profiler", {description = "Enable the Tracy profiler.", default = false})
+option("force_vk_debug", {description = "Force Vulkan debug utilities to be enabled.", default = false})
 
 add_includedirs("Include")
 
@@ -46,8 +47,12 @@ if is_plat("windows") then
 end
 
 if has_config("profiler") then
-    add_defines("FL_PROFILER_ENABLED")
+  add_defines("FL_PROFILER_ENABLED")
   add_requires("tracy")
+end
+
+if has_config("force_vk_debug") then
+  add_defines("FL_FORCE_VULKAN_DEBUG")
 end
 
 rule("cp-resources")
@@ -76,6 +81,8 @@ target(ProjectName)
   if has_config("profiler") then
     add_packages("tracy")
   end
+
+  add_defines("VK_NO_PROTOTYPES", "GLFW_INCLUDE_VULKAN")
 
   add_rpathdirs("$ORIGIN")
 

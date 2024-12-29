@@ -7,6 +7,7 @@
 namespace FlashlightEngine {
     Renderer::Renderer(const std::shared_ptr<Window>& window)
         : m_Window(window) {
+        m_Instance = std::make_unique<Instance>(RendererValidationLevel::None);
     }
 
     Renderer::~Renderer() {

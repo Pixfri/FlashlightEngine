@@ -10,6 +10,7 @@
 #include <FlashlightEngine/Types.hpp>
 
 #include <FlashlightEngine/Renderer/Enums.hpp>
+#include <FlashlightEngine/Renderer/Wrapper/Instance.hpp>
 
 #include <FlashlightEngine/Core/Window.hpp>
 
@@ -27,6 +28,8 @@ namespace FlashlightEngine {
 
     private:
         std::shared_ptr<Window> m_Window;
+
+        std::shared_ptr<Instance> m_Instance;
     };
 }
 

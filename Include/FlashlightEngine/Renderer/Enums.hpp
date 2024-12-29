@@ -10,6 +10,15 @@
 #include <FlashlightEngine/Types.hpp>
 
 namespace FlashlightEngine {
+    enum class RendererValidationLevel {
+        None = 0,
+
+        Verbose,
+        Info,
+        Warning,
+        Error
+    };
+
 }
 
 #endif // FL_RENDERER_ENUMS_HPP
