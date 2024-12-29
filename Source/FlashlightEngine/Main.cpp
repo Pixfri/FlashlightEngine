@@ -31,14 +31,11 @@ int main(const int argc, char* argv[]) {
         FlashlightEngine::EngineApplication app(g_Width, g_Height);
 
         app.Run();
-    } catch (const std::invalid_argument& e) {
-        std::cerr << "Invalid argument: " << e.what() << std::endl;
-        return EXIT_FAILURE;
     } catch (const std::runtime_error& e) {
         std::cerr << "An error occurred while running the application: " << e.what() << std::endl;
         return EXIT_FAILURE;
-    } catch (const spdlog::spdlog_ex& ex) {
-        std::cerr << "Failed to initialize logger: " << ex.what() << std::endl;
+    } catch (const spdlog::spdlog_ex& e) {
+        std::cerr << "Failed to initialize logger: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -56,6 +53,13 @@ void SetupLogger(const int argc, char* argv[]) {
     spdlog::register_logger(logger);
     spdlog::set_default_logger(logger);
 
+    // Set the default mode depending on the build mode.
+#if defined(FL_DEBUG)
+    spdlog::set_level(spdlog::level::debug);
+#else
+    spdlog::set_level(spdlog::level::info);
+#endif
+
     spdlog::set_pattern("[%H:%M:%S %z] [%^---%L---%$] [thread %t] %v");
 
     spdlog::cfg::load_argv_levels(argc, argv);
@@ -71,7 +75,8 @@ void ParseArguments(const int argc, char* argv[]) {
                 const long value = std::strtol(argv[i + 1], &end, 10);
 
                 if (*end != '\0' || value <= 0) {
-                    throw std::invalid_argument("Invalid width value provided after --width.");
+                    spdlog::error("Invalid width value provided after --width. Keeping the default value of {} instead.", g_Width);
+                    return;
                 }
 
                 g_Width = static_cast<FlashlightEngine::UInt32>(value);
@@ -82,7 +87,8 @@ void ParseArguments(const int argc, char* argv[]) {
                 const long value = std::strtol(argv[i + 1], &end, 10);
 
                 if (*end != '\0' || value <= 0) {
-                    throw std::invalid_argument("Invalid height value provided after --height.");
+                    spdlog::error("Invalid height value provided after --height. Keeping the default value of {} instead.", g_Height);
+                    return;
                 }
 
                 g_Height = static_cast<FlashlightEngine::UInt32>(value);
