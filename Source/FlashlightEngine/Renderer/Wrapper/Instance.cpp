@@ -75,6 +75,8 @@ namespace FlashlightEngine {
                 debug_break();
             } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
                 spdlog::warn(ss.str());
+            } else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
+                spdlog::info(ss.str());
             } else {
                 spdlog::debug(ss.str());
             }
