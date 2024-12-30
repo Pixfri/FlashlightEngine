@@ -20,7 +20,27 @@ namespace FlashlightEngine {
         return FindQueueFamilies(m_PhysicalDevice);
     }
 
+    inline VkDevice Device::GetDevice() const {
+        return m_Device;
+    }
+
+    inline VkQueue Device::GetGraphicsQueue() const {
+        return m_GraphicsQueue;
+    }
+
+    inline VkQueue Device::GetPresentQueue() const {
+        return m_PresentQueue;
+    }
+
+    inline VkQueue Device::GetTransferQueue() const {
+        return m_TransferQueue;
+    }
+
+    inline VkQueue Device::GetComputeQueue() const {
+        return m_ComputeQueue;
+    }
+
     inline bool Device::IsValid() const {
-        return m_PhysicalDevice != VK_NULL_HANDLE;
+        return m_PhysicalDevice != VK_NULL_HANDLE && m_Device != VK_NULL_HANDLE;
     }
 }

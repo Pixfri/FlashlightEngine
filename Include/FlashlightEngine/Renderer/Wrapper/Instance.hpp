@@ -27,6 +27,9 @@ namespace FlashlightEngine {
         [[nodiscard]] inline VkInstance GetInstance() const;
         [[nodiscard]] inline bool IsValid() const;
         [[nodiscard]] inline VkResult GetLastResult() const;
+#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
+        [[nodiscard]] inline std::vector<const char*> GetEnabledValidationLayers() const;
+#endif
 
         Instance& operator=(const Instance&) = delete;
         Instance& operator=(Instance&& other) noexcept;

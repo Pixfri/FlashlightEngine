@@ -16,4 +16,10 @@ namespace FlashlightEngine {
     inline VkResult Instance::GetLastResult() const {
         return m_LastResult;
     }
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
+    inline std::vector<const char*> Instance::GetEnabledValidationLayers() const {
+        return m_ValidationLayers;
+    }
+#endif
 }

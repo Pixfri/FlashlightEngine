@@ -30,7 +30,7 @@ namespace FlashlightEngine {
 
     class Device {
     public:
-        Device(const Instance& instance, const std::shared_ptr<Surface>& surface);
+        Device(const Instance& instance, const std::shared_ptr<Surface>& surface, bool enableValidationLayers);
         ~Device();
 
         Device(const Device&) = delete;
@@ -39,6 +39,11 @@ namespace FlashlightEngine {
         [[nodiscard]] inline VkPhysicalDevice GetPhysicalDevice() const;
         [[nodiscard]] inline VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
         [[nodiscard]] inline QueueFamilyIndices GetQueueFamilies() const;
+        [[nodiscard]] inline VkDevice GetDevice() const;
+        [[nodiscard]] inline VkQueue GetGraphicsQueue() const;
+        [[nodiscard]] inline VkQueue GetPresentQueue() const;
+        [[nodiscard]] inline VkQueue GetTransferQueue() const;
+        [[nodiscard]] inline VkQueue GetComputeQueue() const;
         [[nodiscard]] inline bool IsValid() const;
 
         Device& operator=(const Device&) = delete;
@@ -47,13 +52,26 @@ namespace FlashlightEngine {
     private:
         VkPhysicalDevice m_PhysicalDevice{VK_NULL_HANDLE};
 
+        VkDevice m_Device{VK_NULL_HANDLE};
+        VkQueue m_GraphicsQueue{VK_NULL_HANDLE};
+        VkQueue m_PresentQueue{VK_NULL_HANDLE};
+        VkQueue m_TransferQueue{VK_NULL_HANDLE};
+        VkQueue m_ComputeQueue{VK_NULL_HANDLE};
+
         std::shared_ptr<Surface> m_Surface{nullptr};
 
         void PickPhysicalDevice(const Instance& instance);
+        void CreateDevice(const Instance& instance, bool enableValidationLayers);
 
         // Utility functions
         bool IsDeviceSuitable(VkPhysicalDevice device) const;
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+        bool CheckExtensionsSupport(VkPhysicalDevice device) const;
+
+        // Constants
+        std::vector<const char*> m_RequiredExtensions = {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+        };
     };
 }
 

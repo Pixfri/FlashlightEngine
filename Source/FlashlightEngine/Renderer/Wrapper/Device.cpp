@@ -6,17 +6,29 @@
 
 #include <FlashlightEngine/Renderer/Wrapper/VulkanUtils.hpp>
 
+#include <set>
+#include <unordered_set>
+
 namespace FlashlightEngine {
-    Device::Device(const Instance& instance, const std::shared_ptr<Surface>& surface)
+    Device::Device(const Instance& instance, const std::shared_ptr<Surface>& surface, const bool enableValidationLayers)
         : m_Surface(surface) {
         PickPhysicalDevice(instance);
+        CreateDevice(instance, enableValidationLayers);
     }
 
-    Device::~Device() = default;
+    Device::~Device() {
+        if (IsValid()) {
+            vkDestroyDevice(m_Device, nullptr);
+            spdlog::debug("[Vulkan] Device destroyed.");
+        }
+    }
 
     Device::Device(Device&& other) noexcept {
         m_PhysicalDevice = other.m_PhysicalDevice;
         other.m_PhysicalDevice = VK_NULL_HANDLE;
+
+        m_Device = other.m_Device;
+        other.m_Device = VK_NULL_HANDLE;
 
         m_Surface = other.m_Surface;
         other.m_Surface = nullptr;
@@ -25,6 +37,9 @@ namespace FlashlightEngine {
     Device& Device::operator=(Device&& other) noexcept {
         m_PhysicalDevice = other.m_PhysicalDevice;
         other.m_PhysicalDevice = VK_NULL_HANDLE;
+
+        m_Device = other.m_Device;
+        other.m_Device = VK_NULL_HANDLE;
 
         m_Surface = other.m_Surface;
         other.m_Surface = nullptr;
@@ -59,16 +74,16 @@ namespace FlashlightEngine {
         VkPhysicalDeviceProperties properties = GetPhysicalDeviceProperties();
 
         spdlog::info("[Vulkan] Chosen physical device:");
-        spdlog::info("\t- Name: {}", properties.deviceName);
-        spdlog::info("\t- Type: {}", VkPhysicalDeviceTypeToString(properties.deviceType));
-        spdlog::info("\t- Vulkan API version: {}.{}.{}",
+        spdlog::info("[Vulkan] \t- Name: {}", properties.deviceName);
+        spdlog::info("[Vulkan] \t- Type: {}", VkPhysicalDeviceTypeToString(properties.deviceType));
+        spdlog::info("[Vulkan] \t- Vulkan API version: {}.{}.{}",
                      VK_API_VERSION_MAJOR(properties.apiVersion),
                      VK_API_VERSION_MINOR(properties.apiVersion),
                      VK_API_VERSION_PATCH(properties.apiVersion));
 
         // NVIDIA
         if (properties.vendorID == 4318) {
-            spdlog::info("\t- Driver version: {}.{}.{}.{}",
+            spdlog::info("[Vulkan] \t- Driver version: {}.{}.{}.{}",
                          (properties.driverVersion >> 22) & 0x3FF,
                          (properties.driverVersion >> 14) & 0x0FF,
                          (properties.driverVersion >> 6) & 0x0FF,
@@ -77,18 +92,97 @@ namespace FlashlightEngine {
 #if defined(_WIN32) || defined(_WIN64)
         // Intel, only differs on Windows.
         else if (properties.vendorID == 0x8086) {
-            spdlog::info("\t- Driver version: {}.{}",
+            spdlog::info("[Vulkan] \t- Driver version: {}.{}",
                          (properties.driverVersion >> 14),
                          (properties.driverVersion) & 0x3FFF);
         }
 #endif
         // Use Vulkan macros for other vendors
         else {
-            spdlog::info("\t- Driver version: {}.{}.{}",
+            spdlog::info("[Vulkan] \t- Driver version: {}.{}.{}",
                          VK_API_VERSION_MAJOR(properties.driverVersion),
                          VK_API_VERSION_MINOR(properties.driverVersion),
                          VK_API_VERSION_PATCH(properties.driverVersion));
         }
+    }
+
+    void Device::CreateDevice(const Instance& instance, const bool enableValidationLayers) {
+        const QueueFamilyIndices indices = GetQueueFamilies();
+
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<UInt32> uniqueQueueFamilies = {
+            indices.GraphicsFamily,
+            indices.PresentFamily,
+            indices.TransferFamily,
+            indices.ComputeFamily
+        };
+
+        constexpr Float32 queuePriority = 1.0f;
+        for (const UInt32 queueFamily : uniqueQueueFamilies) {
+            VkDeviceQueueCreateInfo queueCreateInfo{};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = queueFamily;
+            queueCreateInfo.queueCount = 1;
+            queueCreateInfo.pQueuePriorities = &queuePriority;
+            queueCreateInfos.push_back(queueCreateInfo);
+        }
+
+        VkDeviceCreateInfo deviceInfo{};
+        deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+        deviceInfo.queueCreateInfoCount = static_cast<UInt32>(queueCreateInfos.size());
+        deviceInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+        // Build the pNext chain to enable Vulkan 1.2 and 1.3 core features.
+        VkPhysicalDeviceFeatures2 features2{};
+        features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+
+        VkPhysicalDeviceVulkan12Features features12{};
+        features12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+        features12.descriptorIndexing = true;
+        features12.bufferDeviceAddress = true;
+
+        VkPhysicalDeviceVulkan13Features features13{};
+        features13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+        features13.dynamicRendering = true;
+        features13.synchronization2 = true;
+
+        features2.pNext = &features12;
+        features12.pNext = &features13;
+
+        deviceInfo.pNext = &features2;
+
+        deviceInfo.enabledExtensionCount = static_cast<UInt32>(m_RequiredExtensions.size());
+        deviceInfo.ppEnabledExtensionNames = m_RequiredExtensions.data();
+
+#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
+        // Previous Vulkan implementations made the difference between device and instance specific layers, but this
+        // is no longer the case. It is still a good practice to specify them.
+        auto enabledValidationLayers = instance.GetEnabledValidationLayers();
+        if (enableValidationLayers) {
+            deviceInfo.enabledLayerCount = static_cast<UInt32>(enabledValidationLayers.size());
+            deviceInfo.ppEnabledLayerNames = enabledValidationLayers.data();
+        } else {
+            deviceInfo.enabledLayerCount = 0;
+            deviceInfo.ppEnabledLayerNames = nullptr;
+        }
+#else
+        deviceInfo.enabledLayerCount = 0;
+        deviceInfo.ppEnabledLayerNames = nullptr;
+#endif
+
+        if (const VkResult result = vkCreateDevice(m_PhysicalDevice, &deviceInfo, nullptr, &m_Device);
+            result != VK_SUCCESS) {
+            spdlog::error("[Vulkan] Failed to create device. Error: {}", VkResultToString(result));
+            throw std::runtime_error("[Vulkan] Failed to create device.");
+        }
+
+        vkGetDeviceQueue(m_Device, indices.GraphicsFamily, 0, &m_GraphicsQueue);
+        vkGetDeviceQueue(m_Device, indices.PresentFamily, 0, &m_PresentQueue);
+        vkGetDeviceQueue(m_Device, indices.TransferFamily, 0, &m_TransferQueue);
+        vkGetDeviceQueue(m_Device, indices.ComputeFamily, 0, &m_ComputeQueue);
+
+        spdlog::debug("[Vulkan] Successfully created device.");
     }
 
     bool Device::IsDeviceSuitable(VkPhysicalDevice device) const {
@@ -114,7 +208,8 @@ namespace FlashlightEngine {
             features12.descriptorIndexing &&
             features13.dynamicRendering &&
             features13.synchronization2 &&
-            indices.IsComplete();
+            indices.IsComplete() &&
+            CheckExtensionsSupport(device);
     }
 
     QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device) const {
@@ -134,8 +229,8 @@ namespace FlashlightEngine {
             }
 
             if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) {
-                indices.PresentFamily = i;
-                indices.PresentFamilyFound = true;
+                indices.TransferFamily = i;
+                indices.TransferFamilyFound = true;
             }
 
             if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
@@ -159,5 +254,42 @@ namespace FlashlightEngine {
         }
 
         return indices;
+    }
+
+    bool Device::CheckExtensionsSupport(const VkPhysicalDevice device) const {
+        UInt32 availableExtensionCount = 0;
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtensionCount, nullptr);
+
+        std::vector<VkExtensionProperties> availableExtensions(availableExtensionCount);
+        vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtensionCount, availableExtensions.data());
+
+        VkPhysicalDeviceProperties properties;
+        vkGetPhysicalDeviceProperties(device, &properties);
+
+        spdlog::debug("[Vulkan] Available device extensions for {}:", properties.deviceName);
+
+        std::unordered_set<std::string> available;
+        for (const auto& [extensionName, specVersion] : availableExtensions) {
+            spdlog::debug("[Vulkan] \t- {}", extensionName);
+            available.insert(extensionName);
+        }
+
+        spdlog::debug("[Vulkan] Required device extensions:");
+        if (!std::ranges::all_of(m_RequiredExtensions, [&available, &properties](const char* required) {
+            spdlog::debug("[Vulkan] \t- {}", required);
+            if (!available.contains(required)) {
+                spdlog::warn("[Vulkan] Required device extension \"{}\" is not supported by {}.",
+                             required,
+                             properties.deviceName);
+                return false;
+            }
+
+
+            return true;
+        })) {
+            return false;
+        }
+
+        return true;
     }
 }
