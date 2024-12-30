@@ -13,6 +13,10 @@ namespace FlashlightEngine {
         return m_SwapchainImages;
     }
 
+    inline VkImage Swapchain::GetImage(const UInt32 index) const {
+        return m_SwapchainImages[index];
+    }
+
     inline UInt64 Swapchain::GetImageCount() const {
         return m_SwapchainImages.size();
     }

@@ -18,6 +18,17 @@
 #include <FlashlightEngine/Core/Window.hpp>
 
 namespace FlashlightEngine {
+    struct FrameData {
+        VkSemaphore SwapchainSemaphore;
+        VkSemaphore RenderSemaphore;
+        VkFence RenderFence;
+
+        VkCommandPool CommandPool;
+        VkCommandBuffer MainCommandBuffer;
+    };
+
+    constexpr UInt32 g_FramesInFlight = 2;
+
     class Renderer {
     public:
         Renderer(const std::shared_ptr<Window>& window, RendererValidationLevel validationLevel);
@@ -26,7 +37,12 @@ namespace FlashlightEngine {
         Renderer(const Renderer&) = delete;
         Renderer(Renderer&&) noexcept = default;
 
-        void UpdateSwapchain();
+        VkCommandBuffer BeginFrame();
+        bool EndFrame();
+        void BeginRendering(VkClearColorValue clearColor);
+        void EndRendering();
+
+        static void TransitionImage(VkCommandBuffer cmd, VkImage image, VkImageLayout srcLayout, VkImageLayout dstLayout);
 
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
@@ -38,6 +54,26 @@ namespace FlashlightEngine {
         std::shared_ptr<Surface> m_Surface;
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Swapchain> m_Swapchain;
+
+        FrameData m_Frames[g_FramesInFlight];
+        UInt64 m_FrameNumber{0};
+        UInt32 m_CurrentImageIndex;
+
+        enum class PassState {
+            None,
+
+            RenderPass,
+            ComputePass
+        };
+
+        PassState m_PassState;
+
+        inline FrameData& GetCurrentFrame();
+
+        void InitCommandBuffers();
+        void InitSyncObjects();
+
+        void RecreateSwapchain();
     };
 }
 

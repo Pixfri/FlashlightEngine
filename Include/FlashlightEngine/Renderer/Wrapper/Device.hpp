@@ -52,6 +52,7 @@ namespace FlashlightEngine {
         [[nodiscard]] inline VkQueue GetTransferQueue() const;
         [[nodiscard]] inline VkQueue GetComputeQueue() const;
         [[nodiscard]] inline bool IsValid() const;
+        inline void WaitIdle() const;
 
         Device& operator=(const Device&) = delete;
         Device& operator=(Device&& other) noexcept;

@@ -22,10 +22,23 @@ namespace FlashlightEngine {
     }
 
     void EngineApplication::OnUpdate() {
-        m_Renderer->UpdateSwapchain();
     }
 
     void EngineApplication::OnRender() {
+        if (const auto commandBuffer = m_Renderer->BeginFrame()) {
+            FlUnused(commandBuffer);
+
+
+
+            constexpr VkClearColorValue clearValue = {{1.0f, 0.0f, 0.0f, 1.0f}};
+
+            m_Renderer->BeginRendering(clearValue);
+
+            m_Renderer->EndRendering();
+
+            if (!m_Renderer->EndFrame()) {
+            }
+        }
     }
 
     void EngineApplication::OnKeyPressed(const KeyDownEvent& event) {
@@ -36,6 +49,10 @@ namespace FlashlightEngine {
                 break;
             case Key::F:
                 GetWindow().SetFullscreen(!GetWindow().IsFullscreen());
+                break;
+            case Key::V:
+                GetWindow().SetVSync(!GetWindow().IsVSync());
+                break;
             default:
                 break;
             }

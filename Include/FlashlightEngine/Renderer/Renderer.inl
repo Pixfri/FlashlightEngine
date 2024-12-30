@@ -5,5 +5,7 @@
 #pragma once
 
 namespace FlashlightEngine {
-    
+    inline FrameData& Renderer::GetCurrentFrame() {
+        return m_Frames[m_FrameNumber % g_FramesInFlight];
+    }
 }

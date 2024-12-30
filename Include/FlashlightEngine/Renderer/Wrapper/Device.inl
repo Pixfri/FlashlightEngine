@@ -47,4 +47,8 @@ namespace FlashlightEngine {
     inline bool Device::IsValid() const {
         return m_PhysicalDevice != VK_NULL_HANDLE && m_Device != VK_NULL_HANDLE;
     }
+
+    inline void Device::WaitIdle() const {
+        vkDeviceWaitIdle(m_Device);
+    }
 }

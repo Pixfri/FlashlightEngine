@@ -12,6 +12,7 @@
 #include <FlashlightEngine/Renderer/Wrapper/Device.hpp>
 
 namespace FlashlightEngine {
+    struct FrameData;
     class Swapchain {
     public:
         struct SwapchainInfo {
@@ -29,12 +30,16 @@ namespace FlashlightEngine {
 
         [[nodiscard]] inline VkSwapchainKHR GetSwapchain() const;
         [[nodiscard]] inline std::vector<VkImage> GetImages() const;
+        [[nodiscard]] inline VkImage GetImage(UInt32 index) const;
         [[nodiscard]] inline UInt64 GetImageCount() const;
         [[nodiscard]] inline std::vector<VkImageView> GetImageViews() const;
         [[nodiscard]] inline VkImageView GetImageView(UInt32 index) const;
         [[nodiscard]] inline VkFormat GetImageFormat() const;
         [[nodiscard]] inline VkExtent2D GetExtent() const;
         [[nodiscard]] inline bool IsValid() const;
+
+        [[nodiscard]] VkResult AcquireNextImage(const FrameData& frameData, UInt32& swapchainImageIndex) const;
+        [[nodiscard]] VkResult Present(const FrameData& frameData, UInt32 imageIndex) const;
 
         Swapchain& operator=(const Swapchain&) = delete;
         Swapchain& operator=(Swapchain&& other) noexcept;

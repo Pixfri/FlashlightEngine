@@ -4,6 +4,7 @@
 
 #include <FlashlightEngine/Renderer/Wrapper/Swapchain.hpp>
 
+#include <FlashlightEngine/Renderer/Renderer.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/VulkanUtils.hpp>
 
 namespace FlashlightEngine {
@@ -13,8 +14,6 @@ namespace FlashlightEngine {
         CreateSwapchainImageViews();
 
         m_SwapchainInfo.OldSwapchain = nullptr;
-
-        spdlog::debug("Swapchain created with dimensions ({},{})", info.Extent.width, info.Extent.height);
     }
 
     Swapchain::~Swapchain() {
@@ -38,6 +37,15 @@ namespace FlashlightEngine {
         std::swap(m_Device, other.m_Device);
     }
 
+    VkResult Swapchain::AcquireNextImage(const FrameData& frameData, UInt32& swapchainImageIndex) const {
+        return vkAcquireNextImageKHR(m_Device->GetDevice(),
+                                     m_Swapchain,
+                                     1000000000,
+                                     frameData.SwapchainSemaphore,
+                                     nullptr,
+                                     &swapchainImageIndex);
+    }
+
     Swapchain& Swapchain::operator=(Swapchain&& other) noexcept {
         m_Swapchain = other.m_Swapchain;
         other.m_Swapchain = VK_NULL_HANDLE;
@@ -49,6 +57,20 @@ namespace FlashlightEngine {
         std::swap(m_Device, other.m_Device);
 
         return *this;
+    }
+
+    VkResult Swapchain::Present(const FrameData& frameData, const UInt32 imageIndex) const {
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.pSwapchains = &m_Swapchain;
+        presentInfo.swapchainCount = 1;
+
+        presentInfo.pWaitSemaphores = &frameData.RenderSemaphore;
+        presentInfo.waitSemaphoreCount = 1;
+
+        presentInfo.pImageIndices = &imageIndex;
+
+        return vkQueuePresentKHR(m_Device->GetPresentQueue(), &presentInfo);
     }
 
     void Swapchain::CreateSwapchain() {
@@ -73,7 +95,7 @@ namespace FlashlightEngine {
         swapchainInfo.imageColorSpace = colorSpace;
         swapchainInfo.imageExtent = extent;
         swapchainInfo.imageArrayLayers = 1;
-        swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
         const QueueFamilyIndices indices = m_Device->GetQueueFamilies();
         const UInt32 queueFamilyIndices[] = {indices.GraphicsFamily, indices.PresentFamily};
