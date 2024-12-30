@@ -7,9 +7,12 @@
 namespace FlashlightEngine {
     Renderer::Renderer(const std::shared_ptr<Window>& window, const RendererValidationLevel validationLevel)
         : m_Window(window) {
-        m_Instance = std::make_unique<Instance>(validationLevel);
+        window->SetTitle(window->GetTitle() + " <Vulkan 1.3>");
+
+        m_Instance = std::make_shared<Instance>(validationLevel);
+
+        m_Surface = std::make_shared<Surface>(m_Instance, *window);
     }
 
-    Renderer::~Renderer() {
-    }
+    Renderer::~Renderer() = default;
 }

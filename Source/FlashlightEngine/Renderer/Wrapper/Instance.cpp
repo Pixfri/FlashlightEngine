@@ -96,15 +96,17 @@ namespace FlashlightEngine {
     }
 
     Instance::~Instance() {
+        if (IsValid()) {
 #if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
-        vkDestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
+            vkDestroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
 
-        spdlog::debug("[Vulkan] Debug messenger destroyed.");
+            spdlog::debug("[Vulkan] Debug messenger destroyed.");
 #endif
 
-        vkDestroyInstance(m_Instance, nullptr);
+            vkDestroyInstance(m_Instance, nullptr);
 
-        spdlog::debug("[Vulkan] Instance destroyed.");
+            spdlog::debug("[Vulkan] Instance destroyed.");
+        }
     }
 
     Instance::Instance(Instance&& other) noexcept {
@@ -238,6 +240,7 @@ namespace FlashlightEngine {
             available.insert(extensionName);
         }
 
+        spdlog::debug("[Vulkan] Required instance extensions:");
         if (!std::ranges::all_of(requiredExtensions, [&available](const char* required) {
             spdlog::debug("[Vulkan] \t- {}", required);
             if (!available.contains(required)) {

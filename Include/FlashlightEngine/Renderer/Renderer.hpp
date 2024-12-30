@@ -11,6 +11,7 @@
 
 #include <FlashlightEngine/Renderer/Enums.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/Instance.hpp>
+#include <FlashlightEngine/Renderer/Wrapper/Surface.hpp>
 
 #include <FlashlightEngine/Core/Window.hpp>
 
@@ -21,15 +22,16 @@ namespace FlashlightEngine {
         ~Renderer();
 
         Renderer(const Renderer&) = delete;
-        Renderer(Renderer&&) = delete;
+        Renderer(Renderer&&) noexcept = default;
 
         Renderer& operator=(const Renderer&) = delete;
-        Renderer& operator=(Renderer&&) = delete;
+        Renderer& operator=(Renderer&&) noexcept = default;
 
     private:
         std::shared_ptr<Window> m_Window;
 
         std::shared_ptr<Instance> m_Instance;
+        std::shared_ptr<Surface> m_Surface;
     };
 }
 
