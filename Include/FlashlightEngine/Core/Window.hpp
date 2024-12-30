@@ -50,7 +50,10 @@ namespace FlashlightEngine {
         [[nodiscard]] inline UInt32 GetWidth() const;
         [[nodiscard]] inline UInt32 GetHeight() const;
         inline void GetSize(UInt32& width, UInt32& height) const;
-        inline VideoMode GetVideoMode() const;
+        [[nodiscard]] inline VideoMode GetVideoMode() const;
+        [[nodiscard]] inline std::string GetTitle() const;
+
+        inline void SetTitle(const std::string& title);
 
         inline void SetEventCallback(const std::function<void(Event&)>& callback);
 
