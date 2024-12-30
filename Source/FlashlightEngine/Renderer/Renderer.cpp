@@ -12,6 +12,8 @@ namespace FlashlightEngine {
         m_Instance = std::make_shared<Instance>(validationLevel);
 
         m_Surface = std::make_shared<Surface>(m_Instance, *window);
+
+        m_Device = std::make_shared<Device>(*m_Instance, *m_Surface);
     }
 
     Renderer::~Renderer() = default;

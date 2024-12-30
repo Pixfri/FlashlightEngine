@@ -104,4 +104,21 @@ namespace FlashlightEngine {
             return "Unhandled VkResult";
         }
     }
+
+    inline std::string VkPhysicalDeviceTypeToString(const VkPhysicalDeviceType type) {
+        switch (type) {
+        case VK_PHYSICAL_DEVICE_TYPE_OTHER:
+            return "Other";
+        case VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU:
+            return "Integrated GPU";
+        case VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU:
+            return "Discrete (dedicated) GPU";
+        case VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU:
+            return "Virtual GPU";
+        case VK_PHYSICAL_DEVICE_TYPE_CPU:
+            return "CPU (The GPU is closely linked to the CPU)";
+        default:
+            return "Unhandled VkPhysicalDeviceType";
+        }
+    }
 }

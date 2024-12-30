@@ -12,6 +12,7 @@
 #include <FlashlightEngine/Renderer/Enums.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/Instance.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/Surface.hpp>
+#include <FlashlightEngine/Renderer/Wrapper/Device.hpp>
 
 #include <FlashlightEngine/Core/Window.hpp>
 
@@ -32,6 +33,7 @@ namespace FlashlightEngine {
 
         std::shared_ptr<Instance> m_Instance;
         std::shared_ptr<Surface> m_Surface;
+        std::shared_ptr<Device> m_Device;
     };
 }
 

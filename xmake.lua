@@ -55,9 +55,7 @@ if has_config("force_vk_debug") then
   add_defines("FL_FORCE_VULKAN_DEBUG")
 end
 
-if is_mode("debug") or has_config("force_vk_debug") then
-  add_requires("debugbreak")
-end
+add_requires("debugbreak")
 
 rule("cp-resources")
   after_build(function(target)
@@ -86,9 +84,7 @@ target(ProjectName)
     add_packages("tracy")
   end
 
-  if is_mode("debug") or has_config("force_vk_debug") then
-    add_packages("debugbreak")
-  end
+  add_packages("debugbreak")
 
   add_defines("VK_NO_PROTOTYPES", "GLFW_INCLUDE_VULKAN")
 

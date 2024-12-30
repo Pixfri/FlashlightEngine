@@ -170,16 +170,19 @@ namespace FlashlightEngine {
         instanceInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
 #if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
-        FlAssert(CheckValidationLayerSupport(), "[Vulkan] Validation layers aren't available.");
+        if (validationLevel != RendererValidationLevel::None) {
+            FlAssert(CheckValidationLayerSupport(), "[Vulkan] Validation layers aren't available.");
 
-        instanceInfo.enabledLayerCount = static_cast<UInt32>(m_ValidationLayers.size());
-        instanceInfo.ppEnabledLayerNames = m_ValidationLayers.data();
+            instanceInfo.enabledLayerCount = static_cast<UInt32>(m_ValidationLayers.size());
+            instanceInfo.ppEnabledLayerNames = m_ValidationLayers.data();
 
-        VkDebugUtilsMessengerCreateInfoEXT debugInfo{};
-        PopulateDebugMessengerCreateInfo(debugInfo, validationLevel);
+            VkDebugUtilsMessengerCreateInfoEXT debugInfo{};
+            PopulateDebugMessengerCreateInfo(debugInfo, validationLevel);
 
-        instanceInfo.pNext = &debugInfo;
+            instanceInfo.pNext = &debugInfo;
+        }
 #else
+        FlUnused(validationLevel);
         instanceInfo.enabledLayerCount = 0;
         instanceInfo.ppEnabledLayerNames = nullptr;
 #endif
@@ -256,6 +259,7 @@ namespace FlashlightEngine {
         return true;
     }
 
+#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
     bool Instance::CheckValidationLayerSupport() const {
         UInt32 layerCount = 0;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -317,4 +321,5 @@ namespace FlashlightEngine {
 
         createInfo.pfnUserCallback = DebugMessengerCallback;
     }
+#endif
 }

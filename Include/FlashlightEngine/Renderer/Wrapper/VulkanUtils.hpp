@@ -15,6 +15,8 @@
 
 namespace FlashlightEngine {
     inline std::string VkResultToString(VkResult result);
+
+    inline std::string VkPhysicalDeviceTypeToString(VkPhysicalDeviceType type);
 }
 
 #include <FlashlightEngine/Renderer/Wrapper/VulkanUtils.inl>
