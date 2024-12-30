@@ -238,14 +238,16 @@ namespace FlashlightEngine {
             available.insert(extensionName);
         }
 
-        spdlog::debug("[Vulkan] Required instance extensions:");
-        for (const auto& required : requiredExtensions) {
+        if (!std::ranges::all_of(requiredExtensions, [&available](const char* required) {
             spdlog::debug("[Vulkan] \t- {}", required);
             if (!available.contains(required)) {
-                spdlog::error("Required extensions \"{}\" is missing.", required);
-
+                spdlog::error("[Vulkan] Required instance extension \"{}\" is missing.", required);
                 return false;
             }
+
+            return true;
+        })) {
+            return false;
         }
 
         return true;
