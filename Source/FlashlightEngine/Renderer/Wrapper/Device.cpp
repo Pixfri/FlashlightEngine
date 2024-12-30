@@ -202,14 +202,22 @@ namespace FlashlightEngine {
         vkGetPhysicalDeviceProperties(device, &properties);
         vkGetPhysicalDeviceFeatures2(device, &features);
 
-        QueueFamilyIndices indices = FindQueueFamilies(device);
-
-        return features12.bufferDeviceAddress &&
+        bool featuresSupported = features12.bufferDeviceAddress &&
             features12.descriptorIndexing &&
             features13.dynamicRendering &&
-            features13.synchronization2 &&
-            indices.IsComplete() &&
-            CheckExtensionsSupport(device);
+            features13.synchronization2;
+
+        QueueFamilyIndices indices = FindQueueFamilies(device);
+
+        bool extensionsSupported = CheckExtensionsSupport(device);
+
+        bool swapchainAdequate = false;
+        if (extensionsSupported) {
+            SwapchainSupportDetails swapchainSupport = QuerySwapchainSupport(device);
+            swapchainAdequate = !swapchainSupport.Formats.empty() && !swapchainSupport.PresentModes.empty();
+        }
+
+        return featuresSupported && indices.IsComplete() && extensionsSupported && swapchainAdequate;
     }
 
     QueueFamilyIndices Device::FindQueueFamilies(VkPhysicalDevice device) const {
@@ -256,7 +264,34 @@ namespace FlashlightEngine {
         return indices;
     }
 
-    bool Device::CheckExtensionsSupport(const VkPhysicalDevice device) const {
+    SwapchainSupportDetails Device::QuerySwapchainSupport(VkPhysicalDevice device) const {
+        SwapchainSupportDetails details{};
+
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_Surface->GetSurface(), &details.Capabilities);
+
+        UInt32 formatCount = 0;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface->GetSurface(), &formatCount, nullptr);
+
+        if (formatCount != 0) {
+            details.Formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_Surface->GetSurface(), &formatCount,
+                                                 details.Formats.data());
+        }
+
+        UInt32 presentModeCount = 0;
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface->GetSurface(), &presentModeCount,
+                                                  nullptr);
+
+        if (presentModeCount != 0) {
+            details.PresentModes.resize(formatCount);
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_Surface->GetSurface(), &formatCount,
+                                                      details.PresentModes.data());
+        }
+
+        return details;
+    }
+
+    bool Device::CheckExtensionsSupport(VkPhysicalDevice device) const {
         UInt32 availableExtensionCount = 0;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &availableExtensionCount, nullptr);
 
@@ -268,28 +303,21 @@ namespace FlashlightEngine {
 
         spdlog::debug("[Vulkan] Available device extensions for {}:", properties.deviceName);
 
-        std::unordered_set<std::string> available;
         for (const auto& [extensionName, specVersion] : availableExtensions) {
             spdlog::debug("[Vulkan] \t- {}", extensionName);
-            available.insert(extensionName);
         }
+
+        std::set<std::string> requiredExtensions(m_RequiredExtensions.begin(), m_RequiredExtensions.end());
 
         spdlog::debug("[Vulkan] Required device extensions:");
-        if (!std::ranges::all_of(m_RequiredExtensions, [&available, &properties](const char* required) {
-            spdlog::debug("[Vulkan] \t- {}", required);
-            if (!available.contains(required)) {
-                spdlog::warn("[Vulkan] Required device extension \"{}\" is not supported by {}.",
-                             required,
-                             properties.deviceName);
-                return false;
-            }
-
-
-            return true;
-        })) {
-            return false;
+        for (const auto& extension : requiredExtensions) {
+            spdlog::debug("[Vulkan] \t- {}", extension);
         }
 
-        return true;
+        for (const auto& [extensionName, specVersion] : availableExtensions) {
+            requiredExtensions.erase(extensionName);
+        }
+
+        return requiredExtensions.empty();
     }
 }

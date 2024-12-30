@@ -22,6 +22,7 @@ namespace FlashlightEngine {
     }
 
     void EngineApplication::OnUpdate() {
+        m_Renderer->UpdateSwapchain();
     }
 
     void EngineApplication::OnRender() {
@@ -33,6 +34,8 @@ namespace FlashlightEngine {
             case Key::Escape:
                 Close();
                 break;
+            case Key::F:
+                GetWindow().SetFullscreen(!GetWindow().IsFullscreen());
             default:
                 break;
             }

@@ -20,6 +20,10 @@ namespace FlashlightEngine {
         return FindQueueFamilies(m_PhysicalDevice);
     }
 
+    inline SwapchainSupportDetails Device::GetSwapchainSupport() const {
+        return QuerySwapchainSupport(m_PhysicalDevice);
+    }
+
     inline VkDevice Device::GetDevice() const {
         return m_Device;
     }

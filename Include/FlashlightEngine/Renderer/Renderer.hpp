@@ -13,6 +13,7 @@
 #include <FlashlightEngine/Renderer/Wrapper/Instance.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/Surface.hpp>
 #include <FlashlightEngine/Renderer/Wrapper/Device.hpp>
+#include <FlashlightEngine/Renderer/Wrapper/Swapchain.hpp>
 
 #include <FlashlightEngine/Core/Window.hpp>
 
@@ -25,6 +26,8 @@ namespace FlashlightEngine {
         Renderer(const Renderer&) = delete;
         Renderer(Renderer&&) noexcept = default;
 
+        void UpdateSwapchain();
+
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = default;
 
@@ -34,6 +37,7 @@ namespace FlashlightEngine {
         std::shared_ptr<Instance> m_Instance;
         std::shared_ptr<Surface> m_Surface;
         std::shared_ptr<Device> m_Device;
+        std::shared_ptr<Swapchain> m_Swapchain;
     };
 }
 

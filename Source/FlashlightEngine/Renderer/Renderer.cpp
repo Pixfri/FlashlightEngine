@@ -14,7 +14,33 @@ namespace FlashlightEngine {
         m_Surface = std::make_shared<Surface>(m_Instance, *window);
 
         m_Device = std::make_shared<Device>(*m_Instance, m_Surface, validationLevel != RendererValidationLevel::None);
+
+        Swapchain::SwapchainInfo swapchainInfo = {
+            .Extent = window->GetExtent(),
+            .EnableVSync = window->IsVSync(),
+            .Surface = m_Surface->GetSurface(),
+            .OldSwapchain = nullptr
+        };
+
+        m_Swapchain = std::make_shared<Swapchain>(m_Device, swapchainInfo);
     }
 
     Renderer::~Renderer() = default;
+
+    void Renderer::UpdateSwapchain() {
+        m_Window->UpdateFullscreenMode();
+
+        if (m_Window->ShouldInvalidateSwapchain()) {
+            Swapchain::SwapchainInfo swapchainInfo = {
+                .Extent = m_Window->GetExtent(),
+                .EnableVSync = m_Window->IsVSync(),
+                .Surface = m_Surface->GetSurface(),
+                .OldSwapchain = m_Swapchain
+            };
+
+            m_Swapchain = std::make_shared<Swapchain>(m_Device, swapchainInfo);
+
+            m_Window->SwapchainInvalidated();
+        }
+    }
 }

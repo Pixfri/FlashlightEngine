@@ -60,7 +60,9 @@ namespace FlashlightEngine {
         // Constants
 #if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
         const std::vector<const char*> m_ValidationLayers = {
-            "VK_LAYER_KHRONOS_validation"
+            "VK_LAYER_KHRONOS_validation",
+            //"VK_LAYER_LUNARG_api_dump",
+            // "VK_LAYER_LUNARG_monitor"
         };
 #endif
     };

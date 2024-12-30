@@ -28,6 +28,12 @@ namespace FlashlightEngine {
         }
     };
 
+    struct SwapchainSupportDetails {
+        VkSurfaceCapabilitiesKHR Capabilities;
+        std::vector<VkSurfaceFormatKHR> Formats;
+        std::vector<VkPresentModeKHR> PresentModes;
+    };
+
     class Device {
     public:
         Device(const Instance& instance, const std::shared_ptr<Surface>& surface, bool enableValidationLayers);
@@ -39,6 +45,7 @@ namespace FlashlightEngine {
         [[nodiscard]] inline VkPhysicalDevice GetPhysicalDevice() const;
         [[nodiscard]] inline VkPhysicalDeviceProperties GetPhysicalDeviceProperties() const;
         [[nodiscard]] inline QueueFamilyIndices GetQueueFamilies() const;
+        [[nodiscard]] inline SwapchainSupportDetails GetSwapchainSupport() const;
         [[nodiscard]] inline VkDevice GetDevice() const;
         [[nodiscard]] inline VkQueue GetGraphicsQueue() const;
         [[nodiscard]] inline VkQueue GetPresentQueue() const;
@@ -66,6 +73,7 @@ namespace FlashlightEngine {
         // Utility functions
         bool IsDeviceSuitable(VkPhysicalDevice device) const;
         QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device) const;
+        SwapchainSupportDetails QuerySwapchainSupport(VkPhysicalDevice device) const;
         bool CheckExtensionsSupport(VkPhysicalDevice device) const;
 
         // Constants
