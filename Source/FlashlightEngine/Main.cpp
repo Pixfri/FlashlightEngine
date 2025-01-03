@@ -19,12 +19,7 @@
 
 FlashlightEngine::UInt32 g_Width = 1280;
 FlashlightEngine::UInt32 g_Height = 720;
-
-#if defined(FL_DEBUG) || defined(FL_FORCE_VULKAN_DEBUG)
-auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Warnings;
-#else
-auto g_ValidationLevel = FlashlightEngine::RendererValidationLevel::None;
-#endif
+bool g_UseHighPerfGPU = true;
 
 void SetupLogger(int argc, char* argv[]);
 void ParseArguments(int argc, char* argv[]);
@@ -34,7 +29,7 @@ int main(const int argc, char* argv[]) {
         SetupLogger(argc, argv);
         ParseArguments(argc, argv);
 
-        FlashlightEngine::EngineApplication app(g_Width, g_Height, g_ValidationLevel);
+        FlashlightEngine::EngineApplication app(g_Width, g_Height, g_UseHighPerfGPU);
 
         app.Run();
     } catch (const std::runtime_error& e) {
@@ -93,21 +88,11 @@ void ParseArguments(const int argc, char* argv[]) {
         }
     }
 
-    if (cmdLineParser.CmdOptionExists("--vvl_level")) {
-        if (const std::string level = cmdLineParser.GetCmdOption("--vvl_level");
-            level.empty()) {
-            spdlog::warn("No validation level provided after --vvl_level. Using the default level.");
-        } else {
-            if (level == "verbose")
-                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Verbose;
-            else if (level == "infos")
-                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Infos;
-            else if (level == "warnings")
-                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Warnings;
-            else if (level == "errors")
-                g_ValidationLevel = FlashlightEngine::RendererValidationLevel::Errors;
-            else
-                spdlog::warn("Invalid level provided after --vvl_level. Using the default value.");
-        }
+    if (cmdLineParser.CmdOptionExists("--highperf")) {
+        g_UseHighPerfGPU = true;
+    }
+
+    if (cmdLineParser.CmdOptionExists("--lowperf")) {
+        g_UseHighPerfGPU = false;
     }
 }

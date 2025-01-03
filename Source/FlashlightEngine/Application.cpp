@@ -10,7 +10,7 @@ namespace FlashlightEngine {
     Application* Application::m_Instance = nullptr;
 
     Application::Application(const UInt32 width, const UInt32 height, const std::string& title,
-                             const RendererValidationLevel validationLevel) {
+                             const bool useHighPerfGPU) {
         FlAssert(!m_Instance, "Application already exists!");
         m_Instance = this;
 
@@ -27,7 +27,7 @@ namespace FlashlightEngine {
             OnEvent(e);
         });
 
-        m_Renderer = std::make_unique<Renderer>(m_Window, validationLevel);
+        m_Renderer = std::make_unique<Renderer>(*m_Window, useHighPerfGPU);
 
         m_Running = true;
     }

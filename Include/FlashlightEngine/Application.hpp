@@ -11,16 +11,16 @@
 
 #include <FlashlightEngine/Core/Window.hpp>
 
-#include <expected>
+#include <FlashlightEngine/Renderer/Renderer.hpp>
+
 #include <memory>
 #include <string>
 
-#include <FlashlightEngine/Renderer/Renderer.hpp>
 
 namespace FlashlightEngine {
     class Application {
     public:
-        Application(UInt32 width, UInt32 height, const std::string& title, RendererValidationLevel validationLevel);
+        Application(UInt32 width, UInt32 height, const std::string& title, bool useHighPerfGPU);
         virtual ~Application();
 
         void Run();
@@ -33,11 +33,10 @@ namespace FlashlightEngine {
         [[nodiscard]] inline Window& GetWindow() const;
         inline void Close();
 
-    private:
-        std::shared_ptr<Window> m_Window;
-
     protected:
+        std::shared_ptr<Window> m_Window;
         std::unique_ptr<Renderer> m_Renderer;
+
     private:
         bool m_Running = false;
         static Application* m_Instance;

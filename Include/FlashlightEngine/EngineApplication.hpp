@@ -14,7 +14,7 @@
 namespace FlashlightEngine {
     class EngineApplication final : public Application {
     public:
-        EngineApplication(UInt32 width, UInt32 height, RendererValidationLevel validationLevel);
+        EngineApplication(UInt32 width, UInt32 height, bool useHighPerfGPU);
         ~EngineApplication() override;
 
         void OnEvent(Event& event) override;

@@ -9,9 +9,8 @@
 #include <FlashlightEngine/Core/Filesystem.hpp>
 
 namespace FlashlightEngine {
-    EngineApplication::EngineApplication(const UInt32 width, const UInt32 height,
-                                         const RendererValidationLevel validationLevel)
-        : Application(width, height, "Flashlight Engine", validationLevel) {
+    EngineApplication::EngineApplication(const UInt32 width, const UInt32 height, const bool useHighPerfGPU)
+        : Application(width, height, "Flashlight Engine", useHighPerfGPU) {
     }
 
     EngineApplication::~EngineApplication() = default;
@@ -25,20 +24,6 @@ namespace FlashlightEngine {
     }
 
     void EngineApplication::OnRender() {
-        if (const auto commandBuffer = m_Renderer->BeginFrame()) {
-            FlUnused(commandBuffer);
-
-
-
-            constexpr VkClearColorValue clearValue = {{1.0f, 0.0f, 0.0f, 1.0f}};
-
-            m_Renderer->BeginRendering(clearValue);
-
-            m_Renderer->EndRendering();
-
-            if (!m_Renderer->EndFrame()) {
-            }
-        }
     }
 
     void EngineApplication::OnKeyPressed(const KeyDownEvent& event) {
@@ -48,10 +33,10 @@ namespace FlashlightEngine {
                 Close();
                 break;
             case Key::F:
-                GetWindow().SetFullscreen(!GetWindow().IsFullscreen());
+                m_Window->SetFullscreen(!m_Window->IsFullscreen());
                 break;
             case Key::V:
-                GetWindow().SetVSync(!GetWindow().IsVSync());
+                m_Window->SetVSync(!m_Window->IsVSync());
                 break;
             default:
                 break;

@@ -8,7 +8,7 @@ add_rules("mode.debug", "mode.release")
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
 option("profiler", {description = "Enable the Tracy profiler.", default = false})
-option("force_vk_debug", {description = "Force Vulkan debug utilities to be enabled.", default = false})
+option("force_wgpu_debug", {description = "Force WebGPU debug utilities to be enabled.", default = false})
 
 add_includedirs("Include")
 
@@ -36,8 +36,8 @@ add_requires(
     "stb",
     "glfw",
     "spdlog",
-    "slang",
-    "volk"
+    "wgpu-native",
+    "glfw3webgpu"
 )
 
 if is_plat("windows") then
@@ -51,8 +51,8 @@ if has_config("profiler") then
   add_requires("tracy")
 end
 
-if has_config("force_vk_debug") then
-  add_defines("FL_FORCE_VULKAN_DEBUG")
+if has_config("force_wgpu_debug") then
+  add_defines("FL_FORCE_WEBGPU_DEBUG")
 end
 
 add_requires("debugbreak")
@@ -77,7 +77,8 @@ target(ProjectName)
     "glfw",
     "spdlog",
     "slang",
-    "volk"
+    "wgpu-native",
+    "glfw3webgpu"
   )
 
   if has_config("profiler") then
@@ -85,8 +86,6 @@ target(ProjectName)
   end
 
   add_packages("debugbreak")
-
-  add_defines("VK_NO_PROTOTYPES", "GLFW_INCLUDE_VULKAN")
 
   add_rpathdirs("$ORIGIN")
 
