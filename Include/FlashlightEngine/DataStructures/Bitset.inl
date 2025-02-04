@@ -4,12 +4,14 @@
 
 #pragma once
 
+#include <algorithm>
+
 namespace Fl {
     inline Bitset::Bitset(const U64 bitCount, const bool initialValue)
         : m_Bits(bitCount, initialValue) {
     }
 
-    inline Bitset::Bitset(std::initializer_list<bool> values)
+    inline Bitset::Bitset(const std::initializer_list<bool> values)
         : m_Bits(values) {
     }
 
