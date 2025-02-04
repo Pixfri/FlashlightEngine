@@ -36,7 +36,7 @@ on_run(function()
     CLASS_NAME = className,
     CLASS_PATH = classPath,
     COPYRIGHT = os.date("%Y") .. [[ Jean "Pixfri" Letessier ]],
-    HEADER_GUARD = "PN_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
+    HEADER_GUARD = "FL_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
     PROJECT = project
   }
 
@@ -64,8 +64,10 @@ headerTemplate = [[
 #ifndef %HEADER_GUARD%
 #define %HEADER_GUARD%
 
-namespace %PROJECT% {
-    class %CLASS_NAME% {
+#include <FlashlightEngine/Prerequisites.hpp>
+
+namespace Fl {
+    class FL_API %CLASS_NAME% {
     public:
         %CLASS_NAME%() = default;
         ~%CLASS_NAME%() = default;
@@ -92,7 +94,7 @@ inlineTemplate = [[
 
 #pragma once
 
-namespace %PROJECT% {
+namespace Fl {
     
 }
 ]]
@@ -104,7 +106,7 @@ sourceTemplate = [[
 
 #include <%PROJECT%/%CLASS_PATH%.hpp>
 
-namespace %PROJECT% {
+namespace Fl {
     
 }
 ]]
