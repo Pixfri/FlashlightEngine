@@ -63,7 +63,7 @@ target(ProjectName)
 includes("xmake/**.lua")
 
 if has_config("build_tests") then
-  -- includes("tests/xmake.lua")
+  includes("tests/xmake.lua")
 end
 
 if has_config("build_examples") then
