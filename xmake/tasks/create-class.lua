@@ -66,8 +66,9 @@ headerTemplate = [[
 
 #include <FlashlightEngine/Prerequisites.hpp>
 
+
 namespace Fl {
-    class FL_API %CLASS_NAME% {
+    class %CLASS_NAME% {
     public:
         %CLASS_NAME%() = default;
         ~%CLASS_NAME%() = default;
