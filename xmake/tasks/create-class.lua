@@ -66,7 +66,6 @@ headerTemplate = [[
 
 #include <FlashlightEngine/Prerequisites.hpp>
 
-
 namespace Fl {
     class %CLASS_NAME% {
     public:
