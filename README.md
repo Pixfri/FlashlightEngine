@@ -70,6 +70,7 @@ depends on the main engine target, so when you will try to build the `FlTests` t
   - [ ] Quaternion class
   - [ ] Transform entity component
   - [ ] Angle units classes
+  - [X] Some constants
 - [ ] Physics
 - [ ] Animations
 - [ ] Model loading
