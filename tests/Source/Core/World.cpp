@@ -2,6 +2,7 @@
 // This file is part of FlashlightEngine.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
+#include <FlashlightEngine/Core/Component.hpp>
 #include <FlashlightEngine/Core/World.hpp>
 
 #include <catch2/catch_test_macros.hpp>

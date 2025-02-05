@@ -1,5 +1,6 @@
 #include <FlashlightEngine/Core/Application.hpp>
 
 int main() {
-    Fl::Application app{};
+    // Nothing (for now).
+    return 0;
 }
