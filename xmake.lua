@@ -29,6 +29,7 @@ add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "g
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
 option("build_tests", {description = "Build the tests.", default = false})
 option("build_examples", {description = "Build the examples.", default = false})
+option("tracy_profiler", {description = "Enable the tracy profiler.", default = false})
 
 if is_plat("windows") then
   if has_config("override_runtime") then
@@ -36,12 +37,17 @@ if is_plat("windows") then
   end
 end
 
+if has_config("tracy_profiler") then
+  add_requires("tracy")
+  add_defines("FL_TRACY_ENABLED", "TRACY_ENABLE")
+end
+
 add_requires(
   "spdlog",
   "entt"
 )
 
-target(ProjectName)
+target(ProjectName, function (target)
   set_kind("static")
   
   add_files("Source/**.cpp")
@@ -59,6 +65,11 @@ target(ProjectName)
     "entt",
     {public = true}
   )
+
+  if has_config("tracy_profiler") then
+    add_packages("tracy")
+  end
+end)
 
 includes("xmake/**.lua")
 
