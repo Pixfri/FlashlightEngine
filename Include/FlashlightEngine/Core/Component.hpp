@@ -26,7 +26,7 @@ namespace Fl {
          * It uses CRTP to assign a different id to each component type it is called with.
          * This function will be instantiated every time it is called with a different type, incrementing the assigned
          * index.
-         * Note that it must be called directly from Component, and a derived class must be given
+         * Note that it must be called directly from Fl::Component, and a derived class must be given
          * (Component::GetId<DerivedComponent>()).
          *
          * @tparam ComponentType Type of the component to get the id from.
