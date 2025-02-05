@@ -15,25 +15,27 @@ To build the tests and examples, or just the static library, here are the instru
 
 This project uses [xmake](https://xmake.io) for its build system, so you will need to install it.
 
+### Optional build configurations
+
 > [!TIP]
 > XMake overrides the already set options when you use the `xmake f <something>` command, so you may want to add 
 > multiples options to enable multiple features at once.
 > Another option is to use [this plugin](https://github.com/SirLynix/xmake-plugins)
 > (by [SirLynix](https://github.com/SirLynix)) that lets you use the command `xmake cu <options>` to add options without
-> overwriting the already set ones. 
+> overwriting the already set ones.
 
-### Enabling the tests
+#### Enabling the tests
 
 To enable the tests, use the command `xmake f --build_tests=y` in the project's directory.
 
-### Enabling the examples
+#### Enabling the examples
 
 > [!NOTE]  
 > There are no examples for now, since the engine isn't ready yet to create some.
 
 To enable the examples, use the command `xmake f --build_examples=y` in the project's directory.
 
-### Enabling the Tracy profiler.
+#### Enabling the Tracy profiler.
 
 Flashlight Engine supports [Tracy](https://github.com/wolfpld/tracy) as the main way of profiling the engine. To enable
 it, simple use the `xmake f --tracy_profiler=y` command in the project's directory.
