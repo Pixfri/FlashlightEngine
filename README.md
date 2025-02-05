@@ -38,6 +38,15 @@ To enable the examples, use the command `xmake f --build_examples=y` in the proj
 Flashlight Engine supports [Tracy](https://github.com/wolfpld/tracy) as the main way of profiling the engine. To enable
 it, simple use the `xmake f --tracy_profiler=y` command in the project's directory.
 
+### Building the engine
+
+To build all the enabled target, use the command `xmake build` (it can be shortened to `xmake b` or simply `xmake`).  
+To build a specific target, use the command `xmake build <TargetName>` (or `xmake b <TargetName>`).   
+For example : to build the main engine target, use the command `xmake build FlashlightEngine` (or `xmake b FlashlightEngine`).  
+XMake will also build all the targets the one you are trying to build depends on, for example, `FlTests` (the engine's test suite)
+depends on the main engine target, so when you will try to build the `FlTests` target, it will also compile the
+`FlashlightEngine` target.
+
 ## Roadmap
 
 - [X] Logger (Using [spdlog](https://github.com/gabime/spdlog))
