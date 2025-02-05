@@ -20,10 +20,12 @@ void* operator new(size_t count);
 void operator delete(void* ptr) noexcept;
 
 #define FL_PROFILE(name) ZoneScopedN(name)
+#define FL_PROFILER_FRAMEMARK FrameMark
 
 #else
 
 #define FL_PROFILE_SCOPE(name)
+#define FL_PROFILER_FRAMEMARK
 
 #endif
 
@@ -59,7 +61,7 @@ namespace Fl {
 	template <typename T, PlotType PT = PlotType::Number>
 	class Plot {
 	public:
-		static void Plot(const char* name, T value) {
+		static void AddPlot(const char* name, T value) {
 			auto* p = GetInstance();
 			p->m_Plots[name] = value;
 			UpdateTracyPlot(name, value);

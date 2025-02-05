@@ -20,7 +20,7 @@ namespace Fl {
         return id;
     }
 
-    inline bool System::Update(const FrameTimeInfo& timeInfo) {
+    inline bool System::Update([[maybe_unused]] const FrameTimeInfo& timeInfo) {
         return true;
     }
 

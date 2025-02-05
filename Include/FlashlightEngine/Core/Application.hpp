@@ -9,29 +9,78 @@
 
 #include <FlashlightEngine/Prerequisites.hpp>
 
+#include <FlashlightEngine/Core/Assert.hpp>
+#include <FlashlightEngine/Core/World.hpp>
+#include <FlashlightEngine/DataStructures/Bitset.hpp>
+
 #include <spdlog/async_logger.h>
 
 #include <memory>
 
 namespace Fl {
-    class Application final {
+    struct FrameTimeInfo {
+        F32 DeltaTime;     // Time elapsed since the last application loop iteration.
+        F32 GlobalTime;    // Time elapsed since the application started, in seconds.
+        I32 SubStepCount;  // Amount of fixed time steps to process.
+        F32 SubStepTime;   // Time used by each fixed time step, in seconds.
+    };
+
+    class Application {
     public:
-        Application();
-        ~Application();
+        explicit Application(U64 worldCount = 1);
+        
+        inline const std::vector<WorldPtr>& GetWorlds() const;
+        inline std::vector<WorldPtr>& GetWorlds();
+        inline FrameTimeInfo GetTimeInfo() const;
 
-        static inline Application& GetInstance();
+        inline void SetFixedTimeStep(F32 fixedTimeStep);
 
-        Application(const Application&) = delete;
-        Application(Application&&) = delete;
+        /**
+         * @brief Adds a world to the application.
+         * @tparam Args Types of the arguments to forward to the world.
+         * @param args Arguments to forward to the world.
+         * @return A reference to the new world.
+         */
+        template <typename... Args>
+        World& AddWorld(Args&&... args);
 
-        Application& operator=(const Application&) = delete;
-        Application& operator=(Application&&) = delete;
+        /**
+         * @brief Runs the application.
+         */
+        void Run();
+
+        /**
+         * @brief Runs the application and calls the given callback on each iteration.
+         * @tparam FuncType Type of the callback to call on each cycle.
+         * @param callback The callback to call on each cycle.
+         */
+        template <typename FuncType>
+        void Run(FuncType&& callback);
+
+        /**
+         * @brief Runs one cycle of the application.
+         * @return Whether the application is still running or not.
+         */
+        bool RunOnce();
+
+        /**
+         * @brief Tells the application to stop running.
+         */
+        inline void Quit();
     
     private:
-        static Application* s_AppInstance;
-
         std::shared_ptr<spdlog::async_logger> m_AppLogger;
 
+        std::vector<WorldPtr> m_Worlds{};
+        Bitset m_ActiveWorlds{};
+
+        FrameTimeInfo m_TimeInfo{ 0.0f, 0.0f, 0, 0.016666f };
+        std::chrono::time_point<std::chrono::system_clock> m_LastFrameTime = std::chrono::system_clock::now();
+        F32 m_RemainingTime{}; // Extra time remaining after executing the systems' fixed step update.
+
+        bool m_IsRunning = true;
+
+        static bool m_IsLoggerSetup;
         void SetupLogger();
     };
 }

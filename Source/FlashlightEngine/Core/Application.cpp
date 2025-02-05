@@ -5,6 +5,7 @@
 #include <FlashlightEngine/Core/Application.hpp>
 
 #include <FlashlightEngine/Core/Assert.hpp>
+#include <FlashlightEngine/Core/Profiler.hpp>
 
 #include <spdlog/async.h>
 #include <spdlog/cfg/env.h>
@@ -12,22 +13,54 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Fl {
-    Application* Application::s_AppInstance = nullptr;
+    bool Application::m_IsLoggerSetup = false;
 
-    Application::Application() {
-        FlAssert(!s_AppInstance, "Error: Application already created.");
+    Application::Application(const U64 worldCount) {
+        m_Worlds.reserve(worldCount);
 
-        SetupLogger();
-
-        spdlog::info("Application created.");
-
-        s_AppInstance = this;
+        if (!m_IsLoggerSetup) {
+            SetupLogger();
+        }
     }
 
-    Application::~Application() {
-        s_AppInstance = nullptr;
+    void Application::Run() {
+        spdlog::debug("[Application] Running...");
+        
+        while (RunOnce());
 
-        spdlog::info("Application destroyed.");
+        spdlog::debug("[Application] Exiting...");
+    }
+
+    bool Application::RunOnce() {
+        FL_PROFILE("Application::RunOnce");
+
+        const auto currentTime = std::chrono::system_clock::now();
+        m_TimeInfo.DeltaTime = std::chrono::duration<F32>(currentTime - m_LastFrameTime).count();
+        m_TimeInfo.GlobalTime += m_TimeInfo.DeltaTime;
+        m_LastFrameTime = currentTime;
+
+        m_TimeInfo.SubStepCount = 0;
+        m_RemainingTime += m_TimeInfo.DeltaTime;
+
+        while (m_RemainingTime >= m_TimeInfo.SubStepTime) {
+            ++m_TimeInfo.SubStepCount;
+            m_RemainingTime -= m_TimeInfo.SubStepTime;
+        }
+
+        for (U64 worldIndex = 0; worldIndex < m_Worlds.size(); ++worldIndex) {
+            if (!m_ActiveWorlds[worldIndex]) {
+                continue;
+            }
+
+            if (!m_Worlds[worldIndex]->Update(m_TimeInfo)) {
+                m_ActiveWorlds.SetBit(worldIndex, false);
+            }
+        }
+
+
+        FL_PROFILER_FRAMEMARK;
+
+        return (m_IsRunning && !m_ActiveWorlds.IsEmpty());
     }
 
     void Application::SetupLogger() {
@@ -47,6 +80,7 @@ namespace Fl {
         spdlog::set_pattern("[%H:%M:%S %z] [%n] [%^---%L---%$] [thread %t] %v");
 
         spdlog::cfg::load_env_levels();
-    }
 
+        m_IsLoggerSetup = true;
+    }
 }
