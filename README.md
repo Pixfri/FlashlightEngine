@@ -1,7 +1,66 @@
-# TemplateCppProject
-This is just a simple template I use to generate a classic C++ project with xmake
+# Flashlight Engine
 
-# Using this template
-Just click on the button `Use this template` and `Create a new repository` then enter all the informations.
+Flashlight engine is a game engine made with C++.
 
-Make sure to replace everything called `ProjectName` in the xmake.lua file by your project name and also rename the `ProjectName` folder.
+I mainly maintain this project for educational purposes, since I want to learn how game engines work
+and how to make one myself.
+
+## Building the engine
+
+For now there is no xmake package for the engine.
+
+To build the tests and examples, or just the static library, here are the instructions :
+
+### Getting the build system
+
+This project uses [xmake](https://xmake.io) for its build system, so you will need to install it.
+
+> [!TIP]
+> XMake overrides the already set options when you use the `xmake f <something>` command, so you may want to add 
+> multiples options to enable multiple features at once.
+> Another option is to use [this plugin](https://github.com/SirLynix/xmake-plugins)
+> (by [SirLynix](https://github.com/SirLynix)) that lets you use the command `xmake cu <options>` to add options without
+> overwriting the already set ones. 
+
+### Enabling the tests
+
+To enable the tests, use the command `xmake f --build_tests=y` in the project's directory.
+
+### Enabling the examples
+
+> [!NOTE]  
+> There are no examples for now, since the engine isn't ready yet to create some.
+
+To enable the examples, use the command `xmake f --build_examples=y` in the project's directory.
+
+### Enabling the Tracy profiler.
+
+Flashlight Engine supports [Tracy](https://github.com/wolfpld/tracy) as the main way of profiling the engine. To enable
+it, simple use the `xmake f --tracy_profiler=y` command in the project's directory.
+
+## Roadmap
+
+- [X] Logger (Using [spdlog](https://github.com/gabime/spdlog))
+- [X] ECS (Custom made)
+- [X] Profiler integration (Using the [Tracy profiler](https://github.com/wolfpld/tracy))
+- [ ] WebGPU Renderer
+  - [ ] PBR
+  - [ ] Deferred rendering
+  - [ ] Post-processing effects
+  - [ ] Camera
+  - [ ] Lights
+  - [ ] Windowing
+  - [ ] UI overlay
+  - [ ] Cubemap
+  - [ ] Normal mapping
+- [ ] Custom math library
+  - [ ] Vector class
+  - [ ] Matrix class
+  - [ ] Quaternion class
+  - [ ] Transform entity component
+  - [ ] Angle units classes
+- [ ] Physics
+- [ ] Animations
+- [ ] Model loading
+- [ ] Scripting (with Lua)
+- [ ] Audio
