@@ -95,11 +95,11 @@ namespace Fl {
     }
 
     template <typename ComponentType>
-    ComponentType& Entity::GetComponent() const {
+    ComponentType& Entity::GetComponent() {
         static_assert(std::is_base_of_v<Component, ComponentType>,
                       "[Error] The component must be derived from Fl::Component");
 
-        return const_cast<ComponentType&>(this->GetComponent<ComponentType>());
+        return const_cast<ComponentType&>(static_cast<const Entity*>(this)->GetComponent<ComponentType>());
     }
 
     template <typename ComponentType>

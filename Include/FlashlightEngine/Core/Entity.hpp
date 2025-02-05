@@ -126,7 +126,7 @@ namespace Fl {
          * @throws std::runtime_error if the entity doesn't have the component.
          */
         template <typename ComponentType>
-        ComponentType& GetComponent() const;
+        ComponentType& GetComponent();
 
         /**
          * @brief Removes the given component from the entity.

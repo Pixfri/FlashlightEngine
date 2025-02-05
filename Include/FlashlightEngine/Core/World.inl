@@ -62,7 +62,7 @@ namespace Fl {
 
     template <typename SystemType>
     SystemType& World::GetSystem() {
-        return const_cast<SystemType&>(this->GetSystem<SystemType>());
+        return const_cast<SystemType&>(static_cast<const World*>(this)->GetSystem<SystemType>());
     }
 
     template <typename SystemType>
