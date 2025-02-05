@@ -84,8 +84,7 @@ namespace Fl {
                     if (!matchingComponents.IsEmpty()) {
                         system->LinkEntity(entity);
                     }
-                }
-                else {
+                } else {
                     if (matchingComponents.IsEmpty()) {
                         system->UnlinkEntity(entity);
                     }
@@ -117,7 +116,7 @@ namespace Fl {
     void World::SortEntities() {
         FL_PROFILE("World::SortEntities");
 
-        // Reorganizing the entites, swapping enabled & disabled ones so that the enabled ones are in front
+        // Reorganizing the entities, swapping enabled & disabled ones so that the enabled ones are in front
         auto firstEntity = m_Entities.begin();
         auto lastEntity = m_Entities.end() - 1;
 
@@ -132,7 +131,7 @@ namespace Fl {
             while (firstEntity != lastEntity && (*lastEntity == nullptr || !(*lastEntity)->IsEnabled())) {
                 --lastEntity;
             }
-            
+
             // If both iterators are equal to each other, the list is sorted
             if (firstEntity == lastEntity) {
                 break;

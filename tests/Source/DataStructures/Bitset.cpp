@@ -10,48 +10,48 @@
 
 namespace {
     // Bitset to be tested
-    const Fl::Bitset fullZeros(6, false); // 0 0 0 0 0 0
-    const Fl::Bitset fullOnes(6, true); // 1 1 1 1 1 1
+    const Fl::Bitset g_FullZeros(6, false); // 0 0 0 0 0 0
+    const Fl::Bitset g_FullOnes(6, true); // 1 1 1 1 1 1
 
-    const Fl::Bitset alternated1({true, false, true, false, true, false}); // 1 0 1 0 1 0
-    const Fl::Bitset alternated2({false, true, false, true, false, true}); // 0 1 0 1 0 1
+    const Fl::Bitset g_Alternated1({true, false, true, false, true, false}); // 1 0 1 0 1 0
+    const Fl::Bitset g_Alternated2({false, true, false, true, false, true}); // 0 1 0 1 0 1
 }
 
-TEST_CASE("Bitset basic methods", "[Data Structures]") {
-    CHECK(fullZeros.IsEmpty());
-    CHECK_FALSE(fullOnes.IsEmpty());
+TEST_CASE("Bitset: Basic methods", "[Data Structures]") {
+    CHECK(g_FullZeros.IsEmpty());
+    CHECK_FALSE(g_FullOnes.IsEmpty());
 
-    CHECK(fullZeros.GetSize() == 6);
-    CHECK(fullOnes.GetSize() == fullZeros.GetSize());
+    CHECK(g_FullZeros.GetSize() == 6);
+    CHECK(g_FullOnes.GetSize() == g_FullZeros.GetSize());
 
-    CHECK(fullZeros.GetEnabledBitCount() == 0);
-    CHECK(fullZeros.GetDisabledBitCount() == 6);
+    CHECK(g_FullZeros.GetEnabledBitCount() == 0);
+    CHECK(g_FullZeros.GetDisabledBitCount() == 6);
 
-    CHECK(fullOnes.GetEnabledBitCount() == 6);
-    CHECK(fullOnes.GetDisabledBitCount() == 0);
+    CHECK(g_FullOnes.GetEnabledBitCount() == 6);
+    CHECK(g_FullOnes.GetDisabledBitCount() == 0);
 
-    CHECK(alternated1.GetEnabledBitCount() == 3);
-    CHECK(alternated2.GetEnabledBitCount() == 3);
+    CHECK(g_Alternated1.GetEnabledBitCount() == 3);
+    CHECK(g_Alternated2.GetEnabledBitCount() == 3);
 
-    Fl::Bitset copy = fullOnes;
-    CHECK(copy == fullOnes);
+    Fl::Bitset copy = g_FullOnes;
+    CHECK(copy == g_FullOnes);
 
     copy.Resize(7);
-    CHECK_FALSE(copy.GetSize() == fullOnes.GetSize());
+    CHECK_FALSE(copy.GetSize() == g_FullOnes.GetSize());
 
     copy.Reset();
     CHECK(copy.IsEmpty());
 }
 
-TEST_CASE("Bitset manipulations", "[Data Structures]") {
-    CHECK((alternated1 & alternated1) == alternated1);
-    CHECK((alternated2 & alternated2) == alternated2);
+TEST_CASE("Bitset: Bitwise manipulations", "[Data Structures]") {
+    CHECK((g_Alternated1 & g_Alternated1) == g_Alternated1);
+    CHECK((g_Alternated2 & g_Alternated2) == g_Alternated2);
 
-    CHECK((alternated1 | alternated1) == alternated1);
-    CHECK((alternated2 | alternated2) == alternated2);
+    CHECK((g_Alternated1 | g_Alternated1) == g_Alternated1);
+    CHECK((g_Alternated2 | g_Alternated2) == g_Alternated2);
 
-    CHECK((alternated1 ^ alternated1) == fullZeros);
-    CHECK((alternated2 ^ alternated2) == fullZeros);
+    CHECK((g_Alternated1 ^ g_Alternated1) == g_FullZeros);
+    CHECK((g_Alternated2 ^ g_Alternated2) == g_FullZeros);
 
     //     AND test
     //       ---
@@ -59,7 +59,7 @@ TEST_CASE("Bitset manipulations", "[Data Structures]") {
     // &  0 1 0 1 0 1
     //   _____________
     // =  0 0 0 0 0 0
-    CHECK((alternated1 & alternated2) == fullZeros);
+    CHECK((g_Alternated1 & g_Alternated2) == g_FullZeros);
 
     //      OR test
     //        ---
@@ -67,7 +67,7 @@ TEST_CASE("Bitset manipulations", "[Data Structures]") {
     // |  0 1 0 1 0 1
     //   _____________
     // =  1 1 1 1 1 1
-    CHECK((alternated1 | alternated2) == fullOnes);
+    CHECK((g_Alternated1 | g_Alternated2) == g_FullOnes);
 
     //     XOR test
     //       ---
@@ -75,35 +75,35 @@ TEST_CASE("Bitset manipulations", "[Data Structures]") {
     // ^  0 1 0 1 0 1
     //   _____________
     // =  1 1 1 1 1 1
-    CHECK((alternated1 ^ alternated2) == fullOnes);
+    CHECK((g_Alternated1 ^ g_Alternated2) == g_FullOnes);
 
-    CHECK(~fullZeros == fullOnes);
-    CHECK(~fullOnes == fullZeros);
-    CHECK(~alternated1 == alternated2);
-    CHECK(~alternated2 == alternated1);
+    CHECK(~g_FullZeros == g_FullOnes);
+    CHECK(~g_FullOnes == g_FullZeros);
+    CHECK(~g_Alternated1 == g_Alternated2);
+    CHECK(~g_Alternated2 == g_Alternated1);
 }
 
-TEST_CASE("Bitset shifts", "[Data Structures]") {
-    CHECK((alternated1 << 1) == Fl::Bitset({true, false, true, false, true, false, false})); // 1 0 1 0 1 0 0
-    CHECK((alternated1 >> 1) == Fl::Bitset({true, false, true, false, true})); // 1 0 1 0 1
+TEST_CASE("Bitset: Shifting operations", "[Data Structures]") {
+    CHECK((g_Alternated1 << 1) == Fl::Bitset({true, false, true, false, true, false, false})); // 1 0 1 0 1 0 0
+    CHECK((g_Alternated1 >> 1) == Fl::Bitset({true, false, true, false, true})); // 1 0 1 0 1
 
-    CHECK((alternated1 >> alternated1.GetSize()).GetSize() == 0);
+    CHECK((g_Alternated1 >> g_Alternated1.GetSize()).GetSize() == 0);
 
-    Fl::Bitset shiftTest = alternated1;
+    Fl::Bitset shiftTest = g_Alternated1;
     shiftTest >>= 1; // 1 0 1 0 1 0 0
     shiftTest <<= 1; // 1 0 1 0 1 0
 
-    CHECK(shiftTest == alternated1);
+    CHECK(shiftTest == g_Alternated1);
 }
 
-TEST_CASE("Bitset printing", "[Data Structures]") {
+TEST_CASE("Bitset: Printing", "[Data Structures]") {
     std::stringstream stream;
 
-    stream << fullOnes;
+    stream << g_FullOnes;
     CHECK(stream.str() == "[ 1, 1, 1, 1, 1, 1 ]");
 
     stream.str("");
 
-    stream << alternated1;
+    stream << g_Alternated1;
     CHECK(stream.str() == "[ 1, 0, 1, 0, 1, 0 ]");
 }
