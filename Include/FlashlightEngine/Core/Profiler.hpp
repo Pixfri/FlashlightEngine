@@ -24,7 +24,7 @@ void operator delete(void* ptr) noexcept;
 
 #else
 
-#define FL_PROFILE_SCOPE(name)
+#define FL_PROFILE(name)
 #define FL_PROFILER_FRAMEMARK
 
 #endif
