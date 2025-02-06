@@ -24,6 +24,8 @@ set_languages("cxx20")
 set_rundir("./bin/$(plat)_$(arch)_$(mode)")
 set_targetdir("./bin/$(plat)_$(arch)_$(mode)")
 set_warnings("allextra")
+set_allowedplats("windows", "mingw", "linux")
+set_allowedarchs("windows|x64", "mingw|x86_64", "linux|x86_64")
 add_cxflags("-Wno-missing-field-initializers -Werror=vla", {tools = {"clang", "gcc"}})
 
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
@@ -43,8 +45,7 @@ if has_config("tracy_profiler") then
 end
 
 add_requires(
-  "spdlog",
-  "entt"
+  "spdlog"
 )
 
 target(ProjectName, function (target)
@@ -62,7 +63,6 @@ target(ProjectName, function (target)
 
   add_packages(
     "spdlog",
-    "entt",
     {public = true}
   )
 
