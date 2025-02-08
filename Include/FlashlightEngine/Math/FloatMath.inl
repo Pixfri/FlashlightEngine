@@ -14,7 +14,7 @@ namespace Fl::FloatMath {
 
         const T absoluteDifference = std::abs(val1 - val2);
         return (absoluteDifference <= static_cast<T>(absoluteTolerance)
-            * std::max(static_cast<T>(1), std::max(std::abs(val1), std::max(val2)))
+            * std::max(static_cast<T>(1), std::max(std::abs(val1), std::abs(val2)))
         );
     }
 

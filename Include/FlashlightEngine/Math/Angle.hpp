@@ -93,7 +93,7 @@ namespace Fl {
          * @return Reference to the modified Degrees object.
          */
         template <typename ValueType>
-        constexpr Degrees& operator+=(ValueType val) const noexcept;
+        constexpr Degrees& operator+=(ValueType val) noexcept;
 
         /**
          * @brief Degrees-value subtraction assignment operator.
@@ -102,7 +102,7 @@ namespace Fl {
          * @return Reference to the modified Degrees object.
          */
         template <typename ValueType>
-        constexpr Degrees& operator-=(ValueType val) const noexcept;
+        constexpr Degrees& operator-=(ValueType val) noexcept;
 
         /**
          * @brief Degrees-value multiplication assignment operator.
@@ -111,7 +111,7 @@ namespace Fl {
          * @return Reference to the modified Degrees object.
          */
         template <typename ValueType>
-        constexpr Degrees& operator*=(ValueType val) const noexcept;
+        constexpr Degrees& operator*=(ValueType val) noexcept;
 
         /**
          * @brief Degrees-value division assignment operator.
@@ -120,7 +120,7 @@ namespace Fl {
          * @return Reference to the modified Degrees object.
          */
         template <typename ValueType>
-        constexpr Degrees& operator/=(ValueType val) const noexcept;
+        constexpr Degrees& operator/=(ValueType val) noexcept;
 
         /**
          * @brief Checks if the current degrees angle is equal to another given one. Uses a near equality check to take
@@ -237,7 +237,7 @@ namespace Fl {
          * @return Reference to the modified Radians object.
          */
         template <typename ValueType>
-        constexpr Radians& operator+=(ValueType val) const noexcept;
+        constexpr Radians& operator+=(ValueType val) noexcept;
 
         /**
          * @brief Radians-value subtraction assignment operator.
@@ -246,7 +246,7 @@ namespace Fl {
          * @return Reference to the modified Radians object.
          */
         template <typename ValueType>
-        constexpr Radians& operator-=(ValueType val) const noexcept;
+        constexpr Radians& operator-=(ValueType val) noexcept;
 
         /**
          * @brief Radians-value multiplication assignment operator.
@@ -255,7 +255,7 @@ namespace Fl {
          * @return Reference to the modified Radians object.
          */
         template <typename ValueType>
-        constexpr Radians& operator*=(ValueType val) const noexcept;
+        constexpr Radians& operator*=(ValueType val) noexcept;
 
         /**
          * @brief Radians-value division assignment operator.
@@ -264,7 +264,7 @@ namespace Fl {
          * @return Reference to the modified Radians object.
          */
         template <typename ValueType>
-        constexpr Radians& operator/=(ValueType val) const noexcept;
+        constexpr Radians& operator/=(ValueType val) noexcept;
 
         /**
          * @brief Checks if the current radians angle is equal to another given one. Uses a near equality check to take

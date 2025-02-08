@@ -15,7 +15,7 @@ namespace Fl {
 
     template <typename T>
     constexpr Degrees<T>::Degrees(Radians<T> rad) noexcept
-        : Value{rad * Constants::RadToDegConstant<T>} {
+        : Value{rad.Value * Constants::RadToDegConstant<T>} {
     }
 
     template <typename T>
@@ -50,7 +50,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Degrees<T>& Degrees<T>::operator+=(ValueType val) const noexcept {
+    constexpr Degrees<T>& Degrees<T>::operator+=(ValueType val) noexcept {
         Value += static_cast<T>(val);
 
         return *this;
@@ -58,7 +58,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Degrees<T>& Degrees<T>::operator-=(ValueType val) const noexcept {
+    constexpr Degrees<T>& Degrees<T>::operator-=(ValueType val) noexcept {
         Value -= static_cast<T>(val);
 
         return *this;
@@ -66,7 +66,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Degrees<T>& Degrees<T>::operator*=(ValueType val) const noexcept {
+    constexpr Degrees<T>& Degrees<T>::operator*=(ValueType val) noexcept {
         Value *= static_cast<T>(val);
 
         return *this;
@@ -74,9 +74,9 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Degrees<T>& Degrees<T>::operator/=(ValueType val) const noexcept {
+    constexpr Degrees<T>& Degrees<T>::operator/=(ValueType val) noexcept {
         FlAssert(val != 0, "Cannot divide by 0.");
-        Value += static_cast<T>(val);
+        Value /= static_cast<T>(val);
 
         return *this;
     }
@@ -112,7 +112,7 @@ namespace Fl {
 
     template <typename T>
     constexpr Radians<T>::Radians(Degrees<T> deg) noexcept
-        : Value{deg * Constants::DegToRadConstant<T>} {
+        : Value{deg.Value * Constants::DegToRadConstant<T>} {
     }
 
     template <typename T>
@@ -147,7 +147,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Radians<T>& Radians<T>::operator+=(ValueType val) const noexcept {
+    constexpr Radians<T>& Radians<T>::operator+=(ValueType val) noexcept {
         Value += static_cast<T>(val);
 
         return *this;
@@ -155,7 +155,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Radians<T>& Radians<T>::operator-=(ValueType val) const noexcept {
+    constexpr Radians<T>& Radians<T>::operator-=(ValueType val) noexcept {
         Value -= static_cast<T>(val);
 
         return *this;
@@ -163,7 +163,7 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Radians<T>& Radians<T>::operator*=(ValueType val) const noexcept {
+    constexpr Radians<T>& Radians<T>::operator*=(ValueType val) noexcept {
         Value *= static_cast<T>(val);
 
         return *this;
@@ -171,9 +171,9 @@ namespace Fl {
 
     template <typename T>
     template <typename ValueType>
-    constexpr Radians<T>& Radians<T>::operator/=(ValueType val) const noexcept {
+    constexpr Radians<T>& Radians<T>::operator/=(ValueType val) noexcept {
         FlAssert(val != 0, "Cannot divide by 0.");
-        Value += static_cast<T>(val);
+        Value /= static_cast<T>(val);
 
         return *this;
     }
