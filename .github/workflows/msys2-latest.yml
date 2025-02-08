@@ -51,7 +51,7 @@ jobs:
     - name: Prepare artifacts
       run: |
         mkdir ${{ matrix.mode }}-artifact
-        move bin/mingw_x64_${{ matrix.mode }}/ ${{ matrix.mode }}-artifact/
+        mv bin/mingw_x64_${{ matrix.mode }}/ ${{ matrix.mode }}-artifact/
     
     - uses: actions/upload-artifact@v4
       with:
