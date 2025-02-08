@@ -15,7 +15,7 @@ jobs:
       matrix:
         mode: [debug, release]
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
 
     steps:
@@ -29,7 +29,7 @@ jobs:
     
     - name: Build ${{ matrix.mode }}
       run: |
-        xmake f -m ${{ matrix.mode }} --build_tests=y -y
+        xmake f -m ${{ matrix.mode }} --arch=x86_64 --build_tests=y -y
         xmake
     
     - name: Run tests
@@ -40,10 +40,10 @@ jobs:
     - name: Prepare artifacts
       run: |
         mkdir ${{ matrix.mode }}-artifact
-        move bin/windows_x64_${{ matrix.mode }}/ ${{ matrix.mode }}-artifact/
+        mv bin/linux_x64_${{ matrix.mode }}/ ${{ matrix.mode }}-artifact/
     
     - uses: actions/upload-artifact@v4
       with:
-        name: FlashlightEngine_Windows_${{ matrix.mode }}_${{ github.run_id }}
+        name: FlashlightEngine_Linux_${{ matrix.mode }}_${{ github.run_id }}
         path: ${{ matrix.mode }}-artifact/
-      name: Upload debug artifacts
+      name: Upload artifacts
