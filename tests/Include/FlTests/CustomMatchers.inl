@@ -57,8 +57,8 @@ constexpr IsNearlyEqualToMatrix<T, Width, Height, ToleranceType>::IsNearlyEqualT
 }
 
 template <typename T, Fl::U64 Width, Fl::U64 Height, typename ToleranceType>
-constexpr bool IsNearlyEqualToMatrix<T, Width, Height, ToleranceType>::match(const T& base) const {
-    const_cast<IsNearlyEqualToMatrix*>(this)->m_base = base;
+constexpr bool IsNearlyEqualToMatrix<T, Width, Height, ToleranceType>::match(const Fl::Matrix<T, Width, Height>& base) const {
+    const_cast<IsNearlyEqualToMatrix*>(this)->m_Base = base;
 
     return Fl::FloatMath::AreNearlyEqual(m_Base, m_Comparison, m_AbsoluteTolerance);
 }

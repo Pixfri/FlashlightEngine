@@ -54,10 +54,10 @@ namespace Fl {
                                       mat[8],  mat[9],  mat[10],
                                       mat[12], mat[13], mat[14]);
 
-            return computeMatrixDeterminant(leftMatrix)        * mat[0]
-                 - computeMatrixDeterminant(centerLeftMatrix)  * mat[1]
-                 + computeMatrixDeterminant(centerRightMatrix) * mat[2]
-                 - computeMatrixDeterminant(rightMatrix)       * mat[3];
+            return ComputeMatrixDeterminant(leftMatrix)        * mat[0]
+                 - ComputeMatrixDeterminant(centerLeftMatrix)  * mat[1]
+                 + ComputeMatrixDeterminant(centerRightMatrix) * mat[2]
+                 - ComputeMatrixDeterminant(rightMatrix)       * mat[3];
         }
 
         template <typename T>
@@ -92,9 +92,9 @@ namespace Fl {
                                    mat[3], mat[4]);
 
             const Mat3<T> cofactors(
-                 topLeft.computeDeterminant(), -topCenter.computeDeterminant(),  topRight.computeDeterminant(),
-                -midLeft.computeDeterminant(),  midCenter.computeDeterminant(), -midRight.computeDeterminant(),
-                 botLeft.computeDeterminant(), -botCenter.computeDeterminant(),  botRight.computeDeterminant()
+                 topLeft.ComputeDeterminant(), -topCenter.ComputeDeterminant(),  topRight.ComputeDeterminant(),
+                -midLeft.ComputeDeterminant(),  midCenter.ComputeDeterminant(), -midRight.ComputeDeterminant(),
+                 botLeft.ComputeDeterminant(), -botCenter.ComputeDeterminant(),  botRight.ComputeDeterminant()
             );
 
             return cofactors * invDeterminant;
@@ -197,7 +197,7 @@ namespace Fl {
             for (U64 widthIndex = 0; widthIndex < Width; ++widthIndex) {
                 const U64 finalIndex = resultIndex + widthIndex;
 
-                m_Data[finalIndex] = mat.m_Data[finalIndex + widthStride];
+                m_Data[finalIndex] = mat[finalIndex + widthStride];
             }
 
             ++widthStride;
@@ -333,7 +333,13 @@ namespace Fl {
     constexpr Matrix<T, Width, Height> Matrix<T, Width, Height>::Inverse() const noexcept {
         static_assert(Width == Height, "[Error] Matrix must be a square one.");
 
-        return Detail::ComputeMatrixInverse(*this);
+        const T determinant = Detail::ComputeMatrixDeterminant(*this);
+
+        if (determinant == 0) {
+            return *this;
+        }
+
+        return Detail::ComputeMatrixInverse(*this, static_cast<T>(1) / determinant);
     }
 
     template <typename T, U64 Width, U64 Height>
@@ -544,9 +550,9 @@ namespace Fl {
     constexpr bool Matrix<T, Width, Height>::operator==(const Matrix& mat) const noexcept {
         if constexpr (std::is_floating_point_v<T>) {
             return FloatMath::AreNearlyEqual(*this, mat);
+        } else {
+            return StrictlyEquals(mat);
         }
-
-        return StrictlyEquals(mat);
     }
 
     template <typename T, U64 Width, U64 Height>
