@@ -30,7 +30,7 @@ constexpr IsNearlyEqualToVector<T, Size, ToleranceType>::IsNearlyEqualToVector(c
 }
 
 template <typename T, Fl::U64 Size, typename ToleranceType>
-constexpr bool IsNearlyEqualToVector<T, Size, ToleranceType>::match(const T& base) const {
+constexpr bool IsNearlyEqualToVector<T, Size, ToleranceType>::match(const Fl::Vector<T, Size>& base) const {
     const_cast<IsNearlyEqualToVector*>(this)->m_Base = base;
 
     return Fl::FloatMath::AreNearlyEqual(m_Base, m_Comparison, m_AbsoluteTolerance);

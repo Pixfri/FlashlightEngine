@@ -80,7 +80,7 @@ public:
      * @param base Base vector to compare to.
      * @return True if values are nearly equal to each other, false otherwise.
      */
-    constexpr bool match(const T& base) const override;
+    constexpr bool match(const Fl::Vector<T, Size>& base) const override;
 
     /**
      * @brief Gets the description of the error if the match failed.

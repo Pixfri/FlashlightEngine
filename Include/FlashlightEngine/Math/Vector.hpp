@@ -29,19 +29,13 @@ namespace Fl {
     class Vector {
     public:
         constexpr Vector() noexcept = default;
-
         constexpr explicit Vector(const Vector<T, Size + 1>& vec) noexcept;
-
-        constexpr explicit Vector(const Vector<T, Size - 1>& vec, T val) noexcept;
-
+        constexpr Vector(const Vector<T, Size - 1>& vec, T val) noexcept;
         constexpr explicit Vector(T val) noexcept;
-
         template <typename... Args,
-                  // There can't be more or less values than Size
-                  typename = std::enable_if_t<sizeof...(Args) == Size>,
-                  // Given values must be of a convertible type
-                  typename = std::enable_if_t<(std::is_convertible_v<std::decay_t<Args>, T> && ...)>>
-        constexpr explicit Vector(Args&&... args) noexcept;
+                  typename = std::enable_if_t<sizeof...(Args) == Size>, // There can't be more or less values than Size
+                  typename = std::enable_if_t<(std::is_convertible_v<std::decay_t<Args>, T> && ...)>> // Given values must be of a convertible type
+        constexpr explicit Vector(Args&&... args) noexcept : m_Data{ static_cast<T>(args)... } {};
 
         constexpr ~Vector() noexcept = default;
 
@@ -147,7 +141,7 @@ namespace Fl {
          *                    integer type to avoid overflows.
          * @return The length of the vector.
          */
-        template <typename LengthType = std::conditional_t<std::is_integral_v<T>, U64, T>>
+        template <typename LengthType = std::conditional_t<std::is_integral_v<T>, F32, T>>
         constexpr LengthType ComputeLength() const noexcept;
 
         /**
@@ -281,56 +275,56 @@ namespace Fl {
          * @param vec Vector to be added.
          * @return Reference to the result of the summed vectors.
          */
-        constexpr Vector& operator+=(const Vector& vec) const noexcept;
+        constexpr Vector& operator+=(const Vector& vec) noexcept;
 
         /**
          * Element-wise vector-value addition assignment operator.
          * @param val Value to be added.
          * @return Reference to the result of the vector summed with the value.
          */
-        constexpr Vector& operator+=(T val) const noexcept;
+        constexpr Vector& operator+=(T val) noexcept;
 
         /**
          * @brief Element-wise vector-vector subtraction assignment operator.
          * @param vec Vector to be subtracted.
          * @return Reference to the result of the subtraction.
          */
-        constexpr Vector& operator-=(const Vector& vec) const noexcept;
+        constexpr Vector& operator-=(const Vector& vec) noexcept;
 
         /**
          * @brief Element-wise vector-value subtraction assignment operator.
          * @param val Value to be subtracted.
          * @return Reference to the result of the subtraction.
          */
-        constexpr Vector& operator-=(T val) const noexcept;
+        constexpr Vector& operator-=(T val) noexcept;
 
         /**
          * @brief Element-wise vector-vector multiplication assignment operator (performs a [Hadamard product](https://en.wikipedia.org/wiki/Hadamard_product_(matrices)).
          * @param vec Vector to be multiplied by.
          * @return Reference to the result of the multiplication.
          */
-        constexpr Vector& operator*=(const Vector& vec) const noexcept;
+        constexpr Vector& operator*=(const Vector& vec) noexcept;
 
         /**
          * @brief Element-wise vector-value multiplication assignment operator.
          * @param val Value to be multiplied by.
          * @return Reference to the result of the multiplication.
          */
-        constexpr Vector& operator*=(T val) const noexcept;
+        constexpr Vector& operator*=(T val) noexcept;
 
         /**
          * @brief Element-wise vector-vector division assignment operator.
          * @param vec Vector to be divided by.
          * @return Reference to the result of the division.
          */
-        constexpr Vector& operator/=(const Vector& vec) const noexcept;
+        constexpr Vector& operator/=(const Vector& vec) noexcept;
 
         /**
          * @brief Element-wise vector-value division assignment operator.
          * @param val Value to be divided by.
          * @return Reference to the result of the division.
          */
-        constexpr Vector& operator/=(T val) const noexcept;
+        constexpr Vector& operator/=(T val) noexcept;
 
         /**
          * @brief Element indexing operator.
@@ -376,7 +370,7 @@ namespace Fl {
          * @param vec Vector to output.
          * @return The modified stream.
          */
-        friend std::ostream& operator<<<>(std::ostream& stream, const Vector& vec);
+        friend std::ostream& operator<< <>(std::ostream& stream, const Vector& vec);
 
     private:
         std::array<T, Size> m_Data{};
@@ -407,17 +401,12 @@ namespace Fl {
     // Deduction guides
 
     template <typename T, typename... Args>
-    Vector(T, Args... args) -> Vector<T, sizeof...(Args) + 1>;
+    Vector(T, Args... args) -> Vector<T, sizeof...(args) + 1>;
 
     // Aliases
-    template <typename T>
-    using Vec2 = Vector<T, 2>;
-
-    template <typename T>
-    using Vec3 = Vector<T, 3>;
-
-    template <typename T>
-    using Vec4 = Vector<T, 4>;
+    template <typename T> using Vec2 = Vector<T, 2>;
+    template <typename T> using Vec3 = Vector<T, 3>;
+    template <typename T> using Vec4 = Vector<T, 4>;
 
     using Vec2b = Vec2<U8>;
     using Vec3b = Vec3<U8>;
@@ -440,10 +429,12 @@ namespace Fl {
     using Vec4d = Vec4<F64>;
 
     namespace Axis {
-        constexpr Vec3f X(1.0f, 0.0f, 0.0f);
-        constexpr Vec3f Y(0.0f, 1.0f, 0.0f);
-        constexpr Vec3f Z(0.0f, 0.0f, 1.0f);
+        constexpr Vec3f X(1.f, 0.f, 0.f);
+        constexpr Vec3f Y(0.f, 1.f, 0.f);
+        constexpr Vec3f Z(0.f, 0.f, 1.f);
     }
+
+    // These are not capitalized at the beginning because C++ requires them to be called `get` for structure bindings.
 
     /**
      * @brief Vector element fetching function for a constant lvalue reference.
@@ -454,7 +445,7 @@ namespace Fl {
      * @return Constant lvalue reference on the vector's element.
      */
     template <U64 I, typename T, U64 Size>
-    constexpr const T& Get(const Vector<T, Size>& vec);
+    constexpr const T& get(const Vector<T, Size>& vec);
 
     /**
      * @brief Vector element fetching function for a non-constant lvalue reference.
@@ -465,7 +456,7 @@ namespace Fl {
      * @return Non-constant lvalue reference on the vector's element.
      */
     template <U64 I, typename T, U64 Size>
-    constexpr T& Get(const Vector<T, Size>& vec);
+    constexpr T& get(Vector<T, Size>& vec);
 
     /**
      * @brief Vector element fetching function for a non-constant rvalue reference.
@@ -476,7 +467,7 @@ namespace Fl {
      * @return Non-constant rvalue reference on the vector's element.
      */
     template <U64 I, typename T, U64 Size>
-    constexpr T&& Get(const Vector<T, Size>& vec);
+    constexpr T&& get(Vector<T, Size>&& vec);
 }
 
 /**

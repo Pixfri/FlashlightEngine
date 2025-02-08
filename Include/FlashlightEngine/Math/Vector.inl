@@ -34,12 +34,6 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    template <typename... Args, typename, typename>
-    constexpr Vector<T, Size>::Vector(Args&&... args) noexcept
-        : m_Data{static_cast<T>(args)...} {
-    }
-
-    template <typename T, U64 Size>
     constexpr U64 Vector<T, Size>::GetSize() const noexcept {
         return Size;
     }
@@ -293,7 +287,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator+=(const Vector& vec) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator+=(const Vector& vec) noexcept {
         for (U64 i = 0; i < Size; i++) {
             m_Data[i] += vec[i];
         }
@@ -302,7 +296,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator+=(T val) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator+=(T val) noexcept {
         for (T& element : m_Data) {
             element += val;
         }
@@ -311,7 +305,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator-=(const Vector& vec) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator-=(const Vector& vec) noexcept {
         for (U64 i = 0; i < Size; i++) {
             m_Data[i] -= vec[i];
         }
@@ -320,7 +314,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator-=(T val) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator-=(T val) noexcept {
         for (T& element : m_Data) {
             element -= val;
         }
@@ -329,7 +323,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator*=(const Vector& vec) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator*=(const Vector& vec) noexcept {
         for (U64 i = 0; i < Size; i++) {
             m_Data[i] *= vec[i];
         }
@@ -338,7 +332,7 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator*=(T val) const noexcept {
+    constexpr Vector<T, Size>& Vector<T, Size>::operator*=(T val) noexcept {
         for (T& element : m_Data) {
             element *= val;
         }
@@ -347,10 +341,10 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator/=(const Vector& vec) const noexcept {
-        if constexpr (std::is_integral_v<T>)
-            FlAssert(std::find(vec.m_Data.cbegin(), vec.m_Data.cend(), 0) == vec.m_Data.cend(),
-                     "Division by 0 is undefined.");
+    constexpr Vector<T, Size>& Vector<T, Size>::operator/=(const Vector& vec) noexcept {
+        if constexpr (std::is_integral_v<T>) {
+            FlAssert(std::find(vec.m_Data.cbegin(), vec.m_Data.cend(), 0) == vec.m_Data.cend(), "Integer division by 0 is undefined.");
+        }
 
         for (U64 i = 0; i < Size; i++) {
             m_Data[i] /= vec[i];
@@ -360,9 +354,10 @@ namespace Fl {
     }
 
     template <typename T, U64 Size>
-    constexpr Vector<T, Size>& Vector<T, Size>::operator/=(T val) const noexcept {
-        if constexpr (std::is_integral_v<T>)
-            FlAssert(val != 0, "Division by 0 is undefined.");
+    constexpr Vector<T, Size>& Vector<T, Size>::operator/=(T val) noexcept {
+        if constexpr (std::is_integral_v<T>) {
+            FlAssert(val != 0, "Integer division by 0 is undefined.");
+        }
 
         for (T& element : m_Data) {
             element /= val;
@@ -385,9 +380,9 @@ namespace Fl {
     constexpr bool Vector<T, Size>::operator==(const Vector& vec) const noexcept {
         if constexpr (std::is_floating_point_v<T>) {
             return FloatMath::AreNearlyEqual(*this, vec);
+        } else {
+            return StrictlyEquals(vec);
         }
-
-        return StrictlyEquals(vec);
     }
 
     template <typename T, U64 Size>
@@ -433,19 +428,19 @@ namespace Fl {
     }
 
     template <U64 I, typename T, U64 Size>
-    constexpr const T& Get(const Vector<T, Size>& vec) {
+    constexpr const T& get(const Vector<T, Size>& vec) {
         static_assert(I < Size);
         return vec[I];
     }
 
     template <U64 I, typename T, U64 Size>
-    constexpr T& Get(const Vector<T, Size>& vec) {
+    constexpr T& get(Vector<T, Size>& vec) {
         static_assert(I < Size);
         return vec[I];
     }
 
     template <U64 I, typename T, U64 Size>
-    constexpr T&& Get(const Vector<T, Size>& vec) {
+    constexpr T&& get(Vector<T, Size>&& vec) {
         static_assert(I < Size);
         return std::move(vec[I]);
     }
