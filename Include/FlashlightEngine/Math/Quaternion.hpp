@@ -203,7 +203,42 @@ namespace Fl {
      */
     template <typename T>
     constexpr Vec3<T> operator*(const Vec3<T>& vec, const Quaternion<T>& quat) noexcept;
+
+    // Deduction guide
+
+    template <typename T>
+    Quaternion(Degrees<T>, ...) -> Quaternion<T>;
+
+    // Aliases
+    using Quaternionf = Quaternion<F32>;
+    using Quaterniond = Quaternion<F64>;
+
+    template <U64 Index, typename T>
+    constexpr T get(const Quaternion<T>& quat) noexcept {
+        static_assert(Index < 4);
+
+        if constexpr (Index == 0)      return quat.W();
+        else if constexpr (Index == 1) return quat.X();
+        else if constexpr (Index == 2) return quat.Y();
+        else                           return quat.Z();
+    }
 }
+
+/**
+ * @brief Specialization of std::tuple_size for Fl::Quaternion.
+ * @tparam T Type of the quaternion's data.
+ */
+template <typename T>
+struct std::tuple_size<Fl::Quaternion<T>> : std::integral_constant<std::size_t, 4> {};
+
+/**
+ * @brief Specialization of std::tuple_element for Fl::Quaternion.
+ * @tparam Index Index of the element (0, 1, 2 or 3 for the W, X, Y or Z component, respectively).
+ * @tparam T Type of the quaternion's data.
+ */
+template <std::size_t Index, typename T>
+struct std::tuple_element<Index, Fl::Quaternion<T>> { using type = T; };
+
 
 #include <FlashlightEngine/Math/Quaternion.inl>
 

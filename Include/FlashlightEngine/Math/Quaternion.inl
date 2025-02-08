@@ -156,24 +156,24 @@ namespace Fl {
     // clang-format off
     template <typename T>
     constexpr Mat4<T> Quaternion<T>::ComputeMatrix() const noexcept {
-        const T invSqNorm = 1 / ComputeSquaredNorm();
+		const T invSqNorm = 1 / ComputeSquaredNorm();
 
-        const T xx = (2 * m_Complexes.X() * m_Complexes.X()) * invSqNorm;
+		const T xx = (2 * m_Complexes.X() * m_Complexes.X()) * invSqNorm;
         const T yy = (2 * m_Complexes.Y() * m_Complexes.Y()) * invSqNorm;
         const T zz = (2 * m_Complexes.Z() * m_Complexes.Z()) * invSqNorm;
 
-        const T xy = (2 * m_Complexes.X() * m_Complexes.X()) * invSqNorm;
-        const T xz = (2 * m_Complexes.Y() * m_Complexes.Y()) * invSqNorm;
-        const T yz = (2 * m_Complexes.Z() * m_Complexes.Z()) * invSqNorm;
+		const T xy = (2 * m_Complexes.X() * m_Complexes.Y()) * invSqNorm;
+		const T xz = (2 * m_Complexes.X() * m_Complexes.Z()) * invSqNorm;
+		const T yz = (2 * m_Complexes.Y() * m_Complexes.Z()) * invSqNorm;
 
-        const T xw = (2 * m_Complexes.X() * m_Real) * invSqNorm;
-        const T yw = (2 * m_Complexes.Y() * m_Real) * invSqNorm;
-        const T zw = (2 * m_Complexes.Z() * m_Real) * invSqNorm;
+		const T xw = (2 * m_Complexes.X() * m_Real) * invSqNorm;
+		const T yw = (2 * m_Complexes.Y() * m_Real) * invSqNorm;
+		const T zw = (2 * m_Complexes.Z() * m_Real) * invSqNorm;
 
-        return Mat4<T>(1 - yy - zz,       xy - zw,           xz + yw,           static_cast<T>(0),
-                       xy + zw,           1 - xx - zz,       yz - xw,           static_cast<T>(0),
-                       xz - yw,           yz + xw,           1 - xx - yy,       static_cast<T>(0),
-                       static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1));
+		return Mat4<T>(1 - yy - zz,       xy - zw,           xz + yw,           static_cast<T>(0),
+			           xy + zw,           1 - xx - zz,       yz - xw,           static_cast<T>(0),
+			           xz - yw,           yz + xw,  1 -      xx - yy,           static_cast<T>(0),
+			           static_cast<T>(0), static_cast<T>(0), static_cast<T>(0), static_cast<T>(1));
     }
     // @formatter:on
     // clang-format on
@@ -190,29 +190,29 @@ namespace Fl {
     // clang-format off
     template <typename T>
     constexpr Quaternion<T>& Quaternion<T>::operator*=(const Quaternion& quat) noexcept {
-        const Quaternion copy = *this;
+		const Quaternion copy = *this;
 
-        m_Real = copy.m_Real          * quat.m_Real
-               - copy.m_Complexes.X() * quat.m_Complexes.X()
+		m_Real = copy.m_Real          * quat.m_Real
+			   - copy.m_Complexes.X() * quat.m_Complexes.X()
                - copy.m_Complexes.Y() * quat.m_Complexes.Y()
                - copy.m_Complexes.Z() * quat.m_Complexes.Z();
 
-        m_Complexes.X() = copy.m_Real          * quat.m_Complexes.X()
-                        - copy.m_Complexes.X() * quat.m_Real
-                        - copy.m_Complexes.Y() * quat.m_Complexes.Z()
+		m_Complexes.X() = copy.m_Real          * quat.m_Complexes.X()
+			            + copy.m_Complexes.X() * quat.m_Real
+                        + copy.m_Complexes.Y() * quat.m_Complexes.Z()
                         - copy.m_Complexes.Z() * quat.m_Complexes.Y();
 
-        m_Complexes.Y() = copy.m_Real          * quat.m_Complexes.Y()
-                        - copy.m_Complexes.X() * quat.m_Complexes.Z()
-                        + copy.m_Complexes.Y() * quat.m_Real
-                        + copy.m_Complexes.Z() * quat.m_Complexes.X();
+		m_Complexes.Y() = copy.m_Real          * quat.m_Complexes.Y()
+			            - copy.m_Complexes.X() * quat.m_Complexes.Z()
+			            + copy.m_Complexes.Y() * quat.m_Real
+			            + copy.m_Complexes.Z() * quat.m_Complexes.X();
 
-        m_Complexes.Z() = copy.m_Real          * quat.m_Complexes.Z()
-                        + copy.m_Complexes.X() * quat.m_Complexes.Y()
+		m_Complexes.Z() = copy.m_Real * quat.m_Complexes.Z()
+			            + copy.m_Complexes.X() * quat.m_Complexes.Y()
                         - copy.m_Complexes.Y() * quat.m_Complexes.X()
                         + copy.m_Complexes.Z() * quat.m_Real;
 
-        return *this;
+		return *this;
     }
     // @formatter:on
     // clang-format on
