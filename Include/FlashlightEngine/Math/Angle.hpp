@@ -308,7 +308,7 @@ namespace Fl {
     using Radiansld = Radians<long double>;
 
     namespace Literals {
-        constexpr Degreesld operator ""_deg(const U64 val) noexcept {
+        constexpr Degreesld operator ""_deg(const unsigned long long val) noexcept {
             return Degreesld(static_cast<long double>(val));
         }
 
@@ -316,7 +316,7 @@ namespace Fl {
             return Degreesld(val);
         }
 
-        constexpr Radiansld operator ""_rad(const U64 val) noexcept {
+        constexpr Radiansld operator ""_rad(const unsigned long long val) noexcept {
             return Radiansld(static_cast<long double>(val));
         }
 
