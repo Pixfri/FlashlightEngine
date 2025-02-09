@@ -14,13 +14,13 @@
 #elif defined(__GNUC__)
 #   define FL_COMPILER_GCC
 
-#   ifdef (__MINGW32__)
+#   if defined(__MINGW32__)
 #       define FL_COMPILER_MINGW
 #   endif
 #elif defined(__clang__)
 #   define FL_COMPILER_CLANG
 
-#   ifdef (__MINGW32__)
+#   if defined(__MINGW32__)
 #       define FL_COMPILER_MINGW
 #   endif
 #else
