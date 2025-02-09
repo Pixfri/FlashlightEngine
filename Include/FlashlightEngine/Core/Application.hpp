@@ -10,6 +10,7 @@
 #include <FlashlightEngine/Prerequisites.hpp>
 
 #include <FlashlightEngine/Core/Assert.hpp>
+#include <FlashlightEngine/Core/ApplicationComponent.hpp>
 #include <FlashlightEngine/Core/World.hpp>
 #include <FlashlightEngine/DataStructures/Bitset.hpp>
 
@@ -29,6 +30,8 @@ namespace Fl {
     public:
         explicit Application(U64 worldCount = 1);
         
+        inline const std::vector<ApplicationComponentPtr>& GetAppComponents() const;
+        inline std::vector<ApplicationComponentPtr>& GetAppComponents();
         inline const std::vector<WorldPtr>& GetWorlds() const;
         inline std::vector<WorldPtr>& GetWorlds();
         inline FrameTimeInfo GetTimeInfo() const;
@@ -43,6 +46,15 @@ namespace Fl {
          */
         template <typename... Args>
         World& AddWorld(Args&&... args);
+
+        /**
+         * @brief Adds a component to the application.
+         * @tparam Args Types of the arguments to forward to the application component.
+         * @param args Arguments to forward to the application component.
+         * @return A reference to the new application component.
+         */
+        template <typename... Args>
+        ApplicationComponent& AddComponent(Args&&... args);
 
         /**
          * @brief Runs the application.
@@ -73,6 +85,9 @@ namespace Fl {
 
         std::vector<WorldPtr> m_Worlds{};
         Bitset m_ActiveWorlds{};
+
+        std::vector<ApplicationComponentPtr> m_Components{};
+        Bitset m_ActiveComponents{};
 
         FrameTimeInfo m_TimeInfo{ 0.0f, 0.0f, 0, 0.016666f };
         std::chrono::time_point<std::chrono::system_clock> m_LastFrameTime = std::chrono::system_clock::now();

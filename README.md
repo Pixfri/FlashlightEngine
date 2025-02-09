@@ -77,3 +77,4 @@ depends on the main engine target, so when you will try to build the `FlTests` t
 - [ ] Model loading
 - [ ] Scripting (with Lua)
 - [ ] Audio
+- [X] Application component system to extend the Fl::Application class' features.

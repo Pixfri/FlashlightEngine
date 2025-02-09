@@ -47,6 +47,16 @@ namespace Fl {
             m_RemainingTime -= m_TimeInfo.SubStepTime;
         }
 
+        for (U64 componentIndex = 0; componentIndex < m_Components.size(); ++componentIndex) {
+            if (!m_ActiveComponents[componentIndex]) {
+                continue;
+            }
+
+            if (!m_Components[componentIndex]->Update(m_TimeInfo)) {
+                m_ActiveComponents.SetBit(componentIndex, false);
+            }
+        }
+
         for (U64 worldIndex = 0; worldIndex < m_Worlds.size(); ++worldIndex) {
             if (!m_ActiveWorlds[worldIndex]) {
                 continue;
@@ -60,7 +70,7 @@ namespace Fl {
 
         FL_PROFILER_FRAMEMARK;
 
-        return (m_IsRunning && !m_ActiveWorlds.IsEmpty());
+        return (m_IsRunning && !m_ActiveWorlds.IsEmpty() && !m_ActiveComponents.IsEmpty());
     }
 
     void Application::SetupLogger() {

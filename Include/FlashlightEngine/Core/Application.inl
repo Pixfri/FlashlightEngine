@@ -5,6 +5,14 @@
 #pragma once
 
 namespace Fl {
+	inline const std::vector<ApplicationComponentPtr>& Application::GetAppComponents() const {
+		return m_Components;
+	}
+
+	inline std::vector<ApplicationComponentPtr>& Application::GetAppComponents() {
+		return m_Components;
+	}
+
 	inline const std::vector<WorldPtr>& Application::GetWorlds() const {
 		return m_Worlds;
 	}
@@ -29,6 +37,14 @@ namespace Fl {
 		m_ActiveWorlds.SetBit(m_Worlds.size() - 1);
 
 		return *m_Worlds.back();
+	}
+
+	template <typename... Args>
+	ApplicationComponent& Application::AddComponent(Args&&... args) {
+		m_Components.emplace_back(std::make_unique<ApplicationComponent>(std::forward<Args>(args)...));
+		m_ActiveComponents.SetBit(m_Components.size() - 1);
+
+		return *m_Components.back();
 	}
 
 	template <typename FuncType>
