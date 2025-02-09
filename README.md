@@ -64,7 +64,7 @@ depends on the main engine target, so when you will try to build the `FlTests` t
   - [ ] UI overlay
   - [ ] Cubemap
   - [ ] Normal mapping
-- [ ] Custom math library
+- [X] Custom math library
   - [X] Vector class
   - [X] Matrix class
   - [X] Quaternion class
