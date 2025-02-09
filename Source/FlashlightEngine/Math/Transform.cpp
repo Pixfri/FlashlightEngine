@@ -67,6 +67,8 @@ namespace Fl {
 		m_Scale.X() *= x;
 		m_Scale.Y() *= y;
 		m_Scale.Z() *= z;
+
+		m_Updated = true;
 	}
 
 	Fl::Mat4f Transform::ComputeTranslationMatrix(const bool reverseTranslation) const {

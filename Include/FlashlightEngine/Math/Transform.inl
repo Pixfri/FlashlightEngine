@@ -5,7 +5,7 @@
 #pragma once
 
 namespace Fl {
-    inline explicit Transform::Transform(const Vec3f& position, const Quaternionf& rotation, const Vec3f& scale)
+    inline Transform::Transform(const Vec3f& position, const Quaternionf& rotation, const Vec3f& scale)
         : m_Position{ position }, m_Rotation{ rotation }, m_Scale{ scale } {
 	}
 
