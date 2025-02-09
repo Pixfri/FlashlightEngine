@@ -14,8 +14,8 @@
 #include <source_location>
 
 namespace Fl {
-    template <typename T, typename... Args>
-    void FlAssert(T expr, const std::string& error, const std::source_location& location = std::source_location::current());
+    template <typename T>
+    constexpr void FlAssert(T expr, const std::string& error, const std::source_location& location = std::source_location::current());
 }
 
 #include <FlashlightEngine/Core/Assert.inl>
