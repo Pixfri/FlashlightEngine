@@ -65,12 +65,13 @@ depends on the main engine target, so when you will try to build the `FlTests` t
   - [ ] Cubemap
   - [ ] Normal mapping
 - [ ] Custom math library
-  - [ ] Vector class
-  - [ ] Matrix class
-  - [ ] Quaternion class
-  - [ ] Transform entity component
-  - [ ] Angle units classes
+  - [X] Vector class
+  - [X] Matrix class
+  - [X] Quaternion class
+  - [X] Transform entity component
+  - [X] Angle units classes
   - [X] Some constants
+  - [X] Some utilities (linear interpolation, smooth step, etc.)
 - [ ] Physics
 - [ ] Animations
 - [ ] Model loading
