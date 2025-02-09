@@ -52,7 +52,7 @@ namespace Fl {
                 continue;
             }
 
-            if (!m_Components[componentIndex]->Update(m_TimeInfo)) {
+            if (!m_Components[componentIndex] || !m_Components[componentIndex]->Update(m_TimeInfo)) {
                 m_ActiveComponents.SetBit(componentIndex, false);
             }
         }
@@ -70,7 +70,7 @@ namespace Fl {
 
         FL_PROFILER_FRAMEMARK;
 
-        return (m_IsRunning && !m_ActiveWorlds.IsEmpty() && !m_ActiveComponents.IsEmpty());
+        return (m_IsRunning && (!m_ActiveWorlds.IsEmpty() || !m_ActiveComponents.IsEmpty()));
     }
 
     void Application::SetupLogger() {

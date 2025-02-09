@@ -39,12 +39,54 @@ namespace Fl {
 		return *m_Worlds.back();
 	}
 
-	template <typename... Args>
-	ApplicationComponent& Application::AddComponent(Args&&... args) {
-		m_Components.emplace_back(std::make_unique<ApplicationComponent>(std::forward<Args>(args)...));
-		m_ActiveComponents.SetBit(m_Components.size() - 1);
+	template <typename ComponentType, typename... Args>
+	ComponentType& Application::AddComponent(Args&&... args) {
+		static_assert(std::is_base_of_v<ApplicationComponent, ComponentType>, "[Error] The application component must be derived from Fl::ApplicationComponent.");
 
-		return *m_Components.back();
+		const U64 componentId = ApplicationComponent::GetId<ComponentType>();
+
+		if (componentId >= m_Components.size()) {
+			m_Components.resize(componentId + 1);
+		}
+
+		m_Components[componentId] = std::make_unique<ComponentType>(std::forward<Args>(args)...);
+		m_ActiveComponents.SetBit(componentId);
+
+		return static_cast<ComponentType&>(*m_Components[componentId]);
+	}
+
+	template <typename ComponentType>
+	bool Application::HasComponent() const {
+		static_assert(std::is_base_of_v<ApplicationComponent, ComponentType>, "[Error] The application component must be derived from Fl::ApplicationComponent.");
+
+		const U64 componentId = ApplicationComponent::GetId<ComponentType>();
+
+		return ((componentId < m_Components.size()) && m_Components[componentId]);
+	}
+
+	template <typename ComponentType>
+	const ComponentType& Application::GetComponent() const {
+		static_assert(std::is_base_of_v<ApplicationComponent, ComponentType>, "[Error] The application component must be derived from Fl::ApplicationComponent.");
+
+		if (HasComponent<ComponentType>()) {
+			return static_cast<const ComponentType&>(*m_Components[ApplicationComponent::GetId<ComponentType>()]);
+		}
+
+		throw std::runtime_error("[Error] No component available for the given type.");
+	}
+
+	template <typename ComponentType>
+	ComponentType& Application::GetComponent() {
+		return const_cast<ComponentType&>(static_cast<const Application*>(this)->GetComponent<ComponentType>());
+	}
+
+	template <typename ComponentType>
+	void Application::RemoveComponent() {
+		static_assert(std::is_base_of_v<ApplicationComponent, ComponentType>, "[Error] The application component must be derived from Fl::ApplicationComponent.");
+
+		if (HasComponent<ComponentType>()) {
+			m_Components[ApplicationComponent::GetId<ComponentType>()].reset();
+		}
 	}
 
 	template <typename FuncType>

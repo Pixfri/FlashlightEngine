@@ -49,12 +49,46 @@ namespace Fl {
 
         /**
          * @brief Adds a component to the application.
+         * @tparam ComponentType Type of the component to add.
          * @tparam Args Types of the arguments to forward to the application component.
          * @param args Arguments to forward to the application component.
          * @return A reference to the new application component.
          */
-        template <typename... Args>
-        ApplicationComponent& AddComponent(Args&&... args);
+        template <typename ComponentType, typename... Args>
+        ComponentType& AddComponent(Args&&... args);
+
+        /**
+         * @brief Checks if a given application component is attached to the application.
+         * @tparam ComponentType Type of the component to check.
+         * @return Whether the given component is attached to the application or not.
+         */
+        template <typename ComponentType>
+        [[nodiscard]] bool HasComponent() const;
+
+        /**
+         * @brief Retrieves the component with the given type.
+         * @tparam ComponentType Type of the component to retrieve.
+         * @return A constant reference to the given component.
+         * @throws std::runtime_error If the given component isn't attached to the application.
+         */
+        template <typename ComponentType>
+		const ComponentType& GetComponent() const;
+
+        /**
+         * @brief Retrieves the component with the given type.
+         * @tparam ComponentType Type of the component to retrieve.
+         * @return A reference to the given component.
+         * @throws std::runtime_error If the given component isn't attached to the application.
+         */
+		template <typename ComponentType>
+		ComponentType& GetComponent();
+
+        /**
+         * @brief Removes the given component from the application.
+         * @tparam ComponentType Type of the component to remove.
+         */
+        template <typename ComponentType>
+		void RemoveComponent();
 
         /**
          * @brief Runs the application.
