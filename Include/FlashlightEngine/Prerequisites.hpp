@@ -11,10 +11,18 @@
 
 #if defined(_MSC_VER)
 #   define FL_COMPILER_MSVC
-#elif defined(__gnuc__)
+#elif defined(__GNUC__)
 #   define FL_COMPILER_GCC
+
+#   ifdef (__MINGW32__)
+#       define FL_COMPILER_MINGW
+#   endif
 #elif defined(__clang__)
 #   define FL_COMPILER_CLANG
+
+#   ifdef (__MINGW32__)
+#       define FL_COMPILER_MINGW
+#   endif
 #else
 #   define FL_COMPILER_UNKNOWN
 #   error Could not determine the used compiler.
@@ -24,6 +32,7 @@
 #   define FL_PLATFORM_WINDOWS
 #elif defined(__linux__)
 #   define FL_PLATFORM_LINUX
+#   define FL_PLATFORM_POSIX
 #else
 #   define FL_PLATFORM_UNKNOWN
 #   error Could not determine the target platform.
