@@ -12,7 +12,7 @@
 #include <FlashlightEngine/Core/Assert.hpp>
 #include <FlashlightEngine/Core/ApplicationComponent.hpp>
 #include <FlashlightEngine/Core/World.hpp>
-#include <FlashlightEngine/DataStructures/Bitset.hpp>
+#include <FlashlightEngine/Data/Bitset.hpp>
 
 #include <spdlog/async_logger.h>
 

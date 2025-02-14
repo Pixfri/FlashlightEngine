@@ -10,7 +10,7 @@
 #include <FlashlightEngine/Prerequisites.hpp>
 
 #include <FlashlightEngine/Core/Component.hpp>
-#include <FlashlightEngine/DataStructures/Bitset.hpp>
+#include <FlashlightEngine/Data/Bitset.hpp>
 
 #include <memory>
 #include <stdexcept>

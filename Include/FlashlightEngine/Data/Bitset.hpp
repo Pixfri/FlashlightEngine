@@ -200,6 +200,6 @@ namespace Fl {
     };
 }
 
-#include <FlashlightEngine/DataStructures/Bitset.inl>
+#include <FlashlightEngine/Data/Bitset.inl>
 
 #endif // FL_DATASTRUCTURES_BITSET_HPP

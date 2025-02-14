@@ -2,7 +2,7 @@
 // This file is part of FlashlightEngine.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
-#include <FlashlightEngine/DataStructures/Bitset.hpp>
+#include <FlashlightEngine/Data/Bitset.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -17,7 +17,7 @@ namespace {
     const Fl::Bitset g_Alternated2({false, true, false, true, false, true}); // 0 1 0 1 0 1
 }
 
-TEST_CASE("Bitset: Basic methods", "[Data Structures]") {
+TEST_CASE("Bitset: Basic methods", "[Data]") {
     CHECK(g_FullZeros.IsEmpty());
     CHECK_FALSE(g_FullOnes.IsEmpty());
 
@@ -43,7 +43,7 @@ TEST_CASE("Bitset: Basic methods", "[Data Structures]") {
     CHECK(copy.IsEmpty());
 }
 
-TEST_CASE("Bitset: Bitwise manipulations", "[Data Structures]") {
+TEST_CASE("Bitset: Bitwise manipulations", "[Data]") {
     CHECK((g_Alternated1 & g_Alternated1) == g_Alternated1);
     CHECK((g_Alternated2 & g_Alternated2) == g_Alternated2);
 
@@ -83,7 +83,7 @@ TEST_CASE("Bitset: Bitwise manipulations", "[Data Structures]") {
     CHECK(~g_Alternated2 == g_Alternated1);
 }
 
-TEST_CASE("Bitset: Shifting operations", "[Data Structures]") {
+TEST_CASE("Bitset: Shifting operations", "[Data]") {
     CHECK((g_Alternated1 << 1) == Fl::Bitset({true, false, true, false, true, false, false})); // 1 0 1 0 1 0 0
     CHECK((g_Alternated1 >> 1) == Fl::Bitset({true, false, true, false, true})); // 1 0 1 0 1
 
@@ -96,7 +96,7 @@ TEST_CASE("Bitset: Shifting operations", "[Data Structures]") {
     CHECK(shiftTest == g_Alternated1);
 }
 
-TEST_CASE("Bitset: Printing", "[Data Structures]") {
+TEST_CASE("Bitset: Printing", "[Data]") {
     std::stringstream stream;
 
     stream << g_FullOnes;

@@ -11,9 +11,7 @@
 
 #include <FlashlightEngine/Core/Entity.hpp>
 #include <FlashlightEngine/Core/System.hpp>
-#include <FlashlightEngine/DataStructures/Bitset.hpp>
-
-#include <stdexcept>
+#include <FlashlightEngine/Data/Bitset.hpp>
 
 namespace Fl {
     struct FrameTimeInfo;
