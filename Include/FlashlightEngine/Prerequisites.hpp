@@ -38,6 +38,44 @@
 #   error Could not determine the target platform.
 #endif
 
+#if defined(FL_COMPILER_MSVC)
+#   define DO_PRAGMA(Arg) __pragma(Arg)
+
+#   define PUSH_WARNINGS_STATE DO_PRAGMA(warning(push))
+#   define POP_WARNINGS_STATE DO_PRAGMA(warning(pop))
+
+#   define DISABLE_WARNING(Warning) DO_PRAGMA(warning(disable : Warning))
+
+#   define DISABLE_WARNING_MSVC(Warning) DISABLE_WARNING(Warning)
+#   define DISABLE_WARNING_GCC(Warning)
+#   define DISABLE_WARNING_CLANG(Warning)
+#elif defined(FL_COMPILER_GCC) || defined(FL_COMPILER_CLANG)
+#   define DO_PRAGMA(Arg) _Pragma(#Arg)
+
+#   define PUSH_WARNINGS_STATE DO_PRAGMA(GCC diagnostic push)
+#   define POP_WARNINGS_STATE DO_PRAGMA(GCC diagnostic pop)
+
+#   define DISABLE_WARNING(Warning) DO_PRAGMA(GCC diagnostic ignored #Warning)
+
+#   define DISABLE_WARNING_MSVC(Warning)
+
+#   if defined(FL_COMPILER_CLANG)
+#       define DISABLE_WARNING_GCC(Warning)
+#       define DISABLE_WARNING_CLANG(Warning) DISABLE_WARNING(Warning)
+#   else
+#       define DISABLE_WARNING_GCC(Warning) DISABLE_WARNING(Warning)
+#       define DISABLE_WARNING_CLANG(Warning)
+#   endif
+#else
+#   define DO_PRAGMA(Arg)
+#   define PUSH_WARNINGS_STATE
+#   define POP_WARNINGS_STATE
+#   define DISABLE_WARNING(Warning)
+#   define DISABLE_WARNING_MSVC(Warning)
+#   define DISABLE_WARNING_GCC(Warning)
+#   define DISABLE_WARNING_CLANG(Warning)
+#endif
+
 namespace Fl {
     using I8 = int8_t;
     using I16 = int16_t;
