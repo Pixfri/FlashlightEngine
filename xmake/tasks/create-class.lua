@@ -25,7 +25,7 @@ on_run(function()
 
 	local files = {
 		{ TargetPath = path.join("Include", project, classPath) .. ".hpp", Template = headerTemplate },
-		{ TargetPath = path.join("Include", project, classPath) .. ".inl", Template = inlineTemplate },
+		{ TargetPath = path.join("Include", project, classPath) .. ".inl", Template = sourceTemplate },
 	}
 
 	if not option.get("nocpp") then
@@ -39,7 +39,7 @@ on_run(function()
 		CLASS_NAME = className,
 		CLASS_PATH = classPath,
 		COPYRIGHT = os.date("%Y") .. [[ Jean "Pixfri" Letessier ]],
-		HEADER_GUARD = "PN_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
+		HEADER_GUARD = "FL_" .. classPath:gsub("[/\\]", "_"):upper() .. "_HPP",
 		PROJECT = project,
 	}
 
@@ -67,8 +67,10 @@ headerTemplate = [[
 #ifndef %HEADER_GUARD%
 #define %HEADER_GUARD%
 
-namespace %PROJECT% {
-    class %CLASS_NAME% {
+#include <FlashlightEngine/Prerequisites.hpp>
+
+namespace Fl {
+    class FL_API %CLASS_NAME% {
     public:
         %CLASS_NAME%() = default;
         ~%CLASS_NAME%() = default;
@@ -88,7 +90,7 @@ namespace %PROJECT% {
 #endif // %HEADER_GUARD%
 ]]
 
-inlineTemplate = [[
+sourceTemplate = [[
 // Copyright (C) %COPYRIGHT%
 // This file is part of %PROJECT%.
 // For conditions of distribution and use, see copyright notice in LICENSE.
@@ -97,19 +99,7 @@ inlineTemplate = [[
 
 #include <%PROJECT%/%CLASS_PATH%.hpp>
 
-namespace %PROJECT% {
-    
-}
-]]
-
-sourceTemplate = [[
-// Copyright (C) %COPYRIGHT%
-// This file is part of %PROJECT%.
-// For conditions of distribution and use, see copyright notice in LICENSE.
-
-#include <%PROJECT%/%CLASS_PATH%.hpp>
-
-namespace %PROJECT% {
+namespace Fl {
     
 }
 ]]
