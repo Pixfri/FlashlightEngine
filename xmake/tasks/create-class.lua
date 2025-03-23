@@ -1,4 +1,4 @@
-local headerTemplate, inlineTemplate, sourceTemplate
+local headerTemplate, sourceTemplate
 
 task("create-class")
 
@@ -68,9 +68,10 @@ headerTemplate = [[
 #define %HEADER_GUARD%
 
 #include <FlashlightEngine/Prerequisites.hpp>
+#include <FlashlightEngine/Core/BaseObject.hpp>
 
 namespace Fl {
-    class FL_API %CLASS_NAME% {
+    class FL_API %CLASS_NAME% : public BaseObject {
     public:
         %CLASS_NAME%() = default;
         ~%CLASS_NAME%() = default;
