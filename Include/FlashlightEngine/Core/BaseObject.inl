@@ -34,7 +34,7 @@ namespace Fl {
         return {std::move(name), id};
 #elif defined(FL_COMPILER_CLANG) || defined(FL_COMPILER_GCC)
         // Needs to be demangled with GCC and clang, so we need to use compiler specific APIs.
-        return {std::move(DemangleClassName(tempName)), id};
+        return {DemangleClassName(tempName), id};
 #else
 #   pragma message No way to retrieve the class name was implemented for this compiler.
 #endif
