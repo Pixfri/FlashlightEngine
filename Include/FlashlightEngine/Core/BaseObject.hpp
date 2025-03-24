@@ -9,6 +9,8 @@
 
 #include <FlashlightEngine/Prerequisites.hpp>
 
+#include <string>
+
 namespace Fl {
     /**
      * @brief Base class for all classes in the engine.
@@ -19,18 +21,25 @@ namespace Fl {
     public:
         virtual ~BaseObject() = default;
 
+        struct ClassInfo {
+            std::string name;
+            UInt64 id;
+        };
+
         /**
-         * @brief Gets the ID of the given class.
+         * @brief Gets the info of the given class.
          * This uses CRTP to assign a different ID to each class type it is called with.
          * This function will be instantiated every time it is called with a different type, incrementing the assigned
          * index.
+         * Some compiler trickery is also done to get the class's name, because compilers couldn't agree on the
+         * formatting of the string returned by typeid().name().
          * @note Must be called directly from Fl::BaseObject, and a derived class must be given
-         *       (BaseObject::GetId<DerivedClass>()).
+         *       (BaseObject::GetInfo<DerivedClass>()).
          * @tparam T The class to get the ID of.
          * @return Given class' ID.
          */
         template <class T>
-        static UInt64 GetId() noexcept;
+        static ClassInfo GetInfo() noexcept;
 
     protected:
         BaseObject() = default;
@@ -42,6 +51,15 @@ namespace Fl {
         BaseObject& operator=(BaseObject&&) noexcept = default;
     
     private:
+#if defined(FL_COMPILER_CLANG) || defined(FL_COMPILER_GCC)
+        /**
+         * @brief De-mangles the name returned by GCC and clang when calling typeid(type).name().
+         * @param mangled Mangled class name.
+         * @return A demangled version of the class's name.
+         */
+        static inline std::string DemangleClassName(const char* mangled);
+#endif
+
         static inline UInt64 s_maxId = 0;
     };
 }

@@ -40,7 +40,7 @@ if has_config("build_static") then
   add_defines("FL_STATIC")
 end
 
-add_requires("fmt")
+add_requires("boost_reflect", "fmt")
 
 target(ProjectName, function (target)
   set_kind("shared")
@@ -80,7 +80,7 @@ target(ProjectName, function (target)
     add_rules("c++.unity_build", {uniqueid = "FL_UNITY_ID", batchsize = 12})
   end
 
-  add_packages("fmt")
+  add_packages("boost_reflect", "fmt")
 
   add_defines("FL_BUILD")
   
