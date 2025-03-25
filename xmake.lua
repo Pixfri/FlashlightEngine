@@ -50,11 +50,14 @@ add_requires("fmt")
 
 target(ProjectName, function (target)
   set_kind("shared")
+
+  add_includedirs("Source")
   
   add_files("Source/**.cpp")
   
   for _, ext in ipairs({".hpp", ".inl"}) do
-    add_headerfiles("Include/**" .. ext)
+    add_headerfiles("Include/(FlashlightEngine/**" .. ext .. ")")
+    add_headerfiles("Source/FlashlightEngine/**" .. ext, {install = false})
   end
 
   if is_plat("windows", "mingw") then

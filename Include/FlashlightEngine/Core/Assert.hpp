@@ -14,19 +14,19 @@
 #include <fmt/format.h>
 
 #if defined(FL_DEBUG)
-#   define FlAssert(expr, format, ...)                                                  \
-        do {                                                                            \
-            if FL_UNLIKELY(!(expr)) {                                                   \
-                fmt::print(fg(fmt::color::crimson), format, __VA_OPT__(,) __VA_ARGS__); \
-                if (Fl::IsDebuggerAttached()) {                                         \
-                    FlDebugBreak();                                                     \
-                }                                                                       \
-            }                                                                           \
+#   define FlAssert(expr, format, ...)                          \
+        do {                                                    \
+            if FL_UNLIKELY(!(expr)) {                           \
+                fmt::println(format __VA_OPT__(,) __VA_ARGS__); \
+                if (Fl::IsDebuggerAttached()) {                 \
+                    FlDebugBreak();                             \
+                }                                               \
+            }                                                   \
         } while (false)
 #else
 #   define FlAssert(expr, fmt, ...) ((void)0)
 #endif
 
-#define FlAssertAlwaysFalse(fmt, ...) FlAssert(false, fmt, __VA_OPT__(,) __VA_ARGS__)
+#define FlAssertAlwaysFalse(fmt, ...) FlAssert(false, fmt __VA_OPT__(,) __VA_ARGS__)
 
 #endif // FL_CORE_ASSERT_HPP
