@@ -4,17 +4,23 @@ ProjectName = "FlashlightEngine"
 
 set_project(ProjectName)
 
-add_rules("mode.debug", "mode.release")
+add_rules("mode.debug", "mode.coverage", "mode.releasedbg", "mode.release")
 add_rules("plugin.vsxmake.autoupdate")
 add_rules("compiler-setup")
 
-if is_mode("release") then
+if is_mode("release") or is_mode("releasedbg") then
   set_fpmodels("fast")
   set_optimize("fastest")
-  set_symbols("hidden")
+  add_vectorexts("sse", "sse2", "sse3", "ssse3")
+elseif is_mode("coverage") and not is_plat("windows") then
+  add_links("gcov")
 else
   add_defines("FL_DEBUG")
   set_symbols("debug")
+end
+
+if is_mode("release") then
+  set_symbols("hidden")
 end
 
 set_encodings("utf-8")
@@ -40,7 +46,7 @@ if has_config("build_static") then
   add_defines("FL_STATIC")
 end
 
-add_requires("boost_reflect", "fmt")
+add_requires("fmt")
 
 target(ProjectName, function (target)
   set_kind("shared")
@@ -57,18 +63,18 @@ target(ProjectName, function (target)
 
   -- Remove platform-specific files
   if not is_plat("windows", "mingw") then
-  	remove_headerfiles("Source/FlashlightEngine/*/Win32/**")
-  	remove_files("Source/FlashlightEngine/*/Win32/**")
+  	remove_headerfiles("Source/FlashlightEngine/**/Win32/**")
+  	remove_files("Source/FlashlightEngine/**/Win32/**")
   end
 
   if not is_plat("linux", "android", "cross") then
-  	remove_headerfiles("Source/FlashlightEngine/*/Linux/**")
-  	remove_files("Source/FlashlightEngine/*/Linux/**")
+  	remove_headerfiles("Source/FlashlightEngine/**/Linux/**")
+  	remove_files("Source/FlashlightEngine/**/Linux/**")
   end
 
   if not is_plat("macosx", "iphoneos") then
-   	remove_headerfiles("Source/FlashlightEngine/*/Darwin/**")
-  	remove_files("Source/FlashlightEngine/*/Darwin/**")
+   	remove_headerfiles("Source/FlashlightEngine/**/Darwin/**")
+  	remove_files("Source/FlashlightEngine/**/Darwin/**")
   end
 
   if not is_plat("linux", "macosx", "iphoneos", "android", "wasm", "cross", "bsd") then
@@ -80,7 +86,7 @@ target(ProjectName, function (target)
     add_rules("c++.unity_build", {uniqueid = "FL_UNITY_ID", batchsize = 12})
   end
 
-  add_packages("boost_reflect", "fmt")
+  add_packages("fmt")
 
   add_defines("FL_BUILD")
   

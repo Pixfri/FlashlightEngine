@@ -24,12 +24,12 @@ namespace Fl {
 
         static const UInt64 id = s_maxId++;
 
-        const auto tempName = typeid(T).name();
+        static const auto tempName = typeid(T).name();
 
 #if defined(FL_COMPILER_MSVC)
         // Doesn't seem to need to be demangled with MSVC, but need to remove the class/struct qualifier from the type name.
-        auto name = std::string(tempName);
-        name = name.substr(name.find_first_of(" \t\f\n\r\v")+1); //< All whitespaces to be sure.
+        static auto name = std::string(tempName);
+        static name = name.substr(name.find_first_of(" \t\f\n\r\v")+1); //< All whitespaces to be sure.
 
         return {std::move(name), id};
 #elif defined(FL_COMPILER_CLANG) || defined(FL_COMPILER_GCC)
