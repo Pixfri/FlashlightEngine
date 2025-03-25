@@ -1,4 +1,4 @@
-local headerTemplate, sourceTemplate
+local headerTemplate, inlineTemplate, sourceTemplate
 
 task("create-class")
 
@@ -25,7 +25,7 @@ on_run(function()
 
 	local files = {
 		{ TargetPath = path.join("Include", project, classPath) .. ".hpp", Template = headerTemplate },
-		{ TargetPath = path.join("Include", project, classPath) .. ".inl", Template = sourceTemplate },
+		{ TargetPath = path.join("Include", project, classPath) .. ".inl", Template = inlineTemplate },
 	}
 
 	if not option.get("nocpp") then
@@ -91,7 +91,7 @@ namespace Fl {
 #endif // %HEADER_GUARD%
 ]]
 
-sourceTemplate = [[
+inlineTemplate = [[
 // Copyright (C) %COPYRIGHT%
 // This file is part of %PROJECT%.
 // For conditions of distribution and use, see copyright notice in LICENSE.
@@ -102,5 +102,17 @@ sourceTemplate = [[
 
 namespace Fl {
     
+}
+]]
+
+sourceTemplate = [[
+// Copyright (C) %COPYRIGHT%
+// This file is part of %PROJECT%.
+// For conditions of distribution and use, see copyright notice in LICENSE.
+
+#include <%PROJECT%/%CLASS_PATH%.hpp>
+
+namespace Fl {
+
 }
 ]]

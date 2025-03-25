@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Jean "Pixfri" Letessier 
+// Copyright (C) 2025 Jean "Pixfri" Letessier
 // This file is part of FlashlightEngine.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -39,6 +39,7 @@ namespace Fl {
          * @return Given class' ID.
          */
         template <class T>
+            requires(std::is_base_of_v<BaseObject, T>, !std::is_same_v<T, BaseObject>)
         static ClassInfo GetInfo() noexcept;
 
     protected:
@@ -49,7 +50,7 @@ namespace Fl {
 
         BaseObject& operator=(const BaseObject&) = default;
         BaseObject& operator=(BaseObject&&) noexcept = default;
-    
+
     private:
 #if defined(FL_COMPILER_CLANG) || defined(FL_COMPILER_GCC)
         /**
@@ -62,7 +63,7 @@ namespace Fl {
 
         static inline UInt64 s_maxId = 0;
     };
-}
+} // namespace Fl
 
 #include <FlashlightEngine/Core/BaseObject.inl>
 

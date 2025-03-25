@@ -435,6 +435,18 @@
 #   define FL_ANONYMOUS_NAMESPACE_PREFIX(a) a
 #endif
 
+// |---------------|
+// | Export macros |
+// |---------------|
+
+#if defined(FL_STATIC)
+#   define FL_API
+#elif defined(FL_BUILD)
+#   define FL_API FL_EXPORT
+#else
+#   define FL_API FL_IMPORT
+#endif
+
 // |------------------|
 // | Type definitions |
 // |------------------|
@@ -472,6 +484,8 @@ namespace Fl {
     using Float64 = double;
 
     struct UnreachableError {};
+
+    FL_API bool IsDebuggerAttached();
 }
 
 // |---------------|
@@ -486,16 +500,16 @@ namespace Fl {
 #define FlStringifyMacro(s) FlStringify(s)
 #define FlUnused(x) (void)(x)
 
-// |---------------|
-// | Export macros |
-// |---------------|
-
-#if defined(FL_STATIC)
-#   define FL_API
-#elif defined(FL_BUILD)
-#   define FL_API FL_EXPORT
+#if defined(FL_PLATFORM_WINDOWS)
+#   define FlDebugBreak() __debugbreak()
+#elif defined(FL_PLATFORM_POSIX)
+#   if defined(FL_ARCH_arm) || defined(FL_ARCH_aarch64)
+#       define FlDebugBreak() __builtin_trap()
+#   else
+#       define FlDebugBreak() asm("int $3")
+#   endif
 #else
-#   define FL_API FL_IMPORT
+#   define FlDebugBreak() {}
 #endif
 
 #endif // FL_PREREQUISITES_HPP
