@@ -7,11 +7,11 @@
 #include <FlashlightEngine/Core/Assert.hpp>
 
 #if defined(FL_PLATFORM_WINDOWS)
-#   include <FlashlightEngine/Core/Win32/DynLibImpl.hpp>
+#include <FlashlightEngine/Core/Win32/DynLibImpl.hpp>
 #elif defined(FL_PLATFORM_POSIX)
-#   include <FlashlightEngine/Core/Posix/DynLibImpl.hpp>
+#include <FlashlightEngine/Core/Posix/DynLibImpl.hpp>
 #else
-#   error Current platform has no implementation for DynLib
+#error Current platform has no implementation for DynLib
 #endif
 
 #define FL_TO_DYNLIB_IMPL static_cast<DynLibImpl*>(m_impl.get())
@@ -30,7 +30,7 @@ namespace Fl {
     }
 
     bool DynLib::Load(const std::filesystem::path& path) {
-        FlAssert(m_impl, "[Core/DynLib] A DynLib is already loaded, please call Fl::DynLib::Unload before.");
+        FlAssert(m_impl == nullptr, "[Core/DynLib] A DynLib is already loaded, please call Fl::DynLib::Unload before.");
         m_impl = std::unique_ptr<void, ImplDeleter>(new DynLibImpl, ImplDeleter());
         bool result = false;
         if (path.extension() != FL_DYNLIB_EXTENSION) {

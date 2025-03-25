@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Jean "Pixfri" Letessier 
+// Copyright (C) 2025 Jean "Pixfri" Letessier
 // This file is part of FlashlightEngine.
 // For conditions of distribution and use, see copyright notice in LICENSE.
 
@@ -7,8 +7,8 @@
 #ifndef FL_DYNLIB_HPP
 #define FL_DYNLIB_HPP
 
-#include <FlashlightEngine/Prerequisites.hpp>
 #include <FlashlightEngine/Core/BaseObject.hpp>
+#include <FlashlightEngine/Prerequisites.hpp>
 
 #include <FlashlightEngine/Core/FunctionRef.hpp>
 
@@ -16,11 +16,11 @@
 #include <memory>
 
 #if defined(FL_PLATFORM_WINDOWS)
-#   define FL_DYNLIB_EXTENSION ".dll"
+#define FL_DYNLIB_EXTENSION ".dll"
 #elif defined(FL_PLATFORM_LINUX)
-#   define FL_DYNLIB_EXTENSION ".so"
+#define FL_DYNLIB_EXTENSION ".so"
 #elif defined(FL_PLATFORM_MACOS)
-#   define FL_DYNLIB_EXTENSION ".dylib"
+#define FL_DYNLIB_EXTENSION ".dylib"
 #endif
 
 namespace Fl {
@@ -50,7 +50,7 @@ namespace Fl {
 
         DynLib& operator=(const DynLib&) = delete;
         DynLib& operator=(DynLib&&) noexcept = default;
-    
+
     private:
         struct ImplDeleter {
             void operator()(void* impl) const;
@@ -58,7 +58,7 @@ namespace Fl {
         std::unique_ptr<void, ImplDeleter> m_impl;
         mutable std::string m_lastError;
     };
-}
+} // namespace Fl
 
 #include <FlashlightEngine/Core/DynLib.inl>
 

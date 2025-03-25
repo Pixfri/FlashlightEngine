@@ -7,15 +7,15 @@
 #include <catch2/catch_test_macros.hpp>
 
 #ifdef FL_PLATFORM_POSIX
-#   define PREFIX "lib"
+#define PREFIX "lib"
 #else
-#   define PREFIX ""
+#define PREFIX ""
 #endif
 
 namespace FL_PLATFORM_WINDOWS {
     TEST_CASE("[Core/DynLib] Invoke") {
         Fl::DynLib lib;
-        bool result = lib.Load(PREFIX"flashlightTest-dummy");
+        bool result = lib.Load(PREFIX "flashlightTest-dummy");
         REQUIRE(result);
 
         lib.Invoke<void>("Dummy");
@@ -52,14 +52,15 @@ namespace FL_PLATFORM_WINDOWS {
     TEST_CASE("[Core/DynLib] Loading") {
         Fl::DynLib lib;
         CHECK_FALSE(lib.Unload());
-        bool result = lib.Load(PREFIX"not-existing");
+        bool result = lib.Load(PREFIX "not-existing");
         CHECK_FALSE(result);
         CHECK(lib.GetSymbol("foo") == nullptr);
 
-        result = lib.Load(PREFIX"flashlightTest-dummy");
+        result = lib.Load(PREFIX "flashlightTest-dummy");
         CHECK(result == true);
 
         result = lib.Unload();
         CHECK(result == true);
     }
-}
+} // namespace FL_PLATFORM_WINDOWS
+
