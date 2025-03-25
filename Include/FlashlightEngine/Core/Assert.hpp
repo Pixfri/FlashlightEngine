@@ -14,10 +14,10 @@
 #include <fmt/format.h>
 
 #if defined(FL_DEBUG)
-#   define FlAssert(expr, fmt, ...)                                                     \
+#   define FlAssert(expr, format, ...)                                                  \
         do {                                                                            \
-            if FL_UNLIKELY(!(expression)) {                                             \
-                fmt::println(fg(fmt::color::crimson), fmt, __VA_OPT__(,) __VA_ARGS__);  \
+            if FL_UNLIKELY(!(expr)) {                                                   \
+                fmt::print(fg(fmt::color::crimson), format, __VA_OPT__(,) __VA_ARGS__); \
                 if (Fl::IsDebuggerAttached()) {                                         \
                     FlDebugBreak();                                                     \
                 }                                                                       \
