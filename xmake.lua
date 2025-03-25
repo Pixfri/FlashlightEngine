@@ -35,6 +35,7 @@ add_includedirs("Include")
 option("override_runtime", {description = "Override VS runtime to MD in release and MDd in debug.", default = true})
 option("build_static", {description = "Build the engine as a static library.", default = false})
 option("unitybuild", { description = "Build the engine using unity build", default = false })
+option("build_tests", { description = "Build the engine's unit tests.", default = false})
 
 if is_plat("windows") then
   if has_config("override_runtime") then
@@ -89,11 +90,19 @@ target(ProjectName, function (target)
     add_rules("c++.unity_build", {uniqueid = "FL_UNITY_ID", batchsize = 12})
   end
 
-  add_packages("fmt")
+  add_packages("fmt", {public = true})
 
   add_defines("FL_BUILD")
   
   add_rpathdirs("$ORIGIN")
+
+  if is_plat("linux") then
+    add_syslinks("dl")
+  end
 end)
 
 includes("xmake/**.lua") -- Include external scripts
+
+if has_config("build_tests") then
+  includes("Tests/xmake.lua")
+end

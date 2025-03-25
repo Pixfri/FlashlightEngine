@@ -17,7 +17,7 @@ namespace Fl {
     class FunctionRef;
 
     template <typename ReturnValue, typename... Args>
-    class FL_API FunctionRef<ReturnValue(Args...)> final : public BaseObject {
+    class FunctionRef<ReturnValue(Args...)> final : public BaseObject {
     public:
         using Signature = ReturnValue(Args...);
 
