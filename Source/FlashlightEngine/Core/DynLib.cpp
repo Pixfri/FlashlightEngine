@@ -14,64 +14,39 @@
 #error Current platform has no implementation for DynLib
 #endif
 
-#define FL_TO_DYNLIB_IMPL static_cast<DynLibImpl*>(m_impl.get())
-
 namespace Fl {
-    DynLib::~DynLib() {
-        if (IsLoaded()) {
-            FL_TO_DYNLIB_IMPL->Unload();
-        }
+    std::string DynLib::GetLastError() const {
+        return m_lastError;
+    }
 
-        m_impl = nullptr;
+    DynLibFunc DynLib::GetSymbol(const char* symbol) const {
+        FlAssert(IsLoaded(), "[Core/DynLib] Library is not loaded.");
+
+        return m_impl->GetSymbol(symbol, &m_lastError);
     }
 
     bool DynLib::IsLoaded() const {
         return m_impl != nullptr;
     }
 
-    bool DynLib::Load(const std::filesystem::path& path) {
-        FlAssert(m_impl == nullptr, "[Core/DynLib] A DynLib is already loaded, please call Fl::DynLib::Unload before.");
-        m_impl = std::unique_ptr<void, ImplDeleter>(new DynLibImpl, ImplDeleter());
-        bool result = false;
-        if (path.extension() != FL_DYNLIB_EXTENSION) {
-            result = FL_TO_DYNLIB_IMPL->Load(path.string() + FL_DYNLIB_EXTENSION, &m_lastError);
-        } else {
-            result = FL_TO_DYNLIB_IMPL->Load(path, &m_lastError);
+    bool DynLib::Load(std::filesystem::path libraryPath) {
+        Unload();
+
+        if (libraryPath.extension().empty()) {
+            libraryPath += FL_DYNLIB_EXTENSION;
         }
 
-        if (result) {
-            return true;
-        }
-
-        m_impl = nullptr;
-        return false;
-    }
-
-    bool DynLib::Unload() {
-        if (!m_impl) {
+        auto impl = std::make_unique<PlatformImpl::DynLibImpl>();
+        if (!impl->Load(libraryPath, &m_lastError)) {
+            FlError("Failed to load library '{}'.", m_lastError);
             return false;
         }
 
-        const bool result = FL_TO_DYNLIB_IMPL->Unload(&m_lastError);
-
-        m_impl = nullptr;
-        return result;
+        m_impl = std::move(impl);
+        return true;
     }
 
-    void* DynLib::GetSymbol(const std::string& symbol) const {
-        if (!m_impl) {
-            return nullptr;
-        }
-
-        void* result = FL_TO_DYNLIB_IMPL->GetSymbol(symbol, &m_lastError);
-        return result;
-    }
-
-    void DynLib::ImplDeleter::operator()(void* impl) const {
-        if (!impl) {
-            return;
-        }
-
-        std::default_delete<DynLibImpl>()(static_cast<DynLibImpl*>(impl));
+    void DynLib::Unload() {
+        m_impl.reset();
     }
 } // namespace Fl

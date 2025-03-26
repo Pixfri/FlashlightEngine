@@ -10,8 +10,6 @@
 #include <FlashlightEngine/Core/BaseObject.hpp>
 #include <FlashlightEngine/Prerequisites.hpp>
 
-#include <FlashlightEngine/Core/FunctionRef.hpp>
-
 #include <filesystem>
 #include <memory>
 
@@ -24,42 +22,63 @@
 #endif
 
 namespace Fl {
-    class DynLibImpl;
+    using DynLibFunc = void (*)(void); //< "Generic" type of pointer to function.
 
+    namespace PlatformImpl {
+        class DynLibImpl;
+    }
+
+    /**
+     * @brief Represents and dynamic library loader.
+     */
     class FL_API DynLib final : public BaseObject {
     public:
         DynLib() = default;
-        ~DynLib() override;
+        ~DynLib() override = default;
 
         DynLib(const DynLib&) = delete;
         DynLib(DynLib&&) noexcept = default;
 
+        /**
+         * @brief Gets the last system error emitted.
+         * @return The last system error emitted when loading.
+         */
+        std::string GetLastError() const;
+        /**
+         * @brief Retrieves the symbol with the given name.
+         * @param symbol Name of the symbol to retrieve.
+         * @return The retrieved symbol.
+         */
+        DynLibFunc GetSymbol(const char* symbol) const;
+
+        /**
+         * @brief Checks whether the library is loaded.
+         * @return Whether the library is loaded.
+         */
         bool IsLoaded() const;
-        bool Load(const std::filesystem::path& path);
-        bool Unload();
-        void* GetSymbol(const std::string& symbol) const;
 
-        template <typename ReturnValue, typename... Args>
-        ReturnValue Invoke(const std::string& functionName, Args&&... args);
-
-        template <typename ReturnValue, typename... Args>
-        FunctionRef<ReturnValue(Args...)> GetFunction(const std::string& functionName);
-
-        template <typename T>
-        T* GetValue(const std::string& valueName);
+        /**
+         * @brief Loads the library with the given path.
+         * @remark Sends a FlError() if the library couldn't be loaded.
+         * @param libraryPath Path of the library to load.
+         * @return Whether the library was loaded correctly.
+         */
+        bool Load(std::filesystem::path libraryPath);
+        /**
+         * @brief Unloads the library.
+         */
+        void Unload();
 
         DynLib& operator=(const DynLib&) = delete;
         DynLib& operator=(DynLib&&) noexcept = default;
 
     private:
-        struct ImplDeleter {
-            void operator()(void* impl) const;
-        };
-        std::unique_ptr<void, ImplDeleter> m_impl;
         mutable std::string m_lastError;
+        std::unique_ptr<PlatformImpl::DynLibImpl> m_impl;
     };
 } // namespace Fl
 
 #include <FlashlightEngine/Core/DynLib.inl>
 
 #endif // FL_DYNLIB_HPP
+

@@ -27,6 +27,11 @@
 #   define FlAssert(expr, fmt, ...) ((void)0)
 #endif
 
-#define FlAssertAlwaysFalse(fmt, ...) FlAssert(false, fmt __VA_OPT__(,) __VA_ARGS__)
+#define FlError(format, ...) {                      \
+    fmt::println(format __VA_OPT__(,) __VA_ARGS__); \
+    if (Fl::IsDebuggerAttached()) {                 \
+        FlDebugBreak();                             \
+    }                                               \
+}
 
 #endif // FL_CORE_ASSERT_HPP
