@@ -74,7 +74,7 @@
 
 #   define FL_CHECK_MSVC_VER(ver) (FL_COMPILER_MSVC_VER >= ver)
 
-#   define FL_PRAGMA(x) __pragma(#x)
+#   define FL_PRAGMA(x) __pragma(x)
 
 #   define FL_WARNING_MSVC_DISABLE(...) FL_PRAGMA(warning(disable: __VA_ARGS__))
 #   define FL_WARNING_POP() FL_PRAGMA(warning(pop))
@@ -258,7 +258,7 @@
 #   define FL_EXPORT __attribute__((visibility("default")))
 #   define FL_IMPORT __attribute__((visibility("default")))
 #else
-#   pragma message Couldn't determine the platform. This might cause issues.
+#   pragma message Could not determine the platform. This might cause issues.
 
 #   define FL_PLATFORM_UNKNOWN
 #   define FL_EXPORT
@@ -286,7 +286,7 @@
 #       define FL_ASSUME(expr) [[assume(expr)]]
 #   endif
 
-#   ifndef NAZARA_ASSUME
+#   ifndef FL_ASSUME
 #       if defined(FL_COMPILER_CLANG)
 #           define FL_ASSUME(expr) __builtin_assume(expr)
 #       endif
@@ -499,17 +499,5 @@ namespace Fl {
 #define FlStringify(s) #s
 #define FlStringifyMacro(s) FlStringify(s)
 #define FlUnused(x) (void)(x)
-
-#if defined(FL_PLATFORM_WINDOWS)
-#   define FlDebugBreak() __debugbreak()
-#elif defined(FL_PLATFORM_POSIX)
-#   if defined(FL_ARCH_arm) || defined(FL_ARCH_aarch64)
-#       define FlDebugBreak() __builtin_trap()
-#   else
-#       define FlDebugBreak() asm("int $3")
-#   endif
-#else
-#   define FlDebugBreak() {}
-#endif
 
 #endif // FL_PREREQUISITES_HPP

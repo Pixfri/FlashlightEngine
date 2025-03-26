@@ -36,6 +36,7 @@ option("override_runtime", {description = "Override VS runtime to MD in release 
 option("build_static", {description = "Build the engine as a static library.", default = false})
 option("unitybuild", { description = "Build the engine using unity build", default = false })
 option("build_tests", { description = "Build the engine's unit tests.", default = false})
+option("no_asserts", { description = "Disable asserts in debug mode.", default = false})
 
 if is_plat("windows") then
   if has_config("override_runtime") then
@@ -45,6 +46,10 @@ end
 
 if has_config("build_static") then
   add_defines("FL_STATIC")
+end
+
+if has_config("no_asserts") then
+  add_defines("FL_NO_ASSERT")
 end
 
 add_requires("fmt")

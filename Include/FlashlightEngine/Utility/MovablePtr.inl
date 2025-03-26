@@ -15,7 +15,7 @@ namespace Fl {
     template <typename T>
     MovablePtr<T>::MovablePtr(MovablePtr&& ptr) noexcept
         : m_value(ptr.m_value) {
-        ptr.m_value = false;
+        ptr.m_value = nullptr;
     }
 
     template <typename T>

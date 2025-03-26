@@ -4,7 +4,7 @@
 
 #include <FlashlightEngine/Core/DynLib.hpp>
 
-#include <FlashlightEngine/Core/Assert.hpp>
+#include <FlashlightEngine/Utility/Assert.hpp>
 
 #if defined(FL_PLATFORM_WINDOWS)
 #include <FlashlightEngine/Core/Win32/DynLibImpl.hpp>
@@ -20,7 +20,7 @@ namespace Fl {
     }
 
     DynLibFunc DynLib::GetSymbol(const char* symbol) const {
-        FlAssert(IsLoaded(), "[Core/DynLib] Library is not loaded.");
+        FlAssertMsg(IsLoaded(), "[Core/DynLib] Library is not loaded.");
 
         return m_impl->GetSymbol(symbol, &m_lastError);
     }
@@ -38,7 +38,7 @@ namespace Fl {
 
         auto impl = std::make_unique<PlatformImpl::DynLibImpl>();
         if (!impl->Load(libraryPath, &m_lastError)) {
-            FlError("Failed to load library '{}'.", m_lastError);
+            FlAssertMsg(false, "Failed to load library '{}'.", m_lastError);
             return false;
         }
 
@@ -50,3 +50,7 @@ namespace Fl {
         m_impl.reset();
     }
 } // namespace Fl
+
+#if defined(FL_PLATFORM_WINDOWS)
+#   include <FlashlightEngine/Core/AntiWindows.hpp>
+#endif

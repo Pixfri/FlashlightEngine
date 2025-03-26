@@ -7,8 +7,8 @@
 #ifndef FL_DYNLIB_HPP
 #define FL_DYNLIB_HPP
 
-#include <FlashlightEngine/Core/BaseObject.hpp>
 #include <FlashlightEngine/Prerequisites.hpp>
+#include <FlashlightEngine/Core/BaseObject.hpp>
 
 #include <filesystem>
 #include <memory>
@@ -77,8 +77,6 @@ namespace Fl {
         std::unique_ptr<PlatformImpl::DynLibImpl> m_impl;
     };
 } // namespace Fl
-
-#include <FlashlightEngine/Core/DynLib.inl>
 
 #endif // FL_DYNLIB_HPP
 
