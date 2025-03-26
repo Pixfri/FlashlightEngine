@@ -14,7 +14,6 @@ target("flashlightTest-dummy", function(target)
                 __declspec(dllexport) void __cdecl Dummy() {}
                 __declspec(dllexport) int __cdecl DummyInt() { return 42;}
 				__declspec(dllexport) int __cdecl Increment(int v) { return v + 1;}
-                __declspec(dllexport) int __cdecl GlobalInt = 42;
             }
             ]]
 			)
@@ -26,7 +25,6 @@ target("flashlightTest-dummy", function(target)
                  void Dummy() {}
                  int DummyInt() { return 42;}
 			     int Increment(int v) { return v + 1;}
-                 int GlobalInt = 42;
             }
             ]]
 			)

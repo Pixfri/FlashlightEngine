@@ -33,11 +33,11 @@ namespace Fl {
      */
     class FL_API DynLib final : public BaseObject {
     public:
-        DynLib() = default;
-        ~DynLib() override = default;
+        DynLib();
+        ~DynLib() override;
 
         DynLib(const DynLib&) = delete;
-        DynLib(DynLib&&) noexcept = default;
+        DynLib(DynLib&&) noexcept;
 
         /**
          * @brief Gets the last system error emitted.
@@ -70,7 +70,7 @@ namespace Fl {
         void Unload();
 
         DynLib& operator=(const DynLib&) = delete;
-        DynLib& operator=(DynLib&&) noexcept = default;
+        DynLib& operator=(DynLib&&) noexcept;
 
     private:
         mutable std::string m_lastError;

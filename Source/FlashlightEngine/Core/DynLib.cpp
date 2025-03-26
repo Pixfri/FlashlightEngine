@@ -7,14 +7,19 @@
 #include <FlashlightEngine/Utility/Assert.hpp>
 
 #if defined(FL_PLATFORM_WINDOWS)
-#include <FlashlightEngine/Core/Win32/DynLibImpl.hpp>
+#   include <FlashlightEngine/Core/Win32/DynLibImpl.hpp>
 #elif defined(FL_PLATFORM_POSIX)
-#include <FlashlightEngine/Core/Posix/DynLibImpl.hpp>
+#   include <FlashlightEngine/Core/Posix/DynLibImpl.hpp>
 #else
-#error Current platform has no implementation for DynLib
+#   error Current platform has no implementation for DynLib
 #endif
 
 namespace Fl {
+    DynLib::DynLib() = default;
+    DynLib::~DynLib() = default;
+
+    DynLib::DynLib(DynLib&&) noexcept = default;
+
     std::string DynLib::GetLastError() const {
         return m_lastError;
     }
@@ -49,8 +54,10 @@ namespace Fl {
     void DynLib::Unload() {
         m_impl.reset();
     }
+
+    DynLib& DynLib::operator=(DynLib&&) noexcept = default;
 } // namespace Fl
 
 #if defined(FL_PLATFORM_WINDOWS)
-#   include <FlashlightEngine/Core/AntiWindows.hpp>
+#include <FlashlightEngine/Core/AntiWindows.hpp>
 #endif

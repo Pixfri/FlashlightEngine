@@ -14,8 +14,8 @@
 #   define FlAssert(cond) if FL_UNLIKELY(!(cond)) Fl::AssertFailureWithSource(__FILE__, __LINE__, #cond)
 #   define FlAssertMsg(cond, ...) if FL_UNLIKELY(!(cond)) Fl::AssertFailureWithSource(__FILE__, __LINE__, __VA_ARGS__)
 #else
-#   define FlAssert() do {} while (false)
-#   define FlAssertMsg() do {} while (false)
+#   define FlAssert(...) do {} while (false)
+#   define FlAssertMsg(...) do {} while (false)
 #endif
 
 namespace Fl {

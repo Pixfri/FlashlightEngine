@@ -34,5 +34,4 @@ namespace Fl::PlatformImpl {
         *errorMessage = SystemError::GetLastSystemError();
         return false;
     }
-
 } // namespace Fl::PlatformImpl
