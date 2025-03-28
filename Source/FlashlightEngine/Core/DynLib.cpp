@@ -14,6 +14,8 @@
 #   error Current platform has no implementation for DynLib
 #endif
 
+#include <iostream>
+
 namespace Fl {
     DynLib::DynLib() = default;
     DynLib::~DynLib() = default;

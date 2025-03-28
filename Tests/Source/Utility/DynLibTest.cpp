@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#ifdef FL_PLATFORM_POSIX
+#if defined(FL_COMPILER_GCC) || defined(FL_COMPILER_CLANG)
 #   define PREFIX "lib"
 #else
 #   define PREFIX ""

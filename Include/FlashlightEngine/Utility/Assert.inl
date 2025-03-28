@@ -51,17 +51,18 @@ namespace Fl {
     template <bool Dummy, typename... Args>
     FL_CONSTEXPR20 void AssertFailureWithSource(const char* file, const unsigned int line, const char* message,
                                                 Args&&... args) {
-        if FL_IS_CONSTEVAL () {
-            if constexpr (!Dummy) //< just to make the throw dependent
+        if FL_IS_CONSTEVAL() {
+            if constexpr (!Dummy) { //< just to make the throw dependent
                 throw AssertionFailed{};
+            }
         } else {
             if constexpr (sizeof...(Args) > 0) {
-                std::fputs("Assertion failed: ", stderr);
+                std::fputs("assertion failed: ", stderr);
                 std::fprintf(stderr, message, std::forward<Args>(args)...);
                 std::fprintf(stderr, " at %s:%d: ", file, line);
                 std::fputc('\n', stderr);
             } else {
-                std::fprintf(stderr, "Assertion failed: %s at %s:%d\n", message, file, line);
+                std::fprintf(stderr, "assertion failed: %s at %s:%d\n", message, file, line);
             }
             FlDebugBreak();
             assert(false);

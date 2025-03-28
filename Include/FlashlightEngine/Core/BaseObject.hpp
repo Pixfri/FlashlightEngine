@@ -17,7 +17,7 @@ namespace Fl {
      *
      * This class is used mainly to get the ID of classes in the context of serialization/deserialization.
      */
-    class FL_API BaseObject {
+    class BaseObject {
     public:
         virtual ~BaseObject() = default;
 
